@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="YiQiDong.Core/YiQiDong.Core.csproj" />
+  <Project Path="YiQiDong/YiQiDong.csproj" />
+  <Project Path="_build/_build.csproj" />
+</Solution>

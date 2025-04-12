@@ -1,0 +1,7 @@
+﻿{
+  "Title": "弈启动",
+  "Urls": "http://*:80",
+  "Password": "123456",
+  "DataFolder": "",
+  "AgentTransportTimeout": 60000
+}

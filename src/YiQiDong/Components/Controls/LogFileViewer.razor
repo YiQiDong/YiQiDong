@@ -1,0 +1,57 @@
+﻿<div class="modal-body">
+    <div class="btn-toolbar">
+        @if (!isLogFileLoaded)
+        {
+            <button type="button" class="btn btn-sm btn-secondary" @onclick="btnLoad_Clicked">
+                <i class="fa fa-microchip"></i>
+                加载日志文件
+            </button>
+        }
+        else
+        {
+            <div class="input-group mb-1">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">窗口高度</div>
+                </div>
+                <input type="number" class="form-control" @bind-value="LogWindowHeight">
+            </div>
+            <div class="input-group ml-1 mb-1">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">页大小</div>
+                </div>
+                <input type="number" class="form-control" @bind-value="PageSize">
+            </div>
+            <div class="input-group ml-1 mb-1">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">关键字</div>
+                </div>
+                <input type="text" class="form-control" @bind-value="searchKeywords">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-sm btn-secondary" @onclick="btnSearch_Clicked">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div style="height: @(LogWindowHeight)px; overflow-y: scroll;" class="bg-dark form-control m-0 text-light">
+    @if (displayLines != null)
+    {
+        @foreach (var line in displayLines)
+        {
+            <p class="m-0">@line</p>
+        }
+    }
+</div>
+@if (isLogFileLoaded)
+{
+    <div class="modal-body">
+        <p>匹配行数：@totalCount</p>
+        <Pagination @bind-PageSize="PageSize" @bind-Offset="Offset" RecordCount="totalCount" PageIndexEditable="false" DisplayRecordCount="false">
+        </Pagination>
+    </div>
+}
+
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />

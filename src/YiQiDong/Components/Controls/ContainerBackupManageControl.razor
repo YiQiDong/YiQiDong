@@ -1,0 +1,31 @@
+﻿<Quick.Blazor.Bootstrap.Admin.FileManageControl @ref="fileManageControl"
+                                                DisplayAddress="false"
+                                                DisplayCreateFolderButton="false"
+                                                DisplayFolder="false"
+                                                DisplayRenameButton="false"
+                                                FileFilter="*.ycr"
+                                                Dir="@Dir"
+                                                DownloadFileAction="Download"
+                                                FileDoubleClickCustomAction="e=>ImportContainer()"
+                                                >    
+    <ToolbarAddonButtons>
+        @if (string.IsNullOrEmpty(fileManageControl.SelectedPath))
+        {
+            <button type="button" class="btn btn-sm btn-secondary" disabled>
+                <i class="fa fa-reply" aria-hidden="true"></i>
+                导入
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-sm btn-secondary" @onclick="ImportContainer">
+                <i class="fa fa-reply" aria-hidden="true"></i>
+                导入
+            </button>
+        }
+    </ToolbarAddonButtons>
+</Quick.Blazor.Bootstrap.Admin.FileManageControl>
+
+<ModalWindow @ref="modalWindow" DialogSizeExtraLarge />
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />

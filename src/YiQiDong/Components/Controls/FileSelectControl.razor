@@ -1,0 +1,24 @@
+﻿<Quick.Blazor.Bootstrap.Admin.FileManageControl @ref="fileManageControl"
+    Dir="@Dir"
+    FileFilter="@FileFilter"
+    SelectedPath="@SelectedPath"
+    FileDoubleClickToDownload="@FileDoubleClickToDownload"
+    FileDoubleClickCustomAction="@onFileDoubleClick"
+    DownloadFileAction="Download">
+    <ToolbarAddonButtons>
+        @if (string.IsNullOrEmpty(fileManageControl.SelectedPath) || !System.IO.File.Exists(fileManageControl.SelectedPath))
+        {
+            <button type="button" class="btn btn-sm btn-secondary" disabled>
+                <i class="fa fa-check" aria-hidden="true"></i>
+                选择
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-sm btn-secondary" @onclick="Select">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                选择
+            </button>
+        }
+    </ToolbarAddonButtons>
+</Quick.Blazor.Bootstrap.Admin.FileManageControl>

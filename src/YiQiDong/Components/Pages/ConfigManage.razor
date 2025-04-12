@@ -1,0 +1,156 @@
+﻿@using Quick.Blazor.Bootstrap
+
+<Tabs>
+    <TabPane Key="Common">
+        <Tab>通用</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <EditForm Model="@configModel" OnValidSubmit="ModifyConfigModel">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label>标题</label>
+                            <InputText class="form-control" @bind-Value="configModel.Title" />
+                            <ValidationMessage For="@(() => configModel.Title)" />
+                        </div>
+                        <div class="form-group">
+                            <label>URL</label>
+                            <InputText class="form-control" @bind-Value="configModel.Urls" />
+                            <small class="form-text text-muted">主机中的星号代表绑定全部IP地址，一般情况不用修改成特定IP地址。</small>
+                            <ValidationMessage For="@(() => configModel.Urls)" />
+                        </div>
+                        <div class="form-group">
+                            <label>数据目录</label>
+                            <InputText class="form-control" @bind-Value="configModel.DataFolder" />
+                            <ValidationMessage For="@(() => configModel.DataFolder)" />
+                        </div>
+                        <div class="form-group">
+                            <label>默认HTML</label>
+                            <InputTextArea class="form-control" rows="5" @bind-Value="configModel.DefaultHtml" />
+                            <small class="form-text text-muted">为空时，显示弈启动主页面</small>
+                            <ValidationMessage For="@(() => configModel.DefaultHtml)" />
+                        </div>
+                        <button type="submit" class="btn btn-secondary col-sm-5 col-md-4 col-lg-2">保存</button>
+                    </EditForm>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="Password">
+        <Tab>密码</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <EditForm Model="@passwordManageModel" OnValidSubmit="ModifyPassword">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label>原密码</label>
+                            <InputText class="form-control" type="password" @bind-Value="passwordManageModel.OldPassword" />
+                            <ValidationMessage For="@(() => passwordManageModel.OldPassword)" />
+                        </div>
+                        <div class="form-group">
+                            <label>新密码</label>
+                            <InputText class="form-control" type="password" @bind-Value="passwordManageModel.NewPassword" />
+                            <ValidationMessage For="@(() => passwordManageModel.NewPassword)" />
+                        </div>
+                        <div class="form-group">
+                            <label>再次输入新密码</label>
+                            <InputText class="form-control" type="password" @bind-Value="passwordManageModel.NewPassword2" />
+                            <ValidationMessage For="@(() => passwordManageModel.NewPassword2)" />
+                        </div>
+                        <button type="submit" class="btn btn-secondary col-sm-5 col-md-4 col-lg-2">保存</button>
+                    </EditForm>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="Advance">
+        <Tab>高级</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <EditForm Model="@configModel" OnValidSubmit="ModifyConfigModel">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label>容器初始化间隔时间</label>
+                            <InputNumber class="form-control" @bind-Value="configModel.AgentInitInterval" />
+                            <small class="form-text text-muted">单位：毫秒</small>
+                            <ValidationMessage For="@(() => configModel.AgentInitInterval)" />
+                        </div>
+                        <div class="form-group">
+                            <label>容器传输超时</label>
+                            <InputNumber class="form-control" @bind-Value="configModel.AgentTransportTimeout" />
+                            <small class="form-text text-muted">单位：毫秒</small>
+                            <ValidationMessage For="@(() => configModel.AgentTransportTimeout)" />
+                        </div>
+                        <button type="submit" class="btn btn-secondary col-sm-5 col-md-4 col-lg-2">保存</button>
+                    </EditForm>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    @if(Program.IsStartSuccess)
+    {
+    <TabPane Key="ClusterManage">
+        <Tab>集群</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <YiQiDong.Components.Pages.ClusterManage></YiQiDong.Components.Pages.ClusterManage>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    }
+    <TabPane Key="Update">
+        <Tab>更新</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label>上传文件更新</label>
+                            <div class="input-group">
+                                <div class="btn btn-sm btn-secondary col-sm-5 col-md-4 col-lg-2">
+                                    <i class="fa fa-upload" aria-hidden="true"></i> 上传
+                                    <input @ref="inputUpdateFile" id="inputUpdateFile" type="file" accept=".zip" style="width: 0px; height: 0px; visibility: collapse;" @onchange="@(e=>onInputUpdateFileChanged())">
+                                    <label title="上传"
+                                        style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer"
+                                        for="inputUpdateFile">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>从服务器选择文件更新</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button title="选择文件" type="button" class="btn btn-secondary"
+                                        @onclick="btnSelect_Click">
+                                        <i class="fa fa-reply" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control col-auto" @bind-value="@argUpdateFile" />
+                                <div class="input-group-append">
+                                    @if (string.IsNullOrEmpty(argUpdateFile))
+                                    {
+                                        <button type="button" class="btn btn-secondary" disabled>开始更新</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-secondary"
+                                            @onclick="btnStartUpdate_Click">开始更新</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+</Tabs>
+
+<ModalWindow @ref="modalWindow" DialogCentered="false" DialogSizeExtraLarge="true" ModalBodyCls="p-0"></ModalWindow>
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />

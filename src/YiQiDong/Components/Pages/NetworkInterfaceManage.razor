@@ -1,0 +1,83 @@
+﻿@using System.Net.Sockets
+@using System.Net.NetworkInformation
+
+<ToastStack @ref="toastStack" />
+
+<div class="sticky-top">
+    <div class="btn-toolbar m-2">
+        <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-secondary" @onclick="btnRefresh_Click">
+                <i class="fa fa-refresh" aria-hidden="true"></i> 刷新
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row ml-0 mr-0 mb-2">
+    @if (NetworkInterfaces != null)
+    {
+        @foreach (var t in NetworkInterfaces)
+        {
+            <div class="col-xl-4 col-lg-6 col-sm-12 mt-2">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fa fa-sitemap" aria-hidden="true"></i>
+                        <span class="mr-2">@t.Name</span>
+                        @if (t.Status == OperationalStatus.Up)
+                        {
+                            <span class="badge badge-success">已启用</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">已禁用</span>
+                        }
+                    </div>
+                    <div class="card-body small p-2">
+                        <p class="mb-0">
+                            <span>描述: @t.Description</span>
+                        </p>
+                        @if (t.Status == OperationalStatus.Up)
+                        {
+                            <p class="mb-0">
+                                <span>类型: @t.Type</span>
+                            </p>
+                            <p class="mb-0">
+                    <span>IPv4地址: @t.IpAddress</span>
+                </p>
+                            <p class="mb-0">
+                    <span>MAC地址: @t.MacAddress</span>
+                </p>
+                        }
+                    </div>
+                    <div class="card-footer p-1">
+                        <div class="btn-toolbar">
+                            <div class="btn-group">
+                                <button type="button" title="编辑" class="btn btn-sm btn-secondary" @onclick="@(e => EditNI(t))">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                                @switch (t.Status)
+                                {
+                                    case OperationalStatus.Down:
+                                        <button type="button" title="启用" class="btn btn-sm btn-secondary"
+                                            @onclick="@(e => EnableNI(t))">
+                                            <i class="fa fa-play" aria-hidden="true"></i>
+                                        </button>
+                                        break;
+                                    case OperationalStatus.Up:
+                                        <button type="button" title="禁用" class="btn btn-sm btn-secondary"
+                                            @onclick="@(e => DislabeNI(t))">
+                                            <i class="fa fa-stop" aria-hidden="true"></i>
+                                        </button>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+</div>
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />
+<ModalWindow @ref="modalWindow" DialogCentered="false" />

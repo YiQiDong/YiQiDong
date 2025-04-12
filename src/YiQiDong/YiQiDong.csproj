@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<RollForward>Major</RollForward>
+		<ImplicitUsings>true</ImplicitUsings>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AssemblyTitle>弈启动</AssemblyTitle>
+		<Product>弈启动</Product>
+		<Authors>张鹏</Authors>
+		<Description>跨平台应用程序运行平台</Description>
+		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+		<SelfContained>true</SelfContained>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
+		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>		
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blazor.ECharts" Version="1.0.5" />
+		<PackageReference Include="Epoch.net" Version="4.1.0" />
+		<PackageReference Include="Glash.Blazor.Agent" Version="1.5.12.1" />
+		<PackageReference Include="Glash.Blazor.Server" Version="1.5.12.1" />
+		<PackageReference Include="Glash.Blazor.Client" Version="1.5.12.1" />
+		<PackageReference Include="Microsoft.Diagnostics.Runtime" Version="3.1.512801" />
+		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="NLog" Version="5.4.0" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="4.3.10" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="4.3.10" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="4.3.10" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="4.3.10" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="4.3.10" />
+		<PackageReference Include="Quick.Protocol.AllClients" Version="2.4.3" />
+		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.4.3" />
+		<PackageReference Include="Quick.WebFileTransfer.Server" Version="1.0.1" />
+		<PackageReference Include="System.Management" Version="9.0.4" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.4" />
+		<PackageReference Include="Quick.Build" Version="1.0.18" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\YiQiDong.Core\YiQiDong.Core.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Agent/" />
+	</ItemGroup>
+
+	<Choose>
+		<When Condition="'$(RuntimeIdentifier)'=='linux-x64' OR '$(RuntimeIdentifier)'=='linux-arm64' OR '$(RuntimeIdentifier)'=='linux-arm'">
+			<ItemGroup>
+				<None Update="YiQiDong.service">
+					<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				</None>
+				<None Update="YiQiDong.sh">
+					<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				</None>
+			</ItemGroup>
+		</When>
+		<When Condition="'$(RuntimeIdentifier)'=='osx-x64'">
+			<ItemGroup>
+				<None Update="YiQiDong.plist">
+					<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				</None>
+				<None Update="YiQiDong.Updater.plist">
+					<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				</None>
+				<None Update="YiQiDong.Updater.sh">
+					<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				</None>
+			</ItemGroup>
+		</When>
+	</Choose>
+</Project>

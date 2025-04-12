@@ -1,0 +1,55 @@
+﻿@using Quick.Blazor.Bootstrap
+@using Glash.Blazor.Server.Pages
+
+<Tabs>
+    <TabPane Key="Basic">
+        <Tab>基础</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <Basic></Basic>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="Agent">
+        <Tab>代理</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <AgentManage></AgentManage>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="Client">
+        <Tab>客户端</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <ClientManage></ClientManage>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="Tunnel">
+        <Tab>通道</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <TunnelManage></TunnelManage>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="Logs">
+        <Tab>日志</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <LogsManage></LogsManage>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
+</Tabs>

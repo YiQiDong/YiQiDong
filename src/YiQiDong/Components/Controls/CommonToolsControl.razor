@@ -1,0 +1,11 @@
+﻿<div class="row ml-0 mr-0 mb-2">
+    @foreach (var tool in Tools)
+    {
+        <button type="button" class="btn btn-secondary m-2" @onclick="()=>Show(tool)">
+            <i class="mr-1 @tool.IconClass" aria-hidden="true" />
+            @tool.Name
+        </button>
+    }
+</div>
+
+<ModalWindow @ref="modalWindow" DialogSizeExtraLarge="true" DialogCentered="false" ModalBodyCls="p-0" />

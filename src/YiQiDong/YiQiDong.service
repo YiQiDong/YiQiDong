@@ -1,0 +1,12 @@
+[Unit]
+Description=YiQiDong
+
+[Service]
+Type=forking
+ExecStart=/bin/sh /usr/share/YiQiDong/YiQiDong.sh start
+ExecStop=/bin/sh /usr/share/YiQiDong/YiQiDong.sh stop
+PrivateTmp=true
+Restart=on-abort
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,217 @@
+﻿@using Quick.Fields
+
+<div class="row">
+    <div class="col-12">
+        @if (Core.ContainerManager.Instance.IsInited)
+        {
+            <div class="btn-toolbar">
+                <div class="btn-group mr-2 mb-1">
+                    <button type="button" class="btn btn-sm btn-secondary" @onclick="CreateContainer">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        创建容器
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" @onclick="ContainerBackupManage">
+                        <i class="fa fa-files-o" aria-hidden="true"></i>
+                        备份管理
+                    </button>
+                </div>
+                <EditForm Model="@this">
+                    <div class="input-group mr-2 mb-1">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">标签</div>
+                        </div>
+                        <InputSelect class="form-control" @bind-Value="searchTag">
+                            <option value="">全部</option>
+                            @foreach (var tag in Core.TagManager.Instance.GetTags())
+                            {
+                                <option value="@tag">@tag</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </EditForm>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">关键字</div>
+                    </div>
+                    <input type="text" class="form-control" @bind-value="searchKeywords">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-sm btn-secondary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-secondary" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                初始化中...
+            </button>
+        }
+    </div>
+</div>
+<div class="row">
+    @foreach (var t in Core.ContainerManager.Instance.Query(searchTag, searchKeywords))
+    {
+        <div class="col-xl-4 col-lg-6 col-sm-12 mt-2">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-cube" aria-hidden="true"></i>
+                    <span>@t.ContainerInfo.Name</span>
+                    @if (t.ContainerInfo.Enable)
+                    {
+                        @if (t.ContainerInfo.AutoStart)
+                        {
+                            <span class="badge badge-success ml-2">启动</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary ml-2">停止</span>
+                        }
+                        @if (YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(t.ContainerInfo.Name))
+                        {
+                            <span class="badge badge-info ml-2">集群</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary ml-2">禁用</span>
+                    }
+                </div>
+                <div class="card-body small p-2">
+                    @if (t.ContainerInfo.Tags != null && t.ContainerInfo.Tags.Length > 0)
+                    {
+                        <p class="mb-0">
+                            <span class="font-weight-bold">标签: </span>
+                            @foreach (var tag in t.ContainerInfo.Tags)
+                            {
+                                <span class="badge badge-pill badge-light ml-1">@tag</span>
+                            }
+                        </p>
+                    }
+                    <p class="mb-0">
+                        <span class="font-weight-bold">镜像: </span>
+                        @if (t.ContainerInfo.Image == null)
+                        {
+                            <span class="badge badge-pill badge-light ml-1">未找到镜像[@t.ContainerInfo.ImageId]</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-pill badge-light ml-1">@t.ContainerInfo.Image?.Name [@t.ContainerInfo.Image?.Version]</span>
+                        }
+                    </p>
+                    @if (t.ContainerInfo.RuntimeIds != null && t.ContainerInfo.RuntimeIds.Length > 0)
+                    {
+                        <p class="mb-0">
+                            <span class="font-weight-bold">运行库: </span>
+                            @foreach (var runtimeId in t.ContainerInfo.RuntimeIds)
+                            {
+                                <span class="badge badge-pill badge-light ml-1">@runtimeId</span>
+                            }
+                        </p>
+                    }
+                    @if (t.ContainerInfo.Enable)
+                    {
+                        <p class="mb-0">
+                            <span class="font-weight-bold">进程: </span>
+                            @if (t.IsConnected)
+                            {
+                                <a class="badge badge-pill badge-light ml-1" href="javascript:;" onclick="@(()=>ShowProcessInfo(@t))">
+                                    @getProcessDescription(t.Process)
+                                </a>
+                            }
+                            else
+                            {
+                                <span>正在等待容器进程连接...</span>
+                            }
+                        </p>
+                    }
+                    @if (!string.IsNullOrEmpty(t.ContainerInfo.Description))
+                    {
+                        <p class="mb-0">
+                            <span class="font-weight-bold">描述: </span>@t.ContainerInfo.Description
+                        </p>
+                    }
+                </div>
+                <div class="card-footer p-1">
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group mr-2">
+                            <button type="button" title="控制台" class="btn btn-sm btn-secondary" @onclick="() => ShowContainerConsole(t)">
+                                <i class="fa fa-desktop" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" title="查看文件" class="btn btn-sm btn-secondary" @onclick="()=>ShowContainerFile(t)">
+                                <i class="fa fa-folder" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="btn-group mr-2">
+                            @if (t.ContainerInfo.Enable)
+                            {
+                                @if (!YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(t.ContainerInfo.Name))
+                                {
+                                    @if (t.ContainerInfo.AutoStart)
+                                    {
+                                        @if (t.IsConnected)
+                                        {
+                                            <button type="button" title="停止" class="btn btn-sm btn-secondary" @onclick="() => StopContainer(t)">
+                                                <i class="fa fa-stop" aria-hidden="true"></i>
+                                            </button>
+                                            <button type="button" title="重启" class="btn btn-sm btn-secondary" @onclick="@(e => RestartContainer(t))">
+                                                <i class="fa fa-refresh" aria-hidden="true"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" title="禁用" class="btn btn-sm btn-secondary" @onclick="() => DisableContainer(t)">
+                                                <i class="fa fa-chain-broken" aria-hidden="true"></i>
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (t.IsConnected)
+                                        {
+                                            <button type="button" title="启动" class="btn btn-sm btn-secondary" @onclick="()=>StartContainer(t)">
+                                                <i class="fa fa-play" aria-hidden="true"></i>
+                                            </button>
+                                        }
+                                        <button type="button" title="禁用" class="btn btn-sm btn-secondary" @onclick="() => DisableContainer(t)">
+                                            <i class="fa fa-chain-broken" aria-hidden="true"></i>
+                                        </button>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <button type="button" title="启用" class="btn btn-sm btn-secondary" @onclick="()=>EnableContainer(t)">
+                                    <i class="fa fa-chain" aria-hidden="true"></i>
+                                </button>
+                            }
+                        </div>
+                        @if (!t.ContainerInfo.Enable)
+                        {
+                            <div class="btn-group">
+                                <button type="button" title="备份" class="btn btn-sm btn-secondary" @onclick="()=>BackupContainer(t)">
+                                    <i class="fa fa-clone" aria-hidden="true"></i>
+                                </button>
+                                @if (!YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(t.ContainerInfo.Name))
+                                {
+                                    <button type="button" title="编辑" class="btn btn-sm btn-secondary" @onclick="() => EditContainer(t.ContainerInfo)">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" title="删除" class="btn btn-sm btn-secondary" @onclick="() => DeleteContainer(t)">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<ModalWindow @ref="modalWindow" DialogSizeExtraLarge="true" DialogCentered="false" ModalBodyCls="p-0" />
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />

@@ -1,0 +1,136 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>@Title</PageTitle>
+
+<div class="page">
+    @if (IsLogin)
+    {
+        <div class="sidebar">
+            <NavMenu @ref="navMenu" ActiveKey="Home">
+                <Title>
+                    <div>
+                        <img src="logo.svg" class="mr-2" width="30" height="30" />
+                        @(Program.Config.Title)
+                    </div>
+                </Title>
+                <ChildContent>
+                    <NavMenuItem Key="Home" OnClick="@(() => Show<Pages.Home>())">
+                        <Tab>
+                            <i class="fa fa-home" aria-hidden="true"></i>主页
+                        </Tab>
+                    </NavMenuItem>
+                    @if (Program.IsStartSuccess)
+                    {
+                        <NavMenuItem Key="TagManage" OnClick="@(() => Show<Pages.TagManage>())">
+                            <Tab>
+                                <i class="fa fa-tags" aria-hidden="true"></i>标签管理
+                            </Tab>
+                        </NavMenuItem>
+                        <NavMenuItem Key="RuntimeManage" OnClick="@(() => Show<Pages.RuntimeManage>())">
+                            <Tab>
+                                <i class="fa fa-life-bouy" aria-hidden="true"></i>运行库管理
+                            </Tab>
+                        </NavMenuItem>
+                        <NavMenuItem Key="ImageManage" OnClick="@(() => Show<Pages.ImageManage>())">
+                            <Tab>
+                                <i class="fa fa-archive" aria-hidden="true"></i>镜像管理
+                            </Tab>
+                        </NavMenuItem>
+                        <NavMenuItem Key="ContainerManage" OnClick="@(() => Show<Pages.ContainerManage>())">
+                            <Tab>
+                                <i class="fa fa-cube" aria-hidden="true"></i>容器管理
+                            </Tab>
+                        </NavMenuItem>
+                    }
+                    else
+                    {
+                        <NavMenuItem Key="StartErrorLog" OnClick="@(() => Show<Pages.StartErrorLog>())">
+                            <Tab>
+                                <i class="fa fa-cube" aria-hidden="true"></i>错误日志
+                            </Tab>
+                        </NavMenuItem>
+                    }
+                    <NavMenuItem Key="CommonTools" OnClick="@(() => Show<Pages.CommonTools>())">
+                        <Tab>
+                            <i class="fa fa-cutlery" aria-hidden="true"></i>实用工具
+                        </Tab>
+                    </NavMenuItem>
+                    <NavMenuItem Key="ConfigManage" OnClick="@(() => Show<Pages.ConfigManage>())">
+                        <Tab>
+                            <i class="fa fa-sliders" aria-hidden="true"></i>系统设置
+                        </Tab>
+                    </NavMenuItem>
+                    <NavMenuItem Key="Exit" OnClick="@(() => Logout())">
+                        <Tab>
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>退出
+                        </Tab>
+                    </NavMenuItem>
+                </ChildContent>
+            </NavMenu>
+        </div>
+
+        <div class="main">
+            <div class="content px-4">
+                @if (IsShowDataFolderWarning())
+                {
+                    <div class="alert alert-danger" role="alert">
+                        警告：当前配置的数据目录[@Program.Config.DataFolder]存在风险，更新或删除软件时会删除整个安装目录，镜像和容器文件有被删除的重大风险！请及时修改数据目录为其他路径。
+                    </div>
+                }
+                @if (!Program.IsStartSuccess)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        警告：弈启动时出错，请在左侧“错误信息”菜单中查看详细错误日志。
+                    </div>
+                }
+                @Body
+            </div>
+        </div>
+    }
+    else
+    {
+            @*
+        登录窗口
+    *@
+    <Modal Visiable DialogBackdropVisiable DialogCentered>
+        <TitleContent>
+            <img src="logo.svg" class="mr-2" width="30" height="30" />
+            @Title
+        </TitleContent>
+        <BodyContent>
+            <div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                        </div>
+                        <input class="form-control @(string.IsNullOrEmpty(Message) ? "" : "is-invalid")"
+                               placeholder="请输入密码" type="password" autocomplete="off"
+                               @bind-value="Password" @bind-value:event="oninput"
+                               @onkeypress="onPasswordKeyPress"
+                               required autofocus />
+                        @if (!string.IsNullOrEmpty(Message))
+                        {
+                            <div class="invalid-feedback">
+                                @(Message)
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="button" class="btn btn-success btn-block" value="登录" @onclick="OnPost" />
+                </div>
+                @if (IsShowDataFolderWarning())
+                {
+                    <div class="alert alert-danger" role="alert">
+                        警告：当前配置的数据目录[@Program.Config.DataFolder]存在风险，卸载软件时会删除整个安装目录，镜像和容器文件有被删除的重大风险！请及时修改数据目录为其他路径。
+                    </div>
+                }
+            </div>            
+        </BodyContent>
+        <FooterContent>
+            <p class="card-text"><small class="text-muted">版本：@Consts.Version-@Consts.ARCH</small></p>
+        </FooterContent>
+    </Modal>
+    }
+</div>

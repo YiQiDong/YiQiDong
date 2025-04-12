@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark">
+    <base href="./">
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["YiQiDong.styles.css"]" />
+    <link href="_content/XtermBlazor/XtermBlazor.min.css" rel="stylesheet" />
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.ico" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes @rendermode="RenderMode.InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/Quick.Blazor.Bootstrap.Terminal/TerminalControl_Polyfill.js"></script>
+    <script src="_content/XtermBlazor/XtermBlazor.min.js"></script>
+    <script src="echarts/echarts.min.js"></script>
+</body>
+
+</html>

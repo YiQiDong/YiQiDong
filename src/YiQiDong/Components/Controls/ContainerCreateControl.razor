@@ -1,0 +1,183 @@
+﻿<div class="modal-body">
+    <EditForm Model="@createModel" OnValidSubmit="Ok">
+        <DataAnnotationsValidator />
+        <Tabs NavTabsExtraClass="mb-3">
+            <TabPane Key="1">
+                <Tab>通用</Tab>
+                <ChildContent>
+                    <div class="form-group">
+                        <label>镜像</label>
+                        @if (Model == null || Model.Image == null)
+                        {
+                            <InputSelect @bind-Value="createModel.ImageId" class="form-control">
+                                <option value="">请选择</option>
+                                @foreach (var t in Core.ImageManager.Instance.Query(null, null))
+                                {
+                                    <option value="@t.Id">@t.Name [@t.Version]</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => createModel.ImageId)" />
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control" readonly
+                                value="@Model.Image?.Name [@Model.Image?.Version]" />
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>编号</label>
+                        <InputText class="form-control" @bind-Value="createModel.Id" />
+                        <ValidationMessage For="@(() => createModel.Id)" />
+                    </div>
+                    <div class="form-group">
+                        <label>名称</label>
+                        <InputText class="form-control" @bind-Value="createModel.Name" />
+                        <ValidationMessage For="@(() => createModel.Name)" />
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <InputText class="form-control" @bind-Value="createModel.Description" />
+                        <ValidationMessage For="@(() => createModel.Description)" />
+                    </div>
+                    <div class="form-group">
+                        <label>标签</label>
+                        @if (selectTags != null)
+                        {
+                            <p>
+
+                                @foreach (var tag in selectTags)
+                                {
+                                    <button type="button" class="btn btn-sm m-1 @(tag.Checked ? "btn-info" : "btn-light")"
+                                        @onclick="@(e => checkTag(tag))">@tag.Name</button>
+                                }
+                            </p>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>运行库</label>
+                        @if (selectRuntimes != null)
+                        {
+                            <p>
+
+                                @foreach (var runtime in selectRuntimes)
+                                {
+                                    <button type="button"
+                                        class="btn btn-sm m-1 @(runtime.Checked ? "btn-info" : "btn-light")"
+                                        @onclick="@(e => checkRuntime(runtime))">@runtime.Id</button>
+                                }
+                            </p>
+                        }
+                    </div>
+                </ChildContent>
+            </TabPane>
+            <TabPane Key="2">
+                <Tab>脚本</Tab>
+                <ChildContent>
+                    <div class="form-group">
+                        <label>启动脚本</label>
+                        <InputTextArea class="form-control" @bind-Value="createModel.StartScript" />
+                        <ValidationMessage For="@(() => createModel.StartScript)" />
+                    </div>
+                    <div class="form-group">
+                        <label>停止脚本</label>
+                        <InputTextArea class="form-control" @bind-Value="createModel.StopScript" />
+                        <ValidationMessage For="@(() => createModel.StopScript)" />
+                    </div>
+                </ChildContent>
+            </TabPane>
+            <TabPane Key="3">
+                <Tab>日志</Tab>
+                <ChildContent>
+                    <div class="form-group">
+                        <label>日志级别</label>
+                        <InputSelect @bind-Value="createModel.LogLevel" class="form-control">
+                            <option value="Trace">Trace - 追踪</option>
+                            <option value="Debug">Debug - 调试</option>
+                            <option value="Info">Info - 信息</option>
+                            <option value="Warn">Warn - 警告</option>
+                            <option value="Error">Error - 错误</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => createModel.LogLevel)" />
+                    </div>
+                    <div class="form-group">
+                        <label>日志忽略列表</label>
+                        <InputTextArea @bind-Value="createModel.LogIgnoreList" class="form-control"></InputTextArea>
+                        <ValidationMessage For="@(() => createModel.LogIgnoreList)" />
+                        <small id="passwordHelpBlock" class="form-text text-muted">
+                            一行一条，日志内容中包含忽略项时，日志忽略。
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>日志记录</label>
+                        <InputSelect @bind-Value="createModel.EnableRecordLogStr" class="form-control">
+                            <option value="False">禁用</option>
+                            <option value="True">启用</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => createModel.EnableRecordLog)" />
+                        <small id="passwordHelpBlock" class="form-text text-muted">
+                            日志文件按日期保存，每天一个日志文件，存放在容器目录下的YiQiDong.Container.Logs目录下面
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>日志保存天数</label>
+                        <InputNumber class="form-control" @bind-Value="createModel.LogSaveDays" />
+                        <ValidationMessage For="@(() => createModel.LogSaveDays)" />
+                        <small id="passwordHelpBlock" class="form-text text-muted">
+                            保存最近多少天的日志文件，如果设置为0时则不删除日志。
+                        </small>
+                    </div>
+                </ChildContent>
+            </TabPane>
+            <TabPane Key="4">
+                <Tab>环境变量</Tab>
+                <ChildContent>
+                    <div class="form-group">
+                        <InputTextArea class="form-control" @bind-Value="createModel.EnvironmentVariables" rows="10" />
+                        <ValidationMessage For="@(() => createModel.EnvironmentVariables)" />
+                    </div>
+                </ChildContent>
+            </TabPane>
+            <TabPane Key="5">
+                <Tab>其他</Tab>
+                <ChildContent>
+                    <div class="form-group">
+                        <label>启动警告</label>
+                        <InputTextArea class="form-control" @bind-Value="createModel.StartWarning" />
+                        <ValidationMessage For="@(() => createModel.StartWarning)" />
+                    </div>
+                    <div class="form-group">
+                        <label>停止警告</label>
+                        <InputTextArea class="form-control" @bind-Value="createModel.StopWarning" />
+                        <ValidationMessage For="@(() => createModel.StopWarning)" />
+                    </div>
+                    <div class="form-group">
+                        <label>定时启动</label>
+                        <InputText class="form-control" @bind-Value="createModel.StartCron" />
+                        <ValidationMessage For="@(() => createModel.StartCron)" />
+                        <small class="form-text text-muted">
+                            cron表达式
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>定时停止</label>
+                        <InputText class="form-control" @bind-Value="createModel.StopCron" />
+                        <ValidationMessage For="@(() => createModel.StopCron)" />
+                        <small class="form-text text-muted">
+                            cron表达式
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>定时重启</label>
+                        <InputText class="form-control" @bind-Value="createModel.RestartCron" />
+                        <ValidationMessage For="@(() => createModel.RestartCron)" />
+                        <small class="form-text text-muted">
+                            cron表达式
+                        </small>
+                    </div>
+                </ChildContent>
+            </TabPane>
+
+        </Tabs>
+        <button type="submit" class="btn btn-primary col-sm-5 col-md-4 col-lg-2">确定</button>
+    </EditForm>
+</div>

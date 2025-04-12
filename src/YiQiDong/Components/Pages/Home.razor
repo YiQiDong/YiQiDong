@@ -1,0 +1,201 @@
+﻿@using Blazor.ECharts.Components
+
+<div class="row">
+    <div class="col-md-6 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                系统信息
+            </div>
+            <div class="card-body small p-0">
+                <table class="table table-sm table-striped table-borderless table-hover mb-0">
+                    <tbody>
+                        <tr>
+                            <th>系统名称</th>
+                            <td>@systemInfoContext.OperateSystemName</td>
+                        </tr>
+                        <tr>
+                            <th>系统内核</th>
+                            <td>@systemInfoContext.KernelName</td>
+                        </tr>
+                        <tr>
+                            <th>CPU名称</th>
+                            <td>@systemInfoContext.CpuName</td>
+                        </tr>
+                        <tr>
+                            <th>主机名称</th>
+                            <td>@systemInfoContext.MachineName</td>
+                        </tr>
+                        <tr>
+                            <th>语言区域</th>
+                            <td>@systemInfoContext.Locale</td>
+                        </tr>
+                        <tr>
+                            <th>当前用户</th>
+                            <td>@systemInfoContext.UserName</td>
+                        </tr>
+                        <tr>
+                            <th>当前时区</th>
+                            <td>@systemInfoContext.TimeZone</td>
+                        </tr>
+                        <tr>
+                            <th>当前时间</th>
+                            <td>@systemInfoContext.CurrentTime</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                软件信息
+            </div>
+            <div class="card-body small p-0">
+                <table class="table table-sm table-striped table-borderless table-hover mb-0">
+                    <tbody>
+                        <tr>
+                            <th>软件版本</th>
+                            <td>@systemInfoContext.SoftwareVersion-@systemInfoContext.SoftwareArch</td>
+                        </tr>
+                        <tr>
+                            <th>进程架构</th>
+                            <td>@systemInfoContext.ProcessArchitecture</td>
+                        </tr>
+                        <tr>
+                            <th>进程编号</th>
+                            <td>
+                                <a @onclick="()=>showProcessView(systemInfoContext.ProcessId)">@systemInfoContext.ProcessId</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>启动时间</th>
+                            <td>@systemInfoContext.ProcessStartTime</td>
+                        </tr>
+                        <tr>
+                            <th>使用内存</th>
+                            <td>@systemInfoContext.ProcessUsedMemory</td>
+                        </tr>
+                        <tr>
+                            <th>运行库</th>
+                            <td>@systemInfoContext.RuntimeFrameworkDescription</td>
+                        </tr>
+                        <tr>
+                            <th>安装目录</th>
+                            <td>
+                                <a @onclick="()=>showFolder(systemInfoContext.WorkingDir)">@systemInfoContext.WorkingDir</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>数据目录</th>
+                            <td>
+                                <a @onclick="()=>showFolder(systemInfoContext.DataDir)">@systemInfoContext.DataDir</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <span @onclick="showProcessManage">CPU利用率</span>
+            </div>
+            <div class="card-body p-0">
+                <ELine style="height:120px" Option="@cpuChartsOption"></ELine>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <span @onclick="showProcessManage">内存使用量</span>
+            </div>
+            <div class="card-body p-0">
+                <ELine style="height:120px" Option="@memoryChartsOption"></ELine>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                磁盘信息
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <tbody>
+                        @if(systemInfoContext.DriverInfos!=null)
+                        {
+                            @foreach (var t in systemInfoContext.DriverInfos)
+                            {
+                                <tr>
+                                    <td @onclick="()=>showFolder(t.Name)" style="cursor:pointer">
+                                        <p class="font-weight-bold small mb-1">
+                                            @t.DisplayName
+                                            <div>
+                                                <span class="badge badge-primary">@t.DriveFormat</span>
+                                                <span class="badge badge-primary">@t.DriveType</span>
+                                                <span class="badge badge-info">@t.UsedStr</span>
+                                                /
+                                                <span class="badge badge-info">@t.TotalStr</span>
+                                                =
+                                                <span class="badge badge-info">@(t.UsedPercent)%</span>
+                                            </div>
+                                        </p>
+                                        <Progress Visiable Value="t.UsedPercent"
+                                                                                Striped Background="t.Background">
+                                        </Progress>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                网卡信息
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <tbody>
+                        @if (systemInfoContext.NetworkInterfaceInfos != null)
+                        {
+                            @foreach (var t in systemInfoContext.NetworkInterfaceInfos)
+                            {
+                                <tr>
+                                    <td>
+                                        <p class="font-weight-bold small mb-1">
+                                            网卡 [ @t.Name - @t.Description ]
+                                            <div>
+                                                <p class="m-0">
+                                                    <span class="badge badge-primary">@t.NetworkInterfaceType</span>
+                                                    <span class="badge badge-primary">@t.OperationalStatus</span>
+                                                    <span class="badge badge-primary">MAC:@t.MacAddress</span>
+                                                </p>
+                                                <p class="m-0">
+                                                    @foreach (var address in t.IpAddressArray)
+                                                    {
+                                                        <span class="badge badge-info mr-1">@address</span>
+                                                    }
+                                                </p>
+                                            </div>
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ModalWindow @ref="modalWindow" DialogSizeExtraLarge="true" DialogCentered="false" ModalBodyCls="p-0"></ModalWindow>
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />

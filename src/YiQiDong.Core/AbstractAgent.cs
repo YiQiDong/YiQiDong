@@ -10,9 +10,10 @@ namespace YiQiDong.Core
 {
     public abstract class AbstractAgent : IAgent
     {
+        public const string DEFAULT_PROCESS_NAME = "YiQiDong:Agent";
         private Dictionary<string, AbstractFunction> agentStartFunctionDict = new Dictionary<string, AbstractFunction>();
         private Dictionary<string, AbstractFunction> agentStopFunctionDict = new Dictionary<string, AbstractFunction>();
-        public virtual string ProcessName => "YiQiDong:Agent";
+        public virtual string ProcessName => DEFAULT_PROCESS_NAME;
         public virtual ConfigFileInfo[] GetConfigFiles() => null;
         public event EventHandler FunctionListChanged;
         protected void RaiseEvent_FunctionListChanged()

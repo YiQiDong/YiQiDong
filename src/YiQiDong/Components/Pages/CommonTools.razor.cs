@@ -61,8 +61,8 @@ namespace YiQiDong.Components.Pages
             [
                 new ProcessInfoButton()
                 {
-                    Name = "线程堆栈追踪",
-                    IsVisiableFunc = processInfo => processInfo.Name=="dotnet",
+                    Name = "线程堆栈(dotnet)",
+                    IsVisiableFunc = processInfo => true,
                     OnClickAction=processInfo =>
                     {
                         modalLoading.Value.Show("加载中...", null, true);

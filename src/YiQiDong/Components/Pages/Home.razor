@@ -63,6 +63,10 @@
                             <td>@systemInfoContext.ProcessArchitecture</td>
                         </tr>
                         <tr>
+                            <th>字节序</th>
+                            <td>@systemInfoContext.ByteOrder</td>
+                        </tr>
+                        <tr>
                             <th>进程编号</th>
                             <td>
                                 <a @onclick="()=>showProcessView(systemInfoContext.ProcessId)">@systemInfoContext.ProcessId</a>
@@ -75,10 +79,6 @@
                         <tr>
                             <th>使用内存</th>
                             <td>@systemInfoContext.ProcessUsedMemory</td>
-                        </tr>
-                        <tr>
-                            <th>运行库</th>
-                            <td>@systemInfoContext.RuntimeFrameworkDescription</td>
                         </tr>
                         <tr>
                             <th>安装目录</th>

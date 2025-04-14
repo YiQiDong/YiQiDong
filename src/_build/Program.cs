@@ -63,7 +63,7 @@ if (selectedBuildType == "YiQiDong")
             var publishFolderTemplate = "src/{0}/bin/Release/{1}/publish/";
             var publishFolder_YiQiDong = string.Format(publishFolderTemplate, selectedBuildType, rid);
             Console.WriteLine($"开始编译[{rid}]...");
-            QbCommand.Run("dotnet", $"publish src/YiQiDong -c Release -r {rid}");
+            QbCommand.Run("dotnet", $"publish src/YiQiDong -c Release -r {rid} --self-contained");
             //配置文件中添加版本号
             QbJson.WriteString(Path.Combine(publishFolder_YiQiDong, Consts.CONFIG_JSON_FILENAME), nameof(Consts.Version), version);
             //配置文件中添加架构

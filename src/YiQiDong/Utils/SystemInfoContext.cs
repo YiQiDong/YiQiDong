@@ -196,7 +196,7 @@ namespace YiQiDong.Utils
                 ProcessId = process.Id;
                 ProcessStartTime = process.StartTime.ToString("yyyy-MM-dd HH:mm:ss");
                 RuntimeFrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-                ByteOrder = BitConverter.IsLittleEndian ? "Little-Endian" : "Big-Endian";
+                ByteOrder = BitConverter.IsLittleEndian ? "Little Endian" : "Big Endian";
                 WorkingDir = Environment.CurrentDirectory;
                 DataDir = Program.Config.DataFolder;
             }

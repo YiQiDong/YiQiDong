@@ -98,20 +98,12 @@ namespace YiQiDong.Components.Pages
         {
             modalWindow.Show<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>(
                 $"进程[{pid}]",
-                Quick.Blazor.Bootstrap.Admin.ProcessViewControl.PrepareParameters(pid, CommonTools.GetProcessViewOtherButtons(
-                    new Lazy<ModalLoading>(() => modalLoading),
-                    new Lazy<ModalAlert>(() => modalAlert)
-                )));
+                Quick.Blazor.Bootstrap.Admin.ProcessViewControl.PrepareParameters(pid, null));
         }
 
         private void showProcessManage()
         {
-            modalWindow.Show<Quick.Blazor.Bootstrap.Admin.ProcessManageControl>(
-                "进程管理",
-                Quick.Blazor.Bootstrap.Admin.ProcessManageControl.PrepareParameters(CommonTools.GetProcessViewOtherButtons(
-                    new Lazy<ModalLoading>(() => modalLoading),
-                    new Lazy<ModalAlert>(() => modalAlert)
-                )));
+            modalWindow.Show<Quick.Blazor.Bootstrap.Admin.ProcessManageControl>("进程管理");
 
         }
 

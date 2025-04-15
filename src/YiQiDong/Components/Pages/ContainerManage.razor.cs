@@ -1,10 +1,5 @@
 ﻿using Quick.Blazor.Bootstrap;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using YiQiDong.Core;
-using System.Threading;
-using System.IO;
 using YiQiDong.Core.Utils;
 using System.IO.Compression;
 using YiQiDong.Model;
@@ -23,7 +18,7 @@ namespace YiQiDong.Components.Pages
         private ModalLoading modalLoading;
         private ModalAlert modalAlert;
         private ModalWindow modalWindow;
-        private static readonly Utils.UnitStringConverting storageUSC = Utils.UnitStringConverting.StorageUnitStringConverting;
+        private static readonly UnitStringConverting storageUSC = UnitStringConverting.StorageUnitStringConverting;
 
         protected override void OnInitialized()
         {
@@ -109,13 +104,7 @@ namespace YiQiDong.Components.Pages
         {
             modalWindow.Show<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>(
                 $"{containerContext.ContainerInfo.Name} - 进程",
-                Quick.Blazor.Bootstrap.Admin.ProcessViewControl.PrepareParameters(
-                    containerContext.Process.Id,
-                    CommonTools.GetProcessViewOtherButtons(
-                        new Lazy<ModalLoading>(()=>modalLoading),
-                        new Lazy<ModalAlert>(()=>modalAlert)
-                    )
-                )
+                Quick.Blazor.Bootstrap.Admin.ProcessViewControl.PrepareParameters(containerContext.Process.Id, null)
             );
         }
 

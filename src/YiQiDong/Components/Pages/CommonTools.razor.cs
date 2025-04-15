@@ -62,7 +62,7 @@ namespace YiQiDong.Components.Pages
                 new ProcessInfoButton()
                 {
                     Name = "线程堆栈(dotnet)",
-                    IsVisiableFunc = processInfo => processInfo.Name!="YiQiDong",
+                    IsVisiableFunc = processInfo => processInfo.PID != Program.SystemInfoContext.ProcessId,
                     OnClickAction=processInfo =>
                     {
                         modalLoading.Value.Show("加载中...", null, true);

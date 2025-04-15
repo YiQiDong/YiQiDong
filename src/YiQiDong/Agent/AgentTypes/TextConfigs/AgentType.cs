@@ -84,7 +84,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             var metaConfig = ConfigModel.Parse(AgentContext.Container.Image.AgentConfig);
             metaInfo = metaConfig.GetContainerMetaInfo();
             if (metaInfo == null)
-                throw new ArgumentException("配置文件中未找到容器元信息！");            
+                throw new ArgumentException("配置文件中未找到容器元信息！");
             configModel = ConfigFileProcessor.Default.Load(ContainerConfigModelSerializerContext.Default.ContainerConfigModel);
             if (configModel == null)
                 configModel = new ContainerConfigModel();
@@ -143,11 +143,12 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                         var sourceDir = processPath(item.Key);
                         var containerFolderInfo = item.Value;
                         var desDir = processPath(containerFolderInfo.Path);
-                        FileSystemUtils.CopyFolder(sourceDir, desDir,containerFolderInfo.FileFilters,containerFolderInfo.IncludeSubFolder);
+                        FileSystemUtils.CopyFolder(sourceDir, desDir, containerFolderInfo.FileFilters, containerFolderInfo.IncludeSubFolder);
                     }
                 }
                 refreshWithDollarEnviromentsDictionary();
             };
+            addFunction(new SendCommandFunction(this));
             addFunction(new EnvironmentConfigFunction(this, afterEnvironmentChanged));
             if (metaInfo.HelpDict != null)
                 addFunction(new Core.Functions.HelpFunction(metaInfo.HelpDict));
@@ -228,7 +229,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
 
         private void delayStart(CancellationToken cancellationToken)
         {
-            if(cancellationToken.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested)
                 return;
             Task.Delay(5000, cancellationToken).ContinueWith(t =>
             {
@@ -328,6 +329,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                 processName = Process.ProcessName;
                 AgentContext.LogInfo($"进程[Id:{processId},Name:{processName}]已经启动。");
                 Writer = Process.StandardInput;
+                Writer.NewLine = Environment.NewLine;
                 Process.EnableRaisingEvents = true;
                 Process.OutputDataReceived += Process_OutputDataReceived;
                 Process.ErrorDataReceived += Process_ErrorDataReceived;
@@ -380,8 +382,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             //如果配置了退出命令
             if (!string.IsNullOrEmpty(metaInfo.ExitCommand))
             {
-                AgentContext.LogInfo($"向进程[Id:{Process.Id},Name:{process.ProcessName}]发送结束命令[{metaInfo.ExitCommand}]");
-                Writer.NewLine = Environment.NewLine;
+                AgentContext.LogInfo($"向进程[Id:{Process.Id},Name:{process.ProcessName}]发送结束命令[{metaInfo.ExitCommand}]...");
                 Writer.WriteLine(metaInfo.ExitCommand);
                 Writer.Flush();
             }
@@ -414,6 +415,16 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                 AgentContext.LogInfo($"等待{metaInfo.ExitTimeout}毫秒后，进程还未结束。强制结束进程树。");
                 process.Kill(true);
             }
+        }
+
+        public void SendCommand(string cmd)
+        {
+            var process = Process;
+            if (process == null)
+                throw new IOException("当前未启动工作进程");
+            AgentContext.LogInfo($"向进程[Id:{Process.Id},Name:{process.ProcessName}]发送命令[{cmd}]...");
+            Writer.WriteLine(cmd);
+            Writer.Flush();
         }
     }
 }

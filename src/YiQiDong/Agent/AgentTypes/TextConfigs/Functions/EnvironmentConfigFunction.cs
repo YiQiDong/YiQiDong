@@ -1,6 +1,4 @@
 ﻿using Quick.Fields;
-using System;
-using System.Collections.Generic;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;

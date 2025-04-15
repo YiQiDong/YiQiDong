@@ -43,9 +43,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\YiQiDong.Core\YiQiDong.Core.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Agent/" />
-	</ItemGroup>
 
 	<Choose>
 		<When Condition="'$(RuntimeIdentifier)'=='linux-x64' OR '$(RuntimeIdentifier)'=='linux-arm64' OR '$(RuntimeIdentifier)'=='linux-arm'">

@@ -20,7 +20,7 @@ internal class SendCommandFunction : AbstractFunction
 
     public override FieldForGet[] Execute(FunctionRequest request)
     {
-        var isReadOnly = AgentContext.Container.AutoStart;
+        var isReadOnly = !AgentContext.Container.AutoStart;
         var cmd = request!=null?request.GetFieldValue(TXT_COMMAND):null;
         var list = new List<FieldForGet>()
         {
@@ -31,15 +31,16 @@ internal class SendCommandFunction : AbstractFunction
                 Type = FieldType.InputText,
                 Input_ReadOnly = isReadOnly,
                 Value = cmd
-            },
-            new ()
-            {
-                Id=BTN_SEND,
-                Name="发送",
-                Type = FieldType.Button,
-                Input_ReadOnly = isReadOnly
             }
         };
+        if (!isReadOnly)
+            list.Add(new()
+            {
+                Id = BTN_SEND,
+                Name = "发送",
+                Type = FieldType.Button,
+                Input_ReadOnly = isReadOnly
+            });
         if (request != null && request.IsFieldIdsMatch(BTN_SEND))
         {
             try

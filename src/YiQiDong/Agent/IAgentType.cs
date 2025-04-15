@@ -9,7 +9,7 @@ namespace YiQiDong.Agent
         /// <summary>
         /// 初始化
         /// </summary>
-        void Init(Action<AbstractFunction> addFunction);
+        void Init(Action<AbstractFunction, bool?> addFunction);
         /// <summary>
         /// 获取配置文件
         /// </summary>

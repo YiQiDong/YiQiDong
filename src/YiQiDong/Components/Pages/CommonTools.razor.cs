@@ -114,7 +114,7 @@ namespace YiQiDong.Components.Pages
                             {
                                 content = ExceptionUtils.GetExceptionString(ex);
                             }
-                            modalAlert.Value.Show($"进程[Id:{processInfo.PID}, 名称:{processInfo.Name}] - 线程堆栈追踪", content, usePreTag: true);
+                            modalAlert.Value.Show($"进程[Id:{processInfo.PID}, 名称:{processInfo.Name}] - 线程堆栈(dotnet)", content, usePreTag: true);
                             modalLoading.Value.Close();
                         });
                     }

@@ -16,15 +16,15 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
         public ConfigFileInfo[] GetConfigFiles() => null;
         private string[] logIgnoreList;
 
-        public void Init(Action<Core.AbstractFunction> addFunction)
+        public void Init(Action<Core.AbstractFunction, bool?> addFunction)
         {
             if (!string.IsNullOrEmpty(AgentContext.Container.LogIgnoreList))
-                logIgnoreList = AgentContext.Container.LogIgnoreList.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                logIgnoreList = AgentContext.Container.LogIgnoreList.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
             var imageFolder = AgentContext.Container.ImageFolder;
             var containerFolder = AgentContext.Container.ContainerFolder;
 
-            addFunction(new ConfigFunction(imageFolder, containerFolder));
+            addFunction(new ConfigFunction(imageFolder, containerFolder), null);
         }
 
 

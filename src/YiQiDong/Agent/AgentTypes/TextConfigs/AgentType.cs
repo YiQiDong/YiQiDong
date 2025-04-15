@@ -77,7 +77,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             return fileList.ToArray();
         }
 
-        public void Init(Action<AbstractFunction> addFunction)
+        public void Init(Action<AbstractFunction,bool?> addFunction)
         {
             if (!string.IsNullOrEmpty(AgentContext.Container.LogIgnoreList))
                 logIgnoreList = AgentContext.Container.LogIgnoreList.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -148,10 +148,10 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                 }
                 refreshWithDollarEnviromentsDictionary();
             };
-            addFunction(new SendCommandFunction(this));
-            addFunction(new EnvironmentConfigFunction(this, afterEnvironmentChanged));
+            addFunction(new SendCommandFunction(this), true);
+            addFunction(new EnvironmentConfigFunction(this, afterEnvironmentChanged), null);
             if (metaInfo.HelpDict != null)
-                addFunction(new Core.Functions.HelpFunction(metaInfo.HelpDict));
+                addFunction(new Core.Functions.HelpFunction(metaInfo.HelpDict), null);
             afterEnvironmentChanged();
         }
 
@@ -382,9 +382,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             //如果配置了退出命令
             if (!string.IsNullOrEmpty(metaInfo.ExitCommand))
             {
-                AgentContext.LogInfo($"向进程[Id:{Process.Id},Name:{process.ProcessName}]发送结束命令[{metaInfo.ExitCommand}]...");
-                Writer.WriteLine(metaInfo.ExitCommand);
-                Writer.Flush();
+                SendCommand(metaInfo.ExitCommand);
             }
             else
             {
@@ -422,9 +420,9 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             var process = Process;
             if (process == null)
                 throw new IOException("当前未启动工作进程");
-            AgentContext.LogInfo($"向进程[Id:{Process.Id},Name:{process.ProcessName}]发送命令[{cmd}]...");
             Writer.WriteLine(cmd);
             Writer.Flush();
+            AgentContext.LogInfo($"已向进程[Id:{Process.Id},Name:{process.ProcessName}]发送命令[{cmd}].");
         }
     }
 }

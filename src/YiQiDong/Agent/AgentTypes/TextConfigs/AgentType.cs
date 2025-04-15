@@ -148,10 +148,10 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                 }
                 refreshWithDollarEnviromentsDictionary();
             };
-            addFunction(new SendCommandFunction(this), true);
             addFunction(new EnvironmentConfigFunction(this, afterEnvironmentChanged), null);
             if (metaInfo.HelpDict != null)
                 addFunction(new Core.Functions.HelpFunction(metaInfo.HelpDict), null);
+            addFunction(new SendCommandFunction(this), true);
             afterEnvironmentChanged();
         }
 

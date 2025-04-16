@@ -50,71 +50,79 @@ namespace YiQiDong
 
         public static Task Start()
         {
-            Console.WriteLine($@"---------------------
-  弈启动 [{Consts.Version}]
----------------------");
-            //设置数据目录
-            var dataDir = Config.DataFolder;
-            if (!Path.IsPathRooted(dataDir))
-                dataDir = FolderUtils.GetPathUnderProgramDir(dataDir);
-            FolderUtils.DataFolder = dataDir;            
             try
             {
-                //确保数据目录创建
-                if (!Directory.Exists(dataDir))
-                    Directory.CreateDirectory(dataDir);
-                Console.WriteLine("正在收集系统信息...");
-                SystemInfoContext = new SystemInfoContext();
-                Console.WriteLine("正在初始化数据库...");
-                var dbFile = Path.Combine(dataDir, "Config.litedb");
-                ConfigDbContext.Init(dbFile, modelBuilder =>
+                Console.WriteLine($@"---------------------
+  弈启动 [{Consts.Version}]
+---------------------");
+                //设置数据目录
+                var dataDir = Config.DataFolder;
+                if (!Path.IsPathRooted(dataDir))
+                    dataDir = FolderUtils.GetPathUnderProgramDir(dataDir);
+                FolderUtils.DataFolder = dataDir;
+                try
                 {
-                    modelBuilder.Entity<Model.TagModel>();
-                    Quick.Blazor.Bootstrap.CrontabManager.Global.Instance.OnModelCreating(modelBuilder);
-                    Quick.Blazor.Bootstrap.ReverseProxy.Global.Instance.OnModelCreating(modelBuilder);
-                    Glash.Blazor.Agent.Global.Instance.OnModelCreating(modelBuilder);
-                    Glash.Blazor.Server.Global.Instance.OnModelCreating(modelBuilder);
-                    Glash.Blazor.Client.Global.Instance.OnModelCreating(modelBuilder);
-                });
-                ConfigDbContext.CacheContext.LoadCache();
-                Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
-                Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
-                //异步加载
-                Task.Run(() =>
-                {
-                    try
+                    //确保数据目录创建
+                    if (!Directory.Exists(dataDir))
+                        Directory.CreateDirectory(dataDir);
+                    Console.WriteLine("正在收集系统信息...");
+                    SystemInfoContext = new SystemInfoContext();
+                    Console.WriteLine("正在初始化数据库...");
+                    var dbFile = Path.Combine(dataDir, "Config.litedb");
+                    ConfigDbContext.Init(dbFile, modelBuilder =>
                     {
-                        Console.WriteLine("正在初始化运行库管理器...");
-                        RuntimeManager.Instance.Init();
-                        Console.WriteLine("正在初始化镜像管理器...");
-                        ImageManager.Instance.Init();
-                        Console.WriteLine("正在启动容器管理器...");
-                        ContainerManager.Instance.Init();
-                        Console.WriteLine("正在启动集群管理器...");
-                        ClusterManager.Instance.Init();
-                    }
-                    catch (Exception ex)
+                        modelBuilder.Entity<Model.TagModel>();
+                        Quick.Blazor.Bootstrap.CrontabManager.Global.Instance.OnModelCreating(modelBuilder);
+                        Quick.Blazor.Bootstrap.ReverseProxy.Global.Instance.OnModelCreating(modelBuilder);
+                        Glash.Blazor.Agent.Global.Instance.OnModelCreating(modelBuilder);
+                        Glash.Blazor.Server.Global.Instance.OnModelCreating(modelBuilder);
+                        Glash.Blazor.Client.Global.Instance.OnModelCreating(modelBuilder);
+                    });
+                    ConfigDbContext.CacheContext.LoadCache();
+                    Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
+                    Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
+                    //异步加载
+                    Task.Run(() =>
                     {
-                        IsStartSuccess = false;
-                        StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
-                    }
-                });
-                Components.Pages.WebFileTransferManage.Init();
+                        try
+                        {
+                            Console.WriteLine("正在初始化运行库管理器...");
+                            RuntimeManager.Instance.Init();
+                            Console.WriteLine("正在初始化镜像管理器...");
+                            ImageManager.Instance.Init();
+                            Console.WriteLine("正在启动容器管理器...");
+                            ContainerManager.Instance.Init();
+                            Console.WriteLine("正在启动集群管理器...");
+                            ClusterManager.Instance.Init();
+                        }
+                        catch (Exception ex)
+                        {
+                            IsStartSuccess = false;
+                            StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
+                        }
+                    });
+                    Components.Pages.WebFileTransferManage.Init();
 
-                //检查备份目录是否存在，如果不存在，则创建
-                var backupFolder = FolderUtils.GetBackupDir();
-                if (!Directory.Exists(backupFolder))
-                    Directory.CreateDirectory(backupFolder);
+                    //检查备份目录是否存在，如果不存在，则创建
+                    var backupFolder = FolderUtils.GetBackupDir();
+                    if (!Directory.Exists(backupFolder))
+                        Directory.CreateDirectory(backupFolder);
+                }
+                catch (Exception ex)
+                {
+                    IsStartSuccess = false;
+                    StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
+                }
+                StartWebService().Wait();
+                Console.WriteLine("[Web服务启动完成]");
+                waitForExitTask = new Task(() => Console.WriteLine("[停止完成]"));
+                return waitForExitTask;
             }
             catch (Exception ex)
             {
-                IsStartSuccess = false;
-                StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
+                Console.WriteLine("启动时出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
+                throw;
             }
-            StartWebService().Wait();
-            Console.WriteLine("[Web服务启动完成]");
-            waitForExitTask = new Task(() => Console.WriteLine("[停止完成]"));
-            return waitForExitTask;
         }
 
         [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
@@ -131,7 +139,7 @@ namespace YiQiDong
                 builder.Logging.ClearProviders();
                 builder.Services.AddBlazorDownloadFile();
                 builder.Services.AddFileReaderService();
-                builder.Services.AddRazorComponents().AddInteractiveServerComponents();                
+                builder.Services.AddRazorComponents().AddInteractiveServerComponents();
                 builder.Services.ConfigureHttpJsonOptions(options =>
                 {
                     options.SerializerOptions.TypeInfoResolverChain.Add(Model.YqdContainerInfoSerializerContext.Default);

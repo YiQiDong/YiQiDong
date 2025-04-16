@@ -37,6 +37,7 @@
 		<PackageReference Include="System.Management" Version="9.0.4" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.4" />
 		<PackageReference Include="Quick.Build" Version="1.0.19" />
+		<PackageReference Include="Microsoft.Diagnostics.Runtime" Version="3.1.512801" />
 	</ItemGroup>
 
 	<ItemGroup>

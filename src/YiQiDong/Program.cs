@@ -15,6 +15,8 @@ using Quick.LiteDB.Plus;
 using System.Diagnostics.CodeAnalysis;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components;
+using System.Diagnostics;
+using Microsoft.Diagnostics.Runtime;
 
 namespace YiQiDong
 {
@@ -99,6 +101,7 @@ namespace YiQiDong
                         {
                             IsStartSuccess = false;
                             StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
+                            Console.WriteLine(StartErrorMessage);
                         }
                     });
                     Components.Pages.WebFileTransferManage.Init();
@@ -113,8 +116,52 @@ namespace YiQiDong
                     IsStartSuccess = false;
                     StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
                 }
-                StartWebService().Wait();
-                Console.WriteLine("[Web服务启动完成]");
+                var startWebServiceTask = StartWebService();
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                Task.Run(async () =>
+                {
+                    var process = Process.GetCurrentProcess();
+                    while (!startWebServiceTask.IsCompleted)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        Console.WriteLine($"Web服务启动已用时间：{stopwatch}");
+                        Console.WriteLine($"当前时间：{DateTime.Now}，启动Web服务任务状态：{startWebServiceTask.Status},线程数：{process.Threads.Count}");
+                        using (var dataTarget = DataTarget.AttachToProcess(process.Id, false))
+                        {
+                            var clrVersions = dataTarget.ClrVersions;
+                            if (clrVersions.Length == 0)
+                            {
+                                Console.WriteLine($"在进程[{process.Id}]中未发现CLR环境。");
+                            }
+                            else
+                            {
+                                ClrInfo runtimeInfo = clrVersions[0];
+                                using (var runtime = runtimeInfo.CreateRuntime())
+                                {
+                                    foreach (var t in runtime.Threads)
+                                    {
+                                        var stackTraceLines = t.EnumerateStackTrace().Select(f =>
+                                        {
+                                            if (f.Method != null)
+                                            {
+                                                return f.Method.Signature;
+                                            }
+                                            return null;
+                                        }).Where(t => t != null).ToArray();
+                                        if (stackTraceLines == null || stackTraceLines.Length == 0)
+                                            continue;
+                                        Console.WriteLine($"线程[{t.ManagedThreadId}]");
+                                        foreach (var line in stackTraceLines)
+                                            Console.WriteLine("    " + line);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                startWebServiceTask.Wait();
+                stopwatch.Stop();
                 waitForExitTask = new Task(() => Console.WriteLine("[停止完成]"));
                 return waitForExitTask;
             }
@@ -130,11 +177,12 @@ namespace YiQiDong
         {
             try
             {
+                await Task.Delay(100);
+                Console.WriteLine($"正在准备Web服务相关资源...");
                 var webUrls = Config.Urls;
 #if DEBUG
                 webUrls = "http://localhost:5001";
 #endif
-                Console.WriteLine($"正在启动Web服务:{webUrls}...");
                 var builder = WebApplication.CreateBuilder();
                 builder.Logging.ClearProviders();
                 builder.Services.AddBlazorDownloadFile();
@@ -148,7 +196,7 @@ namespace YiQiDong
                 if (IsStartSuccess)
                     Quick.Blazor.Bootstrap.ReverseProxy.ReverseProxyManager.Instance.Load(builder.Services.AddReverseProxy());
                 builder.WebHost
-                    .UseUrls(webUrls.Split(new char[] { ',', ';' }))
+                    .UseUrls(webUrls.Split([',', ';']))
                     .ConfigureKestrel(options => options.AddServerHeader = false);
 
                 app = builder.Build();
@@ -169,7 +217,9 @@ namespace YiQiDong
                     app.MapReverseProxy();
                 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
                 app.UseYiQiDongControllers();
+                Console.WriteLine($"正在启动Web服务:{webUrls}...");
                 await app.StartAsync();
+                Console.WriteLine("[Web服务启动完成]");
             }
             catch (Exception ex)
             {

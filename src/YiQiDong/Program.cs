@@ -122,9 +122,11 @@ namespace YiQiDong
                 Task.Run(async () =>
                 {
                     var process = Process.GetCurrentProcess();
-                    while (!startWebServiceTask.IsCompleted)
+                    while (true)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        await Task.Delay(TimeSpan.FromMinutes(1));
+                        if (startWebServiceTask.IsCompleted)
+                            return;
                         Console.WriteLine($"Web服务启动已用时间：{stopwatch}");
                         Console.WriteLine($"当前时间：{DateTime.Now}，启动Web服务任务状态：{startWebServiceTask.Status},线程数：{process.Threads.Count}");
                         using (var dataTarget = DataTarget.AttachToProcess(process.Id, false))
@@ -218,6 +220,8 @@ namespace YiQiDong
                 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
                 app.UseYiQiDongControllers();
                 Console.WriteLine($"正在启动Web服务:{webUrls}...");
+                //var buffer = new byte[128];
+                //System.Security.Cryptography.RandomNumberGenerator.Fill(buffer);
                 await app.StartAsync();
                 Console.WriteLine("[Web服务启动完成]");
             }

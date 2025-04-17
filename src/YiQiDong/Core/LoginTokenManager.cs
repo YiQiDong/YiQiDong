@@ -10,6 +10,7 @@ public class LoginTokenManager
         public DateTime LastChangeTime { get; set; }
     }
     private TimeSpan tokenTimeout = TimeSpan.FromMinutes(10);
+    private TimeSpan maxTokenTimeout = TimeSpan.FromDays(1);
     private Dictionary<string, TokenContext> tokenContextDict;
     private LoginTokenManager()
     {
@@ -52,13 +53,10 @@ public class LoginTokenManager
                 var tokenContexts = tokenContextDict.Values.ToArray();
                 foreach (var tokenContext in tokenContexts)
                 {
-                    if (tokenContext.UsingPages > 0)
-                        continue;
+                    var time = DateTime.Now - tokenContext.LastChangeTime;
                     //如果超过超时时间，则移除
-                    if ((DateTime.Now - tokenContext.LastChangeTime) > tokenTimeout)
-                    {
+                    if (time > maxTokenTimeout || (tokenContext.UsingPages <= 0 && time > tokenTimeout))
                         tokenContextDict.Remove(tokenContext.Token);
-                    }
                 }
             }
         }

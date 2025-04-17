@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Quick.Blazor.Bootstrap;
+using Quick.Blazor.Bootstrap.Utils;
 using YiQiDong.Core;
 using YiQiDong.Utils;
 
@@ -23,32 +24,30 @@ namespace YiQiDong.Components.Layout
         public Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+        private string LoginTokenKey;
+        private string loginToken;
 
-        private Lazy<string> LoginTokenKey;
-
-#if DEBUG
         protected override void OnInitialized()
         {
             base.OnInitialized();
+#if DEBUG
             Password = CorrectPassword;
-            LoginTokenKey = new Lazy<string>(() => NavigationManager.Uri + "_token");
-        }
 #endif
-
-        private string loginToken;
+            LoginTokenKey = NavigationManager.Uri + "_token";
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                loginToken = await LocalStorage.GetItemAsStringAsync(LoginTokenKey.Value);
+                loginToken = await LocalStorage.GetItemAsStringAsync(LoginTokenKey);
                 if (!string.IsNullOrEmpty(loginToken))
                 {
                     IsLogin = LoginTokenManager.Instance.Verify(loginToken);
                     if (IsLogin)
                         LoginTokenManager.Instance.UsingToken(loginToken);
                     else
-                        await LocalStorage.RemoveItemAsync(LoginTokenKey.Value);
+                        await LocalStorage.RemoveItemAsync(LoginTokenKey);
                 }
                 IsLoading = false;
                 _ = InvokeAsync(StateHasChanged);
@@ -65,7 +64,7 @@ namespace YiQiDong.Components.Layout
             IsLogin = true;
             var token = Guid.NewGuid().ToString("N");
             LoginTokenManager.Instance.UsingToken(token);
-            LocalStorage.SetItemAsStringAsync(LoginTokenKey.Value, token);
+            LocalStorage.SetItemAsStringAsync(LoginTokenKey, token);
             StateHasChanged();
         }
 
@@ -77,7 +76,7 @@ namespace YiQiDong.Components.Layout
 
         private void Logout()
         {
-            LocalStorage.RemoveItemAsync(LoginTokenKey.Value);
+            LocalStorage.RemoveItemAsync(LoginTokenKey);
             LoginTokenManager.Instance.Logout(loginToken);
             IsLogin = false;
         }
@@ -89,13 +88,13 @@ namespace YiQiDong.Components.Layout
                 navMenu.ChangeActiveKey(activeKey);
             //跳转到页面
             parameterDict[nameof(IPageNavigater)] = this;
-            Body = Quick.Blazor.Bootstrap.Utils.BlazorUtils.GetRenderFragment(componentType, parameterDict);
+            Body = BlazorUtils.GetRenderFragment(componentType, parameterDict);
             StateHasChanged();
         }
 
         private void Show<T>()
         {
-            Body = Quick.Blazor.Bootstrap.Utils.BlazorUtils.GetRenderFragment<T>(new Dictionary<string, object>()
+            Body = BlazorUtils.GetRenderFragment<T>(new Dictionary<string, object>()
             {
                 [nameof(IPageNavigater)] = this
             });

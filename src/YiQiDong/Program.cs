@@ -17,6 +17,7 @@ using Tewr.Blazor.FileReader;
 using YiQiDong.Components;
 using System.Diagnostics;
 using Microsoft.Diagnostics.Runtime;
+using Blazored.LocalStorage;
 
 namespace YiQiDong
 {
@@ -189,6 +190,7 @@ namespace YiQiDong
                 builder.Logging.ClearProviders();
                 builder.Services.AddBlazorDownloadFile();
                 builder.Services.AddFileReaderService();
+                builder.Services.AddBlazoredLocalStorage();
                 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
                 builder.Services.ConfigureHttpJsonOptions(options =>
                 {

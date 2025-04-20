@@ -52,7 +52,7 @@ namespace _build.Resources
         {
             var displayDownloadProgress = new Action<QbNet.TransferProgress>(t =>
             {
-                QbConsole.DisplaySameLineInConsole($"[{t.Current * 100 / t.Total}%]进度：{t.Current}/{t.Total}，速度：{t.Speed}，剩余时间：{t.RemainingTime}");
+                QbConsole.DisplaySameLineInConsole($"[{t.Current * 100 / t.Total}%]进度：{t.Current.ToString("N0")}/{t.Total.ToString("N0")}，速度：{t.Speed.ToString("N0")}，剩余时间：{t.RemainingTime}");
             });
 
             HttpClient client = new HttpClient();

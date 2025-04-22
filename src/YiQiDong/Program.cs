@@ -97,7 +97,6 @@ namespace YiQiDong
                             Console.WriteLine(StartErrorMessage);
                         }
                     });
-                    Components.Pages.WebFileTransferManage.Init();
 
                     //检查备份目录是否存在，如果不存在，则创建
                     var backupFolder = FolderUtils.GetBackupDir();

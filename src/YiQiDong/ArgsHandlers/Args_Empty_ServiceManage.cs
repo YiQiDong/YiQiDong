@@ -1,16 +1,11 @@
 ﻿using Quick.Build;
-using System.Collections.Generic;
 using System.ServiceProcess;
-using System;
 using YiQiDong.Core.Utils;
-using System.Linq;
-using System.IO;
 using System.Runtime.Versioning;
 using System.Diagnostics;
 using YiQiDong.Utils;
 using Quick.Shell.Utils;
 using YiQiDong.Core.Utils.Unix;
-using System.Threading;
 
 namespace YiQiDong.ArgsHandlers
 {

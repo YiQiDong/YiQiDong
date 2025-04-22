@@ -27,8 +27,7 @@ namespace YiQiDong.Components.Pages
                 {
                     [nameof(Quick.Blazor.Bootstrap.Terminal.TerminalControl.WorkingDir)]=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
                 }),
-                ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理下载","fa fa-cloud-download"),
-                ToolInfo.Create<WebFileTransferManage>("Web文件传输","fa fa-file")
+                ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理下载","fa fa-cloud-download")
             ]);
             if (Program.IsStartSuccess)
             {

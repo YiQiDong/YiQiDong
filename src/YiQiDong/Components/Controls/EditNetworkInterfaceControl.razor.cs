@@ -81,7 +81,7 @@ namespace YiQiDong.Components.Controls
                 modalLoading.Show($"修改网卡[{CurrentNetworkInterface.Name}]配置中...", null, true, null);
                 await Task.Run(() =>
                 {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    if (OperatingSystem.IsWindows())
                     {
                         //设置IP地址、子网掩码
                         var wmiQuery = new SelectQuery($"select * from Win32_NetworkAdapterConfiguration where SettingID = '{CurrentNetworkInterface.Id}'");
@@ -134,7 +134,7 @@ namespace YiQiDong.Components.Controls
                         using (var fs = File.OpenWrite(configFile))
                         using (var writer = new StreamWriter(fs))
                         {
-                            writer.WriteLine($"allow-hotplug {CurrentNetworkInterface.Name}");
+                            writer.WriteLine($"auto {CurrentNetworkInterface.Name}");
                             writer.WriteLine($"iface {CurrentNetworkInterface.Name} inet {CurrentNetworkInterfaceConfig.Method.ToString().ToLower()}");
                             if (CurrentNetworkInterfaceConfig.Method == NetworkInterfaceMethod.Static)
                             {

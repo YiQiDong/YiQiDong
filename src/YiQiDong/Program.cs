@@ -1,11 +1,4 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using BlazorDownloadFile;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using YiQiDong.Cluster;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
@@ -16,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components;
 using System.Diagnostics;
-using Microsoft.Diagnostics.Runtime;
 using Blazored.LocalStorage;
 
 namespace YiQiDong
@@ -118,53 +110,7 @@ namespace YiQiDong
                     StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
                 }
                 var startWebServiceTask = StartWebService();
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                Task.Run(async () =>
-                {
-                    var process = Process.GetCurrentProcess();
-                    while (true)
-                    {
-                        await Task.Delay(TimeSpan.FromMinutes(1));
-                        if (startWebServiceTask.IsCompleted)
-                            return;
-                        Console.WriteLine($"Web服务启动已用时间：{stopwatch}");
-                        Console.WriteLine($"当前时间：{DateTime.Now}，启动Web服务任务状态：{startWebServiceTask.Status},线程数：{process.Threads.Count}");
-                        using (var dataTarget = DataTarget.AttachToProcess(process.Id, false))
-                        {
-                            var clrVersions = dataTarget.ClrVersions;
-                            if (clrVersions.Length == 0)
-                            {
-                                Console.WriteLine($"在进程[{process.Id}]中未发现CLR环境。");
-                            }
-                            else
-                            {
-                                ClrInfo runtimeInfo = clrVersions[0];
-                                using (var runtime = runtimeInfo.CreateRuntime())
-                                {
-                                    foreach (var t in runtime.Threads)
-                                    {
-                                        var stackTraceLines = t.EnumerateStackTrace().Select(f =>
-                                        {
-                                            if (f.Method != null)
-                                            {
-                                                return f.Method.Signature;
-                                            }
-                                            return null;
-                                        }).Where(t => t != null).ToArray();
-                                        if (stackTraceLines == null || stackTraceLines.Length == 0)
-                                            continue;
-                                        Console.WriteLine($"线程[{t.ManagedThreadId}]");
-                                        foreach (var line in stackTraceLines)
-                                            Console.WriteLine("    " + line);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
                 startWebServiceTask.Wait();
-                stopwatch.Stop();
                 waitForExitTask = new Task(() => Console.WriteLine("[停止完成]"));
                 return waitForExitTask;
             }

@@ -51,5 +51,15 @@ namespace YiQiDong.Core.Utils.Unix
         {
             prctl(PR_SET_NAME, processName);
         }
+        /// <summary>
+        /// 是否是在chroot环境运行
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsRuningInChroot() => "1" == Environment.GetEnvironmentVariable("IS_CHROOT");
+        /// <summary>
+        /// 是否是在docker环境运行
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsRuningInDocker() => File.Exists("/.dockerenv");
     }
 }

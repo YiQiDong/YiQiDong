@@ -212,7 +212,6 @@ namespace YiQiDong.Components.Pages
                     tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
                 //解压文件
                 await UpdateUtils.Update(tmpDir, updateFile, Console.WriteLine, t => modalLoading.UpdateProgress(t, $"{t}%"));
-                modalLoading.UpdateContent("更新过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请手动刷新页面。");
                 await Task.Delay(1000);
                 if (deleteUpdateFile)
                     File.Delete(updateFile);
@@ -278,7 +277,7 @@ Remove-Item ""{psFileName}""
                 var shFile = $"{nameof(YiQiDong)}.sh";
                 UnixUtils.AddExecutePermissionToFile(shFile);
                 //如果是在chroot环境中运行
-                if ("1" == Environment.GetEnvironmentVariable("IS_CHROOT"))
+                if (UnixUtils.IsRuningInChroot())
                 {
                     Console.WriteLine($"检测到chroot环境");
                     Process.Start(new ProcessStartInfo(shFile, "run chroot")
@@ -288,7 +287,7 @@ Remove-Item ""{psFileName}""
                     Environment.Exit(0);
                 }
                 //如果是在docker环境中运行
-                else if (File.Exists("/.dockerenv"))
+                else if (UnixUtils.IsRuningInDocker())
                 {
                     Console.WriteLine("检测到docker环境");
                     Environment.Exit(0);

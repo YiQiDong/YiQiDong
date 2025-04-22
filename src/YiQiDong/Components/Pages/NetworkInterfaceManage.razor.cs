@@ -112,7 +112,6 @@ namespace YiQiDong.Components.Pages
             else
             {
                 config = new NetworkInterfaceConfig() { Method = NetworkInterfaceMethod.DHCP };
-
                 var configFile = $"/etc/network/interfaces.d/{model.Name}";
                 if (File.Exists(configFile))
                 {

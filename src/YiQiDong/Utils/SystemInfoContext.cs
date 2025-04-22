@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using YiQiDong.Core.Utils;
+using YiQiDong.Core.Utils.Unix;
 
 namespace YiQiDong.Utils
 {
@@ -114,6 +115,7 @@ namespace YiQiDong.Utils
         public int ProcessId { get; set; }
         public string ProcessStartTime { get; set; }
         public string RuntimeFrameworkDescription { get; set; }
+        public string RunMethod { get; set; }
         public string ByteOrder { get; set; }
         public string SoftwareArch { get; set; }
         public string WorkingDir { get; set; }
@@ -196,6 +198,14 @@ namespace YiQiDong.Utils
                 ProcessId = process.Id;
                 ProcessStartTime = process.StartTime.ToString("yyyy-MM-dd HH:mm:ss");
                 RuntimeFrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+                RunMethod = "Host";
+                if (!OperatingSystem.IsWindows())
+                {
+                    if (UnixUtils.IsRuningInChroot())
+                        RunMethod = "chroot";
+                    else if (UnixUtils.IsRuningInDocker())
+                        RunMethod = "Docker";
+                }
                 ByteOrder = BitConverter.IsLittleEndian ? "Little Endian" : "Big Endian";
                 WorkingDir = Environment.CurrentDirectory;
                 DataDir = Program.Config.DataFolder;

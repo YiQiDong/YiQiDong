@@ -65,8 +65,12 @@ namespace YiQiDong.Utils
         private SystemInfoWatcher systemInfoWatcher;
         private Timer shortTimer, longTimer;
 
-        public Queue<double?[]> CpuChartsData = new Queue<double?[]>();
-        public Queue<double?[]> MemoryUsedChartsData = new Queue<double?[]>();
+        public double?[][] CpuChartsData = new double?[chartsMaxDataCount][];
+        public double?[][] MemoryUsedChartsData = new double?[chartsMaxDataCount][];
+
+        private Queue<double?[]> CpuChartsDataQueue = new Queue<double?[]>();
+        private Queue<double?[]> MemoryUsedChartsDataQueue = new Queue<double?[]>();
+
         public DisplayDriverInfo[] DriverInfos;
         public DisplayDriverInfo CpuInfo;
         public DisplayDriverInfo MemoryInfo { get; set; }
@@ -128,8 +132,8 @@ namespace YiQiDong.Utils
             var nowTime = DateTime.Now;
             for (var i = 0; i < chartsMaxDataCount; i++)
             {
-                CpuChartsData.Enqueue(new double?[] { new Epoch.net.LongEpochTime(nowTime.AddSeconds(i - chartsMaxDataCount)).Epoch, null });
-                MemoryUsedChartsData.Enqueue(new double?[] { new Epoch.net.LongEpochTime(nowTime.AddSeconds(i - chartsMaxDataCount)).Epoch, null });
+                CpuChartsDataQueue.Enqueue(new double?[] { new Epoch.net.LongEpochTime(nowTime.AddSeconds(i - chartsMaxDataCount)).Epoch, null });
+                MemoryUsedChartsDataQueue.Enqueue(new double?[] { new Epoch.net.LongEpochTime(nowTime.AddSeconds(i - chartsMaxDataCount)).Epoch, null });
             }
 
             Task.Run(() =>
@@ -227,7 +231,7 @@ namespace YiQiDong.Utils
                     try
                     {
                         CpuInfo.Used = systemInfoWatcher.GetCpuUsagePercent();
-                        pushData(CpuChartsData, CpuInfo.Used);
+                        pushData(CpuChartsDataQueue, CpuInfo.Used, CpuChartsData);
                     }
                     catch (Exception ex)
                     {
@@ -245,7 +249,7 @@ namespace YiQiDong.Utils
 
                         MemoryTotalInUnit = double.Parse(storageUnitStringConverting.GetUnits(MemoryInfo.Total, MemoryUnit).ToString("N1"));
                         var memoryUsedInUnit = double.Parse(storageUnitStringConverting.GetUnits(MemoryInfo.Used, MemoryUnit).ToString("N1"));
-                        pushData(MemoryUsedChartsData, memoryUsedInUnit);
+                        pushData(MemoryUsedChartsDataQueue, memoryUsedInUnit, MemoryUsedChartsData);
                     }
                     catch (Exception ex)
                     {
@@ -319,7 +323,7 @@ namespace YiQiDong.Utils
                             NetworkInterfaceType = t.NetworkInterfaceType.ToString()
                         };
                     })?
-                    .Where(t=>!string.IsNullOrEmpty(t.MacAddress))?
+                    .Where(t => !string.IsNullOrEmpty(t.MacAddress))?
                     .ToArray();
             }
             catch
@@ -328,11 +332,12 @@ namespace YiQiDong.Utils
             }
         }
 
-        private void pushData(Queue<double?[]> queue, double value)
+        private void pushData(Queue<double?[]> queue, double value, double?[][] buffer)
         {
             queue.Enqueue(new double?[] { Epoch.net.LongEpochTime.Now.Epoch, value });
             if (queue.Count > chartsMaxDataCount)
                 queue.Dequeue();
+            queue.CopyTo(buffer, 0);
         }
 
         public void UseCpuAndMemoryQueue(Action action)

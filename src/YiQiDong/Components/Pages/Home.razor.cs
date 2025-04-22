@@ -42,9 +42,13 @@ namespace YiQiDong.Components.Pages
             };
         }
 
+        private SeriesBase cpuSeries;
+        private SeriesBase memorySeries;
+
         protected override void OnInitialized()
         {
             systemInfoContext = Program.SystemInfoContext;
+            cpuSeries=createSeries("CPU利用率(%)", systemInfoContext.CpuChartsData);
             cpuChartsOption = new EChartsOption<Blazor.ECharts.Options.Series.Line.Line>()
             {
                 YAxis = new List<YAxis>()
@@ -56,10 +60,11 @@ namespace YiQiDong.Components.Pages
                         AxisLabel= new AxisLabel(){ Formatter="{value} %" },
                     }
                 },
-                Series = new List<object>() { createSeries("CPU利用率(%)", systemInfoContext.CpuChartsData) }
+                Series = new List<object>() { cpuSeries }
             };
             processEChartsOption(cpuChartsOption);
 
+            memorySeries = createSeries($"已使用({systemInfoContext.MemoryUnit}B)", systemInfoContext.MemoryUsedChartsData);
             memoryChartsOption = new EChartsOption<Blazor.ECharts.Options.Series.Line.Line>()
             {
                 YAxis = new List<YAxis>()
@@ -72,10 +77,7 @@ namespace YiQiDong.Components.Pages
                                     Max = systemInfoContext.MemoryTotalInUnit
                                 }
                             },
-                Series = new List<object>()
-                            {
-                                createSeries($"已使用({systemInfoContext.MemoryUnit}B)", systemInfoContext.MemoryUsedChartsData)
-                            }
+                Series = new List<object>() { memorySeries }
             };
             processEChartsOption(memoryChartsOption);
             systemInfoContext.DataChanged += SystemInfoContext_DataChanged;

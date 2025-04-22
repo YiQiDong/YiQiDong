@@ -1,7 +1,6 @@
 ﻿using Quick.Blazor.Bootstrap;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using YiQiDong.Core.Utils;
 using static YiQiDong.Components.Controls.EditNetworkInterfaceControl;
 
@@ -61,78 +60,13 @@ namespace YiQiDong.Components.Pages
             });
         }
 
-        private NetworkInterfaceConfig GetNetworkInterfaceConfig(DisplayNetworkInterfaceInfo model)
-        {
-            NetworkInterfaceConfig config = null;
-            if (OperatingSystem.IsWindows())
-            {
-                throw new PlatformNotSupportedException();
-            }
-            else
-            {
-                config = new NetworkInterfaceConfig() { Method = NetworkInterfaceMethod.DHCP };
-                var configFile = $"/etc/network/interfaces.d/{model.Name}";
-                if (File.Exists(configFile))
-                {
-                    var lines = File.ReadAllLines(configFile);
-                    foreach (var t in lines)
-                    {
-                        var line = t.Trim();
-                        if (string.IsNullOrEmpty(line))
-                            continue;
-                        //如果是注释
-                        if (line.StartsWith("#"))
-                            continue;
-                        var segments = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        var key = segments[0];
-                        switch (key)
-                        {
-                            case "iface":
-                                if (segments.Length >= 4)
-                                {
-                                    switch (segments[3])
-                                    {
-                                        case "dhcp":
-                                            config.Method = NetworkInterfaceMethod.DHCP;
-                                            break;
-                                        case "static":
-                                            config.Method = NetworkInterfaceMethod.Static;
-                                            break;
-                                    }
-                                }
-                                break;
-                            case "address":
-                                if (segments.Length >= 2)
-                                    config.IPAddress = segments[1];
-                                break;
-                            case "netmask":
-                                if (segments.Length >= 2)
-                                    config.NetMask = segments[1];
-                                break;
-                            case "gateway":
-                                if (segments.Length >= 2)
-                                    config.Gateway = segments[1];
-                                break;
-                            case "dns-nameserver":
-                                if (segments.Length >= 2)
-                                    config.DnsServer = segments[1];
-                                break;
-                        }
-                    }
-                }
-            }
-            return config;
-        }
-
         private void EditNI(DisplayNetworkInterfaceInfo model)
         {
             try
             {
-                var config = GetNetworkInterfaceConfig(model);
                 modalWindow.Show<Controls.EditNetworkInterfaceControl>($"编辑网卡[{model.Name}]", new Dictionary<string, object>()
                 {
-                    [nameof(Controls.EditNetworkInterfaceControl.CurrentNetworkInterface)] = model,
-                    [nameof(Controls.EditNetworkInterfaceControl.CurrentNetworkInterfaceConfig)] = config
+                    [nameof(Controls.EditNetworkInterfaceControl.CurrentNetworkInterface)] = model
                 });
             }
             catch (Exception ex)

@@ -37,14 +37,88 @@ namespace YiQiDong.Components.Controls
             public NetworkInterfaceType Type { get; set; }
         }
 
-        [Parameter]
         public NetworkInterfaceConfig CurrentNetworkInterfaceConfig { get; set; }
+        private string ErrorMessage;
 
         [Parameter]
         public DisplayNetworkInterfaceInfo CurrentNetworkInterface { get; set; }
 
         public ModalLoading modalLoading { get; private set; }
         public ModalAlert modalAlert { get; private set; }
+
+        private NetworkInterfaceConfig GetNetworkInterfaceConfig(DisplayNetworkInterfaceInfo model)
+        {
+            NetworkInterfaceConfig config = null;
+            if (OperatingSystem.IsWindows())
+            {
+                throw new PlatformNotSupportedException();
+            }
+            else
+            {
+                config = new NetworkInterfaceConfig() { Method = NetworkInterfaceMethod.DHCP };
+                var configFile = $"/etc/network/interfaces.d/{model.Name}";
+                if (!File.Exists(configFile))
+                    throw new IOException($"未找到网卡配置文件！");
+                var lines = File.ReadAllLines(configFile);
+                foreach (var t in lines)
+                {
+                    var line = t.Trim();
+                    if (string.IsNullOrEmpty(line))
+                        continue;
+                    //如果是注释
+                    if (line.StartsWith("#"))
+                        continue;
+                    var segments = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var key = segments[0];
+                    switch (key)
+                    {
+                        case "iface":
+                            if (segments.Length >= 4)
+                            {
+                                switch (segments[3])
+                                {
+                                    case "dhcp":
+                                        config.Method = NetworkInterfaceMethod.DHCP;
+                                        break;
+                                    case "static":
+                                        config.Method = NetworkInterfaceMethod.Static;
+                                        break;
+                                }
+                            }
+                            break;
+                        case "address":
+                            if (segments.Length >= 2)
+                                config.IPAddress = segments[1];
+                            break;
+                        case "netmask":
+                            if (segments.Length >= 2)
+                                config.NetMask = segments[1];
+                            break;
+                        case "gateway":
+                            if (segments.Length >= 2)
+                                config.Gateway = segments[1];
+                            break;
+                        case "dns-nameserver":
+                            if (segments.Length >= 2)
+                                config.DnsServer = segments[1];
+                            break;
+                    }
+                }
+            }
+            return config;
+        }
+
+        protected override void OnParametersSet()
+        {
+            try
+            {
+                CurrentNetworkInterfaceConfig = GetNetworkInterfaceConfig(CurrentNetworkInterface);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ExceptionUtils.GetExceptionMessage(ex);
+            }
+        }
 
         private async void OkEditNetworkInterface()
         {

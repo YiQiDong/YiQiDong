@@ -1,14 +1,7 @@
 ﻿using Quick.Blazor.Bootstrap;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Management;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using YiQiDong.Core.Utils;
 using static YiQiDong.Components.Controls.EditNetworkInterfaceControl;
 
@@ -71,43 +64,9 @@ namespace YiQiDong.Components.Pages
         private NetworkInterfaceConfig GetNetworkInterfaceConfig(DisplayNetworkInterfaceInfo model)
         {
             NetworkInterfaceConfig config = null;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
-                queryWin32_NetworkAdapterConfiguration(model.Id, item =>
-                {
-                    var tmpArray = (string[])item.GetPropertyValue("IPAddress");
-                    var ipAddress = (string)null;
-                    var ipAddressList = new string[0];
-                    if (tmpArray != null)
-                    {
-                        ipAddressList = tmpArray.Where(t => !t.Contains(":")).ToArray();
-                        ipAddress = string.Join(",", ipAddressList);
-                    }
-
-                    var netMask = (string)null;
-                    tmpArray = (string[])item.GetPropertyValue("IPSubnet");
-                    if (tmpArray != null)
-                        netMask = string.Join(",", tmpArray.Take(ipAddressList.Length));
-
-                    tmpArray = (string[])item.GetPropertyValue("DefaultIPGateway");
-                    var gateway = (string)null;
-                    if (tmpArray != null)
-                        gateway = string.Join(",", tmpArray);
-
-                    tmpArray = (string[])item.GetPropertyValue("DNSServerSearchOrder");
-                    var dnsServer = (string)null;
-                    if (tmpArray != null)
-                        dnsServer = string.Join(",", tmpArray);
-
-                    config = new NetworkInterfaceConfig()
-                    {
-                        Method = item.GetPropertyValue("DHCPEnabled").ToString() == "True" ? NetworkInterfaceMethod.DHCP : NetworkInterfaceMethod.Static,
-                        IPAddress = ipAddress,
-                        NetMask = netMask,
-                        Gateway = gateway,
-                        DnsServer = dnsServer
-                    };
-                });
+                throw new PlatformNotSupportedException();
             }
             else
             {

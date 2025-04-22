@@ -15,18 +15,21 @@ namespace YiQiDong.Components.Pages
         {
             base.OnParametersSet();
             var toolList = new List<ToolInfo>();
-            toolList.AddRange(new[]
+            if(OperatingSystem.IsLinux())
             {
+                toolList.Add(ToolInfo.Create<NetworkInterfaceManage>("网卡管理","fa fa-sitemap"));
+            }
+            toolList.AddRange(
+            [
                 ToolInfo.Create<FileManageControl>("文件管理","fa fa-folder"),
                 ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProcessManageControl>("进程管理","fa fa-cogs"),
-                ToolInfo.Create<NetworkInterfaceManage>("网卡管理","fa fa-sitemap"),
                 ToolInfo.Create<Quick.Blazor.Bootstrap.Terminal.TerminalControl>("模拟终端","fa fa-terminal",new Dictionary<string, object>()
                 {
                     [nameof(Quick.Blazor.Bootstrap.Terminal.TerminalControl.WorkingDir)]=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
                 }),
                 ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理下载","fa fa-cloud-download"),
                 ToolInfo.Create<WebFileTransferManage>("Web文件传输","fa fa-file")
-            });
+            ]);
             if (Program.IsStartSuccess)
             {
                 toolList.AddRange(new[]

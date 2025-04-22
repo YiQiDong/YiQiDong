@@ -34,7 +34,6 @@
 		<PackageReference Include="Quick.Protocol.AllClients" Version="2.4.3" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.4.3" />
 		<PackageReference Include="Quick.WebFileTransfer.Server" Version="1.0.1" />
-		<PackageReference Include="System.Management" Version="9.0.4" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.4" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />

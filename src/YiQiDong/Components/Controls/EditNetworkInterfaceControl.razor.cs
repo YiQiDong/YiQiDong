@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.IO;
-using System.Management;
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using YiQiDong.Core.Utils;
 
-#pragma warning disable CA1416
 namespace YiQiDong.Components.Controls
 {
     public partial class EditNetworkInterfaceControl
@@ -52,28 +46,6 @@ namespace YiQiDong.Components.Controls
         public ModalLoading modalLoading { get; private set; }
         public ModalAlert modalAlert { get; private set; }
 
-        public static void queryWin32_NetworkAdapter(string id, Action<ManagementObject> handler)
-        {
-            var wmiQuery = new SelectQuery($"select * from Win32_NetworkAdapter where GUID = '{id}'");
-            var searchProcedure = new ManagementObjectSearcher(wmiQuery);
-            var items = searchProcedure.Get();
-            if (items.Count == 0)
-                throw new IOException($"未找到编号为[{id}]的网卡。");
-            foreach (ManagementObject item in items)
-                handler(item);
-        }
-
-        public static void queryWin32_NetworkAdapterConfiguration(string id, Action<ManagementObject> handler)
-        {
-            var wmiQuery = new SelectQuery($"select * from Win32_NetworkAdapterConfiguration where SettingID = '{id}'");
-            var searchProcedure = new ManagementObjectSearcher(wmiQuery);
-            var items = searchProcedure.Get();
-            if (items.Count == 0)
-                throw new IOException($"未找到编号为[{id}]的网卡。");
-            foreach (ManagementObject item in items)
-                handler(item);
-        }
-
         private async void OkEditNetworkInterface()
         {
             try
@@ -83,48 +55,7 @@ namespace YiQiDong.Components.Controls
                 {
                     if (OperatingSystem.IsWindows())
                     {
-                        //设置IP地址、子网掩码
-                        var wmiQuery = new SelectQuery($"select * from Win32_NetworkAdapterConfiguration where SettingID = '{CurrentNetworkInterface.Id}'");
-                        var searchProcedure = new ManagementObjectSearcher(wmiQuery);
-                        var items = searchProcedure.Get();
-                        if (items.Count == 0)
-                            throw new IOException($"未找到编号为[{CurrentNetworkInterface.Id}]的网卡。");
-
-                        foreach (ManagementObject item in items)
-                        {
-                            switch (CurrentNetworkInterfaceConfig.Method)
-                            {
-                                case NetworkInterfaceMethod.DHCP:
-                                    item.InvokeMethod("EnableDHCP", null);
-                                    queryWin32_NetworkAdapterConfiguration(CurrentNetworkInterface.Id, item =>
-                                    {
-                                        //设置DNS服务器
-                                        item.InvokeMethod("SetDNSServerSearchOrder", null);
-                                    });
-                                    break;
-                                case NetworkInterfaceMethod.Static:
-                                    ManagementBaseObject newIP = item.GetMethodParameters("EnableStatic");
-                                    newIP["IPAddress"] = CurrentNetworkInterfaceConfig.IPAddress.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                    newIP["SubnetMask"] = CurrentNetworkInterfaceConfig.NetMask.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                    item.InvokeMethod("EnableStatic", newIP, null);
-                                    queryWin32_NetworkAdapterConfiguration(CurrentNetworkInterface.Id, item =>
-                                    {
-                                        //设置网关
-                                        {
-                                            var inPar = item.GetMethodParameters("SetGateways");
-                                            inPar["DefaultIPGateway"] = CurrentNetworkInterfaceConfig.Gateway.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                            item.InvokeMethod("SetGateways", inPar, null);
-                                        }
-                                        //设置DNS服务器
-                                        {
-                                            var inPar = item.GetMethodParameters("SetDNSServerSearchOrder");
-                                            inPar["DNSServerSearchOrder"] = CurrentNetworkInterfaceConfig.DnsServer.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                            item.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
-                                        }
-                                    });
-                                    break;
-                            }
-                        }
+                        throw new PlatformNotSupportedException();
                     }
                     else
                     {
@@ -185,14 +116,9 @@ namespace YiQiDong.Components.Controls
         public static void innerEnableNI(DisplayNetworkInterfaceInfo model)
         {
             //如果是Windows平台，则调用WMI
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
-                queryWin32_NetworkAdapter(model.Id, item =>
-                {
-                    var ret = (uint)item.InvokeMethod("Enable", null);
-                    if (ret != 0)
-                        throw new ApplicationException("错误码：" + ret);
-                });
+                throw new PlatformNotSupportedException();
             }
             //否则调用ifup
             else
@@ -213,14 +139,9 @@ namespace YiQiDong.Components.Controls
         public static void innerDisableNI(DisplayNetworkInterfaceInfo model)
         {
             //如果是Windows平台，则调用WMI
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
-                queryWin32_NetworkAdapter(model.Id, item =>
-                {
-                    var ret = (uint)item.InvokeMethod("Disable", null);
-                    if (ret != 0)
-                        throw new ApplicationException("错误码：" + ret);
-                });
+                throw new PlatformNotSupportedException();
             }
             //否则调用ifdown
             else
@@ -239,4 +160,3 @@ namespace YiQiDong.Components.Controls
         }
     }
 }
-#pragma warning restore CA1416

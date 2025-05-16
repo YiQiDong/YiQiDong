@@ -109,6 +109,8 @@ namespace YiQiDong.ArgsHandlers
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
+                if (!line.StartsWith("http://"))
+                    line = $"http://*:{line}";
                 Program.Config.Urls = line;
                 changed = true;
             }

@@ -47,7 +47,9 @@ namespace _build.Resources.Core
             Console.WriteLine($"正在获取{imageName}文件信息...");
             var github = new GitHubClient(new ProductHeaderValue(repositoryName));
             var contents = github.Repository.Content.GetAllContentsByRef(workspaceName, repositoryName, "binaries").Result;
-            var contentDict = contents.ToDictionary(t => t.Name.Replace(".tar.gz", string.Empty), t => t);
+            var contentDict = contents
+                .Where(t => t.Name.StartsWith("nginx-") && !t.Name.EndsWith(".sha1") && !t.Name.EndsWith(".sources"))
+                .ToDictionary(t => t.Name.Replace(".exe", string.Empty), t => t);
 
             Console.WriteLine($"请选择Github镜像站：");
             var githubMirror = QbSelect.ArrowSelect(githubMirrorDict.ToDictionary(t => t.Key, t => t.Value).ToArray(), selectedForegroundColor: ConsoleColor.Green);
@@ -69,14 +71,14 @@ namespace _build.Resources.Core
                 var tmpPublishFolder = Path.Combine(tmpFolder, content.Sha);
                 var strs = contentName.Split("-");
                 var version = strs[1];
-                var platform = strs[2];
+                var platform = strs[3];
                 switch (platform)
                 {
                     case "win32":
                         platform = "win";
                         break;
                 }
-                var rawRid = strs[3];
+                var rawRid = strs[2];
                 var rid = platform;
                 switch (rawRid)
                 {

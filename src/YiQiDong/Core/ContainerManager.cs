@@ -51,15 +51,7 @@ namespace YiQiDong.Core
                     continue;
                 containerMeta.Id = Path.GetFileName(containerFolder);
                 containerMeta.Image = ImageManager.Instance.Get(containerMeta.ImageId);
-                //检查添加标签
-                if (containerMeta.Tags != null)
-                {
-                    foreach (var tag in containerMeta.Tags)
-                    {
-                        if (!TagManager.Instance.Contains(tag))
-                            TagManager.Instance.Add(tag);
-                    }
-                }
+                
                 var containerContext = new ContainerContext(containerMeta);
                 containerContext.BeginEnable();
                 ContainerList.Add(containerContext);

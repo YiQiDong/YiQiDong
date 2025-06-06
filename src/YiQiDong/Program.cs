@@ -66,7 +66,6 @@ namespace YiQiDong
                     var dbFile = Path.Combine(dataDir, "Config.litedb");
                     ConfigDbContext.Init(dbFile, modelBuilder =>
                     {
-                        modelBuilder.Entity<Model.TagModel>();
                         Quick.Blazor.Bootstrap.CrontabManager.Global.Instance.OnModelCreating(modelBuilder);
                         Quick.Blazor.Bootstrap.ReverseProxy.Global.Instance.OnModelCreating(modelBuilder);
                         Glash.Blazor.Agent.Global.Instance.OnModelCreating(modelBuilder);

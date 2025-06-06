@@ -1,42 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Quick.LiteDB.Plus;
-
-namespace YiQiDong.Core
+﻿namespace YiQiDong.Core
 {
     public class TagManager
     {
         public static TagManager Instance { get; } = new TagManager();
+        private string[] tags = null;
 
-        public string[] GetTags() => ConfigDbContext.CacheContext
-            .Query<Model.TagModel>()
-            .Select(t => t.Id)
-            .OrderBy(t => t)
-            .ToArray();
+        private TagManager()
+        {
+            Reload();
+        }
+
+        public string[] GetTags() => tags;
 
         public bool Contains(string tag)
         {
-            return ConfigDbContext.CacheContext.Find(new Model.TagModel(tag)) != null;
+            return Array.IndexOf(tags, tag) >= 0;
         }
 
-        public void Add(string tag)
+        public void Reload()
         {
-            ConfigDbContext.CacheContext.Add(new Model.TagModel(tag));
-        }
-
-        public void Delete(string tag)
-        {
-            var images = ImageManager.Instance.Query(tag, null);
-            if (images.Length > 0)
-                throw new ApplicationException($"镜像[{images[0].Name} {images[0].Version}]正在使用此标签");
-            var containers = ContainerManager.Instance.Query(tag, null);
-            if (containers.Length > 0)
-                throw new ApplicationException($"容器[{containers[0].ContainerInfo.Name}]正在使用此标签");
-            var model = ConfigDbContext.CacheContext.Find(new Model.TagModel(tag));
-            if (model != null)
-                ConfigDbContext.CacheContext.Remove(model);
+            var tagHashSet = new HashSet<string>();
+            foreach (var imageInfo in ImageManager.Instance.Query(null, null))
+                if (imageInfo.Tags != null)
+                    foreach (var tag in imageInfo.Tags)
+                        if (!tagHashSet.Contains(tag))
+                            tagHashSet.Add(tag);
+            tags = tagHashSet.OrderBy(t => t).ToArray();
         }
     }
 }

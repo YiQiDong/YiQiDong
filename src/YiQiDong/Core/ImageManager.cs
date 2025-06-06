@@ -60,16 +60,7 @@ namespace YiQiDong.Core
                 var imageInfo = ImageInfo.Parse(content);
                 if (imageInfo == null)
                     return null;
-                imageInfo.Id = Path.GetFileName(dir);
-                //检查添加标签
-                if (imageInfo.Tags != null)
-                {
-                    foreach (var tag in imageInfo.Tags)
-                    {
-                        if (!TagManager.Instance.Contains(tag))
-                            TagManager.Instance.Add(tag);
-                    }
-                }
+                imageInfo.Id = Path.GetFileName(dir);               
                 //添加权限(非Windows操作系统)
                 if (!OperatingSystem.IsWindows() && imageInfo.Path != null && imageInfo.Path.Length > 0)
                 {
@@ -379,6 +370,8 @@ namespace YiQiDong.Core
                         container.ContainerInfo.Image = imageInfo;
                         container.BeginEnable();
                     }
+                //重新加载标签
+                TagManager.Instance.Reload();
                 return imageInfo;
             }
             catch
@@ -443,6 +436,7 @@ namespace YiQiDong.Core
                 Directory.Delete(imageFolder, true);
             ImageList.Remove(model);
             refreshImageDict();
+            TagManager.Instance.Reload();
         }
 
         public string GetPathInImage(string imageId, string path)

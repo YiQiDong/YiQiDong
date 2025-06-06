@@ -748,15 +748,8 @@ public class ContainerContext : IDisposable
     public async Task Restart()
     {
         await Stop();
-        Disable();
-        while (IsConnected)
-            await Task.Delay(1000);
-        Enable();
-        while (!IsConnected)
-            await Task.Delay(1000);
-        //如果没有设置自动启动，则启动
-        if (!ContainerInfo.AutoStart)
-            await Start();
+        await Task.Delay(1000);
+        await Start();
     }
 
     public void ClearContainerHistory()

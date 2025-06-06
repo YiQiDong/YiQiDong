@@ -15,7 +15,8 @@ namespace YiQiDong.ArgsHandlers
         private static string[] UnixSystemdSystemFolders = new[]
         {
             "/lib/systemd/system",
-            "/usr/lib/systemd/system"
+            "/usr/lib/systemd/system",
+            "/etc/systemd/system"
         };
         private static string systemdSystemFolder = null;
         private static string GetSystemdSystemFolder()
@@ -26,8 +27,12 @@ namespace YiQiDong.ArgsHandlers
                 {
                     foreach (var folder in UnixSystemdSystemFolders)
                     {
-                        if (Directory.Exists(folder))
+                        var dirInfo = new DirectoryInfo(folder);
+                        if (dirInfo.Exists)
                         {
+                            //如果目录是只读，则跳过
+                            if ((dirInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                                continue;
                             systemdSystemFolder = folder;
                             break;
                         }

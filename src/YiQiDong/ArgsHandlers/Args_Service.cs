@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
-using System;
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 using System.ServiceProcess;
-using System.Threading.Tasks;
 
 namespace YiQiDong.ArgsHandlers
 {

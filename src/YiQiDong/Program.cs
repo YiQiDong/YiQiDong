@@ -135,7 +135,8 @@ namespace YiQiDong
                 builder.Services.AddBlazorDownloadFile();
                 builder.Services.AddFileReaderService();
                 builder.Services.AddBlazoredLocalStorage();
-                builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+                builder.Services.AddRazorComponents()
+                    .AddInteractiveServerComponents();
                 builder.Services.ConfigureHttpJsonOptions(options =>
                 {
                     options.SerializerOptions.TypeInfoResolverChain.Add(Model.YqdContainerInfoSerializerContext.Default);
@@ -166,8 +167,6 @@ namespace YiQiDong
                 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
                 app.UseYiQiDongControllers();
                 Console.WriteLine($"正在启动Web服务:{webUrls}...");
-                //var buffer = new byte[128];
-                //System.Security.Cryptography.RandomNumberGenerator.Fill(buffer);
                 await app.StartAsync();
                 Console.WriteLine("[Web服务启动完成]");
             }

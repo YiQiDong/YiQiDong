@@ -136,7 +136,12 @@ namespace YiQiDong
                 builder.Services.AddFileReaderService();
                 builder.Services.AddBlazoredLocalStorage();
                 builder.Services.AddRazorComponents()
-                    .AddInteractiveServerComponents();
+                    .AddInteractiveServerComponents()
+                    .AddHubOptions(options =>
+                    {
+                        //设置最大包大小为100 MB
+                        options.MaximumReceiveMessageSize = 100 * 1024 * 1024;
+                    });
                 builder.Services.ConfigureHttpJsonOptions(options =>
                 {
                     options.SerializerOptions.TypeInfoResolverChain.Add(Model.YqdContainerInfoSerializerContext.Default);

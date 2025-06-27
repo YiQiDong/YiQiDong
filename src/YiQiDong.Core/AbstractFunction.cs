@@ -7,7 +7,7 @@ namespace YiQiDong.Core;
 
 public abstract class AbstractFunction
 {
-    public virtual string Id => this.GetType().FullName;
+    public virtual string Id => Name;
 
     public abstract string Name { get; }
     /// <summary>

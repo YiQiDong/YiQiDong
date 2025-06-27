@@ -25,15 +25,15 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="NLog" Version="5.4.0" />
+		<PackageReference Include="NLog" Version="6.0.0" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="4.3.11" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="4.3.11" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="4.3.11" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="4.3.11" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="4.3.11" />
-		<PackageReference Include="Quick.Protocol.AllClients" Version="2.4.3" />
-		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.4.3" />
-		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.5" />
+		<PackageReference Include="Quick.Protocol.AllClients" Version="2.5.0" />
+		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.5.0" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.6" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 	</ItemGroup>

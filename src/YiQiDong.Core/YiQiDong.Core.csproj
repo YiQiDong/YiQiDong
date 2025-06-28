@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Quick.Fields" Version="1.3.3" />
+		<PackageReference Include="Quick.Fields" Version="1.3.4" />
 		<PackageReference Include="Quick.Protocol" Version="2.5.0" />
 		<PackageReference Include="Quick.Shell" Version="1.0.4" />
 	</ItemGroup>

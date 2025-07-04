@@ -1,25 +1,41 @@
 ﻿<div class="modal-body">
-    <Tabs NavTabsExtraClass="mb-5">
-    <TabPane Key="config">
-        <Tab>配置</Tab>
-        <ChildContent>
-            <EditForm Model="@this">
-                <div class="form-group">
-                    <InputTextArea class="form-control" rows="15" @bind-Value="Content" />
-                </div>
-                <div class="btn-toolbar mb-1">
-                    <div class="input-group mb-1 ml-2">
-                        <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
+    <Tabs NavTabsExtraClass="mb-2">
+        <TabPane Key="config">
+            <Tab>配置</Tab>
+            <ChildContent>
+                <EditForm Model="@this">
+                    <div class="form-group">
+                        <InputTextArea class="form-control" rows="15" @bind-Value="Content" />
                     </div>
-                </div>
-            </EditForm>
-        </ChildContent>
-    </TabPane>
-    <TabPane Key="2">
-        <Tab>示例</Tab>
-        <ChildContent>
-            <h4>只允许连接TCP：22端口</h4>
-            <pre>*filter
+                    <div class="btn-toolbar mb-1">
+                        <div class="input-group mb-1 ml-2">
+                            <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="2">
+            <Tab>说明</Tab>
+            <ChildContent>
+                <pre>*filter
+# 默认拦截，全部禁止访问
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+# 其他规则部分
+.........
+
+# 提交
+COMMIT</pre>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="3">
+            <Tab>示例</Tab>
+            <ChildContent>
+                <h4>只允许连接TCP：22端口</h4>
+                <pre>*filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT DROP [0:0]
@@ -28,8 +44,8 @@
 -A OUTPUT -p tcp --sport 22 -j ACCEPT
 
 COMMIT</pre>
-            <h4>只允许指定IP地址连接TCP：22端口</h4>
-            <pre>*filter
+                <h4>只允许指定IP地址连接TCP：22端口</h4>
+                <pre>*filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT DROP [0:0]
@@ -38,8 +54,8 @@ COMMIT</pre>
 -A OUTPUT -d 192.168.31.193 -p tcp --sport 22 -j ACCEPT
 
 COMMIT</pre>
-            <h4>允许Ping</h4>
-            <pre>*filter
+                <h4>允许Ping</h4>
+                <pre>*filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT DROP [0:0]
@@ -48,9 +64,9 @@ COMMIT</pre>
 -A FORWARD -p icmp -j ACCEPT
 
 COMMIT</pre>
-        </ChildContent>
-    </TabPane>
-</Tabs>
+            </ChildContent>
+        </TabPane>
+    </Tabs>
 
 </div>
 <ModalLoading @ref="modalLoading" />

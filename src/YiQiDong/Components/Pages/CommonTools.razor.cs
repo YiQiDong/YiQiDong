@@ -15,9 +15,10 @@ namespace YiQiDong.Components.Pages
         {
             base.OnParametersSet();
             var toolList = new List<ToolInfo>();
-            if(OperatingSystem.IsLinux())
+            if (OperatingSystem.IsLinux())
             {
-                toolList.Add(ToolInfo.Create<NetworkInterfaceManage>("网卡管理","fa fa-sitemap"));
+                toolList.Add(ToolInfo.Create<NetworkInterfaceManage>("网卡管理", "fa fa-sitemap"));
+                toolList.Add(ToolInfo.Create<LinuxIptablesManage>("iptables管理","fa fa-shield"));
             }
             toolList.AddRange(
             [

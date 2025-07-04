@@ -1,0 +1,14 @@
+﻿<div class="modal-body">
+    <EditForm Model="@this">
+        <div class="form-group">
+            <InputTextArea class="form-control" @bind-Value="Content" />
+        </div>
+        <div class="btn-toolbar mb-1">
+            <div class="input-group mb-1 ml-2">
+                <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+<ModalLoading @ref="modalLoading" />
+<ModalAlert @ref="modalAlert" />

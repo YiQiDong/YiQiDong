@@ -27,6 +27,20 @@ public partial class LinuxIptablesManage : ComponentBase
         }
     }
 
+    public static void CheckAndApplyIptablesRules()
+    {
+        var fullConfigFile = FolderUtils.GetPathUnderDataDir(CONFIG_FILE);
+        var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F");
+        if (ret.ExitCode != 0)
+            throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+        if (File.Exists(fullConfigFile))
+        {
+            ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{fullConfigFile}\"");
+            if (ret.ExitCode != 0)
+                throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+        }
+    }
+
     private async Task Save()
     {
         try
@@ -50,15 +64,7 @@ public partial class LinuxIptablesManage : ComponentBase
         {
             modalLoading.Show("应用", "正在应用规则...", true);
             await Task.Delay(1000);
-            var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F");
-            if (ret.ExitCode != 0)
-                throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
-            if (File.Exists(fullConfigFile))
-            {
-                ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{fullConfigFile}\"");
-                if (ret.ExitCode != 0)
-                    throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
-            }
+            CheckAndApplyIptablesRules();
         }
         catch (Exception ex)
         {

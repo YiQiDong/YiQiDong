@@ -1,14 +1,57 @@
 ﻿<div class="modal-body">
-    <EditForm Model="@this">
-        <div class="form-group">
-            <InputTextArea class="form-control" @bind-Value="Content" />
-        </div>
-        <div class="btn-toolbar mb-1">
-            <div class="input-group mb-1 ml-2">
-                <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
-            </div>
-        </div>
-    </EditForm>
+    <Tabs NavTabsExtraClass="mb-5">
+    <TabPane Key="config">
+        <Tab>配置</Tab>
+        <ChildContent>
+            <EditForm Model="@this">
+                <div class="form-group">
+                    <InputTextArea class="form-control" rows="15" @bind-Value="Content" />
+                </div>
+                <div class="btn-toolbar mb-1">
+                    <div class="input-group mb-1 ml-2">
+                        <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
+                    </div>
+                </div>
+            </EditForm>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="2">
+        <Tab>示例</Tab>
+        <ChildContent>
+            <h4>只允许连接TCP：22端口</h4>
+            <pre>*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+-A INPUT -p tcp --dport 22 -j ACCEPT
+-A OUTPUT -p tcp --sport 22 -j ACCEPT
+
+COMMIT</pre>
+            <h4>只允许指定IP地址连接TCP：22端口</h4>
+            <pre>*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+-A INPUT -s 192.168.31.193 -p tcp --dport 22 -j ACCEPT
+-A OUTPUT -d 192.168.31.193 -p tcp --sport 22 -j ACCEPT
+
+COMMIT</pre>
+            <h4>允许Ping</h4>
+            <pre>*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+-A INPUT -p icmp -j ACCEPT
+-A FORWARD -p icmp -j ACCEPT
+
+COMMIT</pre>
+        </ChildContent>
+    </TabPane>
+</Tabs>
+
 </div>
 <ModalLoading @ref="modalLoading" />
 <ModalAlert @ref="modalAlert" />

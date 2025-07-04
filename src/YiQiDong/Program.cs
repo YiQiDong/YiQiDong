@@ -80,6 +80,7 @@ namespace YiQiDong
                     {
                         try
                         {
+                            OsPlatformManager.Instance.Init();
                             Console.WriteLine("正在初始化运行库管理器...");
                             RuntimeManager.Instance.Init();
                             Console.WriteLine("正在初始化镜像管理器...");

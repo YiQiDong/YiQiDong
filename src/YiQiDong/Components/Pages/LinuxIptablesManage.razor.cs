@@ -81,12 +81,12 @@ public partial class LinuxIptablesManage : ComponentBase
         {
             modalLoading.Close();
         }
-        
+
         try
         {
             modalLoading.Show("应用", "正在应用规则...", true);
             await Task.Delay(1000);
-            CheckAndApplyIptablesRules();
+            CheckAndApplyIptablesRules(false);
         }
         catch (Exception ex)
         {

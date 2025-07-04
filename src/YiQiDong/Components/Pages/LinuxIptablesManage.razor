@@ -61,7 +61,7 @@ COMMIT</pre>
 :OUTPUT DROP [0:0]
 
 -A INPUT -p icmp -j ACCEPT
--A FORWARD -p icmp -j ACCEPT
+-A OUTPUT -p icmp -j ACCEPT
 
 COMMIT</pre>
             </ChildContent>

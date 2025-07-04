@@ -58,7 +58,7 @@ namespace YiQiDong.Components.Controls
                 config = new NetworkInterfaceConfig() { Method = NetworkInterfaceMethod.DHCP };
                 var configFile = $"/etc/network/interfaces.d/{model.Name}";
                 if (!File.Exists(configFile))
-                    throw new IOException($"未找到网卡配置文件！");
+                    throw new IOException($"未找到网卡配置文件[{configFile}]！");
                 var lines = File.ReadAllLines(configFile);
                 foreach (var t in lines)
                 {

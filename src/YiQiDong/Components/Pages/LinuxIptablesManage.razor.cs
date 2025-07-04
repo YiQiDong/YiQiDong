@@ -27,17 +27,38 @@ public partial class LinuxIptablesManage : ComponentBase
         }
     }
 
-    public static void CheckAndApplyIptablesRules()
+    public static void CheckAndApplyIptablesRules(bool ignoreWhenFileNotExist = true)
     {
         var fullConfigFile = FolderUtils.GetPathUnderDataDir(CONFIG_FILE);
+        var isConfigExist = File.Exists(fullConfigFile);
+        if (ignoreWhenFileNotExist && !isConfigExist)
+            return;
+        string content = null;
+        if (isConfigExist)
+            File.ReadAllText(fullConfigFile);
+
         var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F");
         if (ret.ExitCode != 0)
             throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
-        if (File.Exists(fullConfigFile))
+
+        var tmpFile = Path.GetTempFileName();
+        try
         {
-            ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{fullConfigFile}\"");
+            using (var fs = File.OpenWrite(tmpFile))
+            using (var writer = new StreamWriter(fs))
+            {
+                writer.WriteLine("*filter");
+                if (!string.IsNullOrEmpty(content))
+                    writer.WriteLine(content);
+                writer.WriteLine("COMMIT");
+            }
+            ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{tmpFile}\"");
             if (ret.ExitCode != 0)
                 throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+        }
+        finally
+        {
+            File.Delete(tmpFile);
         }
     }
 
@@ -60,6 +81,7 @@ public partial class LinuxIptablesManage : ComponentBase
         {
             modalLoading.Close();
         }
+        
         try
         {
             modalLoading.Show("应用", "正在应用规则...", true);

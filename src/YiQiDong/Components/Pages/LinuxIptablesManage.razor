@@ -16,54 +16,27 @@
             </ChildContent>
         </TabPane>
         <TabPane Key="2">
-            <Tab>说明</Tab>
-            <ChildContent>
-                <pre>*filter
-# 默认拦截，全部禁止访问
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT DROP [0:0]
-
-# 其他规则部分
-.........
-
-# 提交
-COMMIT</pre>
-            </ChildContent>
-        </TabPane>
-        <TabPane Key="3">
             <Tab>示例</Tab>
             <ChildContent>
-                <h4>只允许连接TCP：22端口</h4>
-                <pre>*filter
-:INPUT DROP [0:0]
+                <h4>允许任何连接</h4>
+                <label>iptables默认是允许所有连接，所以一般来说不会配此规则</label>
+                <pre>:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]</pre>
+                <h4>禁止任何连接</h4>
+                <label>一般来说下面其他的规则需要搭配此规则</label>
+                <pre>:INPUT DROP [0:0]
 :FORWARD DROP [0:0]
-:OUTPUT DROP [0:0]
-
--A INPUT -p tcp --dport 22 -j ACCEPT
--A OUTPUT -p tcp --sport 22 -j ACCEPT
-
-COMMIT</pre>
-                <h4>只允许指定IP地址连接TCP：22端口</h4>
-                <pre>*filter
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT DROP [0:0]
-
--A INPUT -s 192.168.31.193 -p tcp --dport 22 -j ACCEPT
--A OUTPUT -d 192.168.31.193 -p tcp --sport 22 -j ACCEPT
-
-COMMIT</pre>
+:OUTPUT DROP [0:0]</pre>
+                <h4>允许连接TCP：22端口</h4>
+                <pre>-A INPUT -p tcp --dport 22 -j ACCEPT
+-A OUTPUT -p tcp --sport 22 -j ACCEPT</pre>
+                <h4>允许指定IP地址连接TCP：22端口</h4>
+                <pre>-A INPUT -s 192.168.31.193 -p tcp --dport 22 -j ACCEPT
+-A OUTPUT -d 192.168.31.193 -p tcp --sport 22 -j ACCEPT</pre>
                 <h4>允许Ping</h4>
-                <pre>*filter
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT DROP [0:0]
-
--A INPUT -p icmp -j ACCEPT
--A OUTPUT -p icmp -j ACCEPT
-
-COMMIT</pre>
+                <pre>-A INPUT -p icmp -j ACCEPT
+-A OUTPUT -p icmp -j ACCEPT</pre>
             </ChildContent>
         </TabPane>
     </Tabs>

@@ -154,15 +154,15 @@ namespace YiQiDong.Components.Pages
             if (!string.IsNullOrEmpty(argUpdateFile) && File.Exists(argUpdateFile))
                 dir = Path.GetDirectoryName(argUpdateFile);
 
-            modalWindow.Show<FileSelectControl>("选择弈启动更新文件", new Dictionary<string, object>()
+            modalWindow.Show("选择弈启动更新文件", new DialogParameters<FileSelectControl>()
             {
-                [nameof(FileSelectControl.FileFilter)] = "*.zip",
-                [nameof(FileSelectControl.SelectAction)] = new Action<string>(t =>
+                {x=>x.FileFilter, "*.zip"},
+                {x=> x.SelectAction, t =>
                 {
                     argUpdateFile = t;
                     modalWindow.Close();
                     InvokeAsync(StateHasChanged);
-                })
+                }}
             });
         }
 

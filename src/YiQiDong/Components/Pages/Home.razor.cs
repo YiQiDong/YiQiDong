@@ -48,7 +48,7 @@ namespace YiQiDong.Components.Pages
         protected override void OnInitialized()
         {
             systemInfoContext = Program.SystemInfoContext;
-            cpuSeries=createSeries("CPU利用率(%)", systemInfoContext.CpuChartsData);
+            cpuSeries = createSeries("CPU利用率(%)", systemInfoContext.CpuChartsData);
             cpuChartsOption = new EChartsOption<Blazor.ECharts.Options.Series.Line.Line>()
             {
                 YAxis = new List<YAxis>()
@@ -90,17 +90,21 @@ namespace YiQiDong.Components.Pages
 
         private void showFolder(string path)
         {
-            modalWindow.Show<Controls.FileManageControl>("文件管理", new Dictionary<string, object>()
-            {
-                [nameof(Controls.FileManageControl.Dir)] = path
-            });
+            modalWindow.Show("文件管理",
+                new DialogParameters<Controls.FileManageControl>()
+                {
+                    {x=>x.Dir,path}
+                });
         }
 
         private void showProcessView(int pid)
         {
-            modalWindow.Show<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>(
+            modalWindow.Show(
                 $"进程[{pid}]",
-                Quick.Blazor.Bootstrap.Admin.ProcessViewControl.PrepareParameters(pid, null));
+                new DialogParameters<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>()
+                {
+                    {x=>x.PID, pid}
+                });
         }
 
         private void showProcessManage()

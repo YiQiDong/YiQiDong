@@ -26,19 +26,21 @@ namespace YiQiDong.Components.Pages
 
         private void ShowRuntimeConsole(RuntimeInfo runtimeInfo)
         {
-            modalWindow.Show<Controls.RuntimeConsoleControl>($"运行库 - {runtimeInfo.Name} [{runtimeInfo.Version}] - 控制台", new Dictionary<string, object>()
-            {
-                [nameof(Controls.RuntimeConsoleControl.Runtime)] = runtimeInfo
-            });
+            modalWindow.Show($"运行库 - {runtimeInfo.Name} [{runtimeInfo.Version}] - 控制台",
+                new DialogParameters<Controls.RuntimeConsoleControl>()
+                {
+                    {x=>x.Runtime, runtimeInfo}
+                });
         }
 
         private void ShowRuntimeFile(string runtimeId)
         {
-            var dir = Utils.RuntimePathUtils.GetRuntimeFolder(runtimeId);
-            modalWindow.Show<Controls.FileManageControl>("文件管理", new Dictionary<string, object>()
-            {
-                [nameof(Controls.FileManageControl.Dir)] = dir
-            });
+            var dir = RuntimePathUtils.GetRuntimeFolder(runtimeId);
+            modalWindow.Show("文件管理",
+                new DialogParameters<Controls.FileManageControl>()
+                {
+                    {x=>x.Dir,dir }
+                });
         }
 
         private void DeleteRuntime(RuntimeInfo model)
@@ -140,14 +142,23 @@ namespace YiQiDong.Components.Pages
                     modalLoading.Close();
                 }
             };
-            modalWindow.Show<Controls.FileSelectControl>("选择运行库文件", new Dictionary<string, object>()
-            {
-                [nameof(Controls.FileSelectControl.Dir)] = lastImportDir,
-                [nameof(Controls.FileSelectControl.FileFilter)] = "*.yrt",
-                [nameof(Controls.FileSelectControl.FileDoubleClickToDownload)] = false,
-                [nameof(Controls.FileSelectControl.FileDoubleClickCustomAction)] = afterSelectFileAction,
-                [nameof(Controls.FileSelectControl.SelectAction)] = afterSelectFileAction
-            });
+            modalWindow.Show("选择运行库文件",
+                new DialogParameters<Controls.FileSelectControl>
+                {
+                    {x=>x.Dir, lastImportDir},
+                    {x=>x.FileFilter, "*.yrt"},
+                    {x=>x.FileDoubleClickToDownload, false},
+                    {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
+                    {x=>x.SelectAction, afterSelectFileAction},
+                });
+             new Dictionary<string, object>()
+             {
+                 [nameof(Controls.FileSelectControl.Dir)] = lastImportDir,
+                 [nameof(Controls.FileSelectControl.FileFilter)] = "*.yrt",
+                 [nameof(Controls.FileSelectControl.FileDoubleClickToDownload)] = false,
+                 [nameof(Controls.FileSelectControl.FileDoubleClickCustomAction)] = afterSelectFileAction,
+                 [nameof(Controls.FileSelectControl.SelectAction)] = afterSelectFileAction
+             });
         }
         private CancellationTokenSource uploadCts;
         private async Task onInputRuntimeFileChanged(string runtimeId)

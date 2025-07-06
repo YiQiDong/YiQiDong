@@ -64,10 +64,11 @@ namespace YiQiDong.Components.Pages
         {
             try
             {
-                modalWindow.Show<Controls.EditNetworkInterfaceControl>($"编辑网卡[{model.Name}]", new Dictionary<string, object>()
-                {
-                    [nameof(Controls.EditNetworkInterfaceControl.CurrentNetworkInterface)] = model
-                });
+                modalWindow.Show($"编辑网卡[{model.Name}]",
+                    new DialogParameters<Controls.EditNetworkInterfaceControl>()
+                    {
+                        {x=>x.CurrentNetworkInterface,model}
+                    });
             }
             catch (Exception ex)
             {

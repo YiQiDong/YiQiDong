@@ -8,7 +8,6 @@ using Quick.LiteDB.Plus;
 using System.Diagnostics.CodeAnalysis;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components;
-using System.Diagnostics;
 using Blazored.LocalStorage;
 
 namespace YiQiDong

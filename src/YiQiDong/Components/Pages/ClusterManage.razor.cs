@@ -53,15 +53,15 @@ namespace YiQiDong.Components.Pages
 
         private void CreateCluster()
         {
-            modalWindow.Show<Controls.ClusterCreateControl>("创建集群",
-                Controls.ClusterCreateControl.PrepareParameter(
-                    null,
-                    t =>
+            modalWindow.Show("创建集群", new DialogParameters<Controls.ClusterCreateControl>()
+            {
+                {x=>x.OkAction,t =>
                     {
                         ClusterManager.Instance.Create(t);
                         modalWindow.Close();
-                    })
-                );
+                    }
+                }
+            });
         }
 
         private void DeleteCluster()
@@ -84,10 +84,9 @@ namespace YiQiDong.Components.Pages
 
         private void AddClusterContainer()
         {
-            modalWindow.Show<Controls.ClusterContainerAddControl>("添加集群容器",
-                Controls.ClusterContainerAddControl.PrepareParameter(
-                    null,
-                    async t =>
+            modalWindow.Show("添加集群容器", new DialogParameters<Controls.ClusterContainerAddControl>()
+            {
+                {x=>x.OkAction, async t =>
                     {
                         try
                         {
@@ -98,8 +97,9 @@ namespace YiQiDong.Components.Pages
                         {
                             modalAlert.Show("错误", "添加节点时失败，原因：" + ExceptionUtils.GetExceptionMessage(ex));
                         }
-                    })
-                );
+                    }
+                }
+            });
         }
 
         private void DeleteClusterContainer(ClusterContainerInfo item)

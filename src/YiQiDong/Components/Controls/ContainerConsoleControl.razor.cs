@@ -2,10 +2,6 @@
 using Microsoft.JSInterop;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.ReverseProxy.Model;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Model;
@@ -84,18 +80,18 @@ namespace YiQiDong.Components.Controls
 
         private void ContainerConfigFiles()
         {
-            modalWindow.Show<ContainerConfigFilesControl>($"{Container.ContainerInfo.Name} - 配置文件", new Dictionary<string, object>()
+            modalWindow.Show($"{Container.ContainerInfo.Name} - 配置文件", new DialogParameters<ContainerConfigFilesControl>
             {
-                [nameof(ContainerConfigFilesControl.Container)] = Container
+                {x=>x.Container, Container}
             });
         }
 
         private void ConfigContainer(FunctionInfo functionInfo)
         {
-            modalWindow.Show<ContainerFunctionControl>($"{Container.ContainerInfo.Name} - {functionInfo.Name}", new Dictionary<string, object>()
+            modalWindow.Show($"{Container.ContainerInfo.Name} - {functionInfo.Name}", new DialogParameters<ContainerFunctionControl>()
             {
-                [nameof(ContainerFunctionControl.Container)] = Container,
-                [nameof(ContainerFunctionControl.Function)] = functionInfo
+                {x=>x.Container,Container},
+                {x=>x.Function,functionInfo}
             });
         }
 
@@ -203,10 +199,10 @@ els[i].scrollTop = els[i].scrollHeight;
 
         private void EditContainer(YqdContainerInfo containerInfo)
         {
-            modalWindow.Show<ContainerCreateControl>("编辑容器",
-                ContainerCreateControl.PrepareParameter(
-                    containerInfo,
-                    t =>
+            modalWindow.Show("编辑容器", new DialogParameters<ContainerCreateControl>()
+            {
+                {x=> x.Model,containerInfo},
+                {x=> x.OkAction,t =>
                     {
                         try
                         {
@@ -218,8 +214,9 @@ els[i].scrollTop = els[i].scrollHeight;
                         {
                             modalAlert.Show("编辑容器时出错", ExceptionUtils.GetExceptionMessage(ex));
                         }
-                    })
-                );
+                    }
+                }
+            });
         }
 
         private void EnableContainer(ContainerContext container)
@@ -250,19 +247,20 @@ els[i].scrollTop = els[i].scrollHeight;
                 modalWindow.Close();
                 var logFile = t;
 
-                modalWindow.Show<LogFileViewer>($"容器[{Container.ContainerInfo.Name}] - 日志 - {Path.GetFileName(logFile)}", new Dictionary<string, object>()
+                modalWindow.Show($"容器[{Container.ContainerInfo.Name}] - 日志 - {Path.GetFileName(logFile)}", new DialogParameters<LogFileViewer>
                 {
-                    [nameof(LogFileViewer.LogFile)] = logFile,
+                    {x=>x.LogFile,logFile}
                 });
             };
 
-            modalWindow.Show<FileSelectControl>($"选择要查看的日志文件", new Dictionary<string, object>()
+            modalWindow.Show($"选择要查看的日志文件", new DialogParameters<FileSelectControl>()
             {
-                [nameof(FileSelectControl.Dir)] = logDir,
-                [nameof(FileSelectControl.FileFilter)] = "*.log",
-                [nameof(FileSelectControl.FileDoubleClickToDownload)] = false,
-                [nameof(FileSelectControl.FileDoubleClickCustomAction)] = afterSelectFileAction,
-                [nameof(FileSelectControl.SelectAction)] = afterSelectFileAction
+                {x=>x.Dir, logDir},
+                {x=>x.FileFilter, logDir},
+                {x=>x.FileFilter, "*.log"},
+                {x=>x.FileDoubleClickToDownload, false},
+                {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
+                {x=>x.SelectAction, afterSelectFileAction},
             });
         }
     }

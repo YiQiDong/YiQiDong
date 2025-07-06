@@ -154,14 +154,5 @@ namespace YiQiDong.Components.Controls
                     break;
             }
         }
-
-        public static Dictionary<string, object> PrepareParameter(ContainerInfo model,Action<CreateContainerModel> okAction)
-        {
-            return new Dictionary<string, object>()
-            {
-                [nameof(Model)] = model,
-                [nameof(OkAction)] = okAction
-            };
-        }
     }
 }

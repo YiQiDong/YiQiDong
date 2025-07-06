@@ -39,10 +39,9 @@ namespace YiQiDong.Components.Pages
 
         private void CreateContainer()
         {
-            modalWindow.Show<Controls.ContainerCreateControl>("创建容器",
-                Controls.ContainerCreateControl.PrepareParameter(
-                    null,
-                    t =>
+            modalWindow.Show("创建容器", new DialogParameters<Controls.ContainerCreateControl>()
+            {
+                {x=>x.OkAction,t =>
                     {
                         try
                         {
@@ -53,8 +52,9 @@ namespace YiQiDong.Components.Pages
                         {
                             modalAlert.Show("创建容器时出错", ExceptionUtils.GetExceptionMessage(ex));
                         }
-                    })
-                );
+                    }
+                }
+            });
         }
 
         private void ContainerBackupManage()
@@ -64,10 +64,10 @@ namespace YiQiDong.Components.Pages
 
         private void EditContainer(YqdContainerInfo containerInfo)
         {
-            modalWindow.Show<Controls.ContainerCreateControl>("编辑容器",
-                Controls.ContainerCreateControl.PrepareParameter(
-                    containerInfo,
-                    t =>
+            modalWindow.Show("编辑容器", new DialogParameters<Controls.ContainerCreateControl>()
+            {
+                {x=>x.Model, containerInfo},
+                {x=>x.OkAction, t =>
                     {
                         try
                         {
@@ -78,8 +78,9 @@ namespace YiQiDong.Components.Pages
                         {
                             modalAlert.Show("编辑容器时出错", ExceptionUtils.GetExceptionMessage(ex));
                         }
-                    })
-                );
+                    }
+                }
+            });
         }
 
         private string getProcessDescription(Process process)
@@ -102,9 +103,12 @@ namespace YiQiDong.Components.Pages
 
         private void ShowProcessInfo(ContainerContext containerContext)
         {
-            modalWindow.Show<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>(
+            modalWindow.Show(
                 $"{containerContext.ContainerInfo.Name} - 进程",
-                Quick.Blazor.Bootstrap.Admin.ProcessViewControl.PrepareParameters(containerContext.Process.Id, null)
+                new DialogParameters<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>()
+                {
+                    {x=>x.PID, containerContext.Process.Id}
+                }
             );
         }
 
@@ -233,19 +237,21 @@ namespace YiQiDong.Components.Pages
 
         private void ShowContainerConsole(ContainerContext container)
         {
-            modalWindow.Show<Controls.ContainerConsoleControl>($"容器 - {container.ContainerInfo.Name} - 控制台", new Dictionary<string, object>()
-            {
-                [nameof(Controls.ContainerFunctionControl.Container)] = container
-            });
+            modalWindow.Show($"容器 - {container.ContainerInfo.Name} - 控制台",
+                new DialogParameters<Controls.ContainerConsoleControl>()
+                {
+                    {x=>x.Container, container}
+                });
         }
 
         private void ShowContainerFile(ContainerContext container)
         {
             var dir = Utils.ContainerPathUtils.GetContainerFolder(container.ContainerInfo.Id);
-            modalWindow.Show<Controls.FileManageControl>("文件管理", new Dictionary<string, object>()
-            {
-                [nameof(Controls.FileManageControl.Dir)] = dir
-            });
+            modalWindow.Show("文件管理",
+                new DialogParameters<Controls.FileManageControl>()
+                {
+                    {x=> x.Dir,dir}
+                });
         }
 
         private void travelFolder(DirectoryInfo di, Action<FileInfo> fileHandler, Action<DirectoryInfo> dirHandler, CancellationToken token)

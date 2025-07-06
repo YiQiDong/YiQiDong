@@ -29,19 +29,21 @@ namespace YiQiDong.Components.Pages
 
         private void ShowImageConsole(ImageInfo imageInfo)
         {
-            modalWindow.Show<Controls.ImageConsoleControl>($"镜像 - {imageInfo.Name} [{imageInfo.Version}] - 控制台", new Dictionary<string, object>()
-            {
-                [nameof(Controls.ImageConsoleControl.Image)] = imageInfo
-            });
+            modalWindow.Show($"镜像 - {imageInfo.Name} [{imageInfo.Version}] - 控制台",
+                new DialogParameters<Controls.ImageConsoleControl>()
+                {
+                    {x=>x.Image, imageInfo}
+                });
         }
 
         private void ShowImageFile(string imageId)
         {
             var dir = Utils.ImagePathUtils.GetImageFolder(imageId);
-            modalWindow.Show<Controls.FileManageControl>("文件管理", new Dictionary<string, object>()
-            {
-                [nameof(Controls.FileManageControl.Dir)] = dir
-            });
+            modalWindow.Show("文件管理",
+                new DialogParameters<Controls.FileManageControl>()
+                {
+                    {x=>x.Dir, dir}
+                });
         }
 
         private void DeleteImage(ImageInfo model)
@@ -142,13 +144,13 @@ namespace YiQiDong.Components.Pages
                     modalLoading.Close();
                 }
             };
-            modalWindow.Show<Controls.FileSelectControl>("选择镜像文件", new Dictionary<string, object>()
+            modalWindow.Show("选择镜像文件", new DialogParameters<Controls.FileSelectControl>()
             {
-                [nameof(Controls.FileSelectControl.Dir)] = lastImportDir,
-                [nameof(Controls.FileSelectControl.FileFilter)] = "*.ymg",
-                [nameof(Controls.FileSelectControl.FileDoubleClickToDownload)] = false,
-                [nameof(Controls.FileSelectControl.FileDoubleClickCustomAction)] = afterSelectFileAction,
-                [nameof(Controls.FileSelectControl.SelectAction)] = afterSelectFileAction
+                {x=>x.Dir, lastImportDir},
+                {x=>x.FileFilter, "*.ymg"},
+                {x=>x.FileDoubleClickToDownload, false},
+                {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
+                {x=>x.SelectAction, afterSelectFileAction},
             });
         }
         

@@ -51,58 +51,62 @@ namespace YiQiDong.Components.Controls
             }
 
             var idAndName = ContainerManager.Instance.GenerateNewContainerIdAndName(currentImageInfo.DefaultId ?? currentImageInfo.Id, currentImageInfo.Name);
-            modalWindow.Show<ContainerCreateControl>("导入容器", ContainerCreateControl.PrepareParameter(containerInfo, t =>
+            modalWindow.Show<ContainerCreateControl>("导入容器", new DialogParameters<ContainerCreateControl>
             {
-                try
-                {
-                    t.Id = idAndName.Item1;
-                    t.Name = idAndName.Item2;
-                    t.ImageId = currentImageInfo.Id;
-                    ContainerManager.Instance.Create(t);
-                    modalWindow.Close();
-                }
-                catch(Exception ex)
-                {
-                    modalAlert.Show("导入容器时出错", ExceptionUtils.GetExceptionMessage(ex));
-                    return;
-                }
-
-                //解压文件
-                modalLoading.Show("导入容器", "解压文件中...", true);
-                Task.Run(() =>
+                {x=>x.Model,containerInfo},
+                {x=>x.OkAction,t =>
                 {
                     try
                     {
-                        var baseDir = ContainerPathUtils.GetContainerFolder(containerInfo.Id);
-                        using (var zipArchive = ZipFile.OpenRead(file))
+                        t.Id = idAndName.Item1;
+                        t.Name = idAndName.Item2;
+                        t.ImageId = currentImageInfo.Id;
+                        ContainerManager.Instance.Create(t);
+                        modalWindow.Close();
+                    }
+                    catch(Exception ex)
+                    {
+                        modalAlert.Show("导入容器时出错", ExceptionUtils.GetExceptionMessage(ex));
+                        return;
+                    }
+
+                    //解压文件
+                    modalLoading.Show("导入容器", "解压文件中...", true);
+                    Task.Run(() =>
+                    {
+                        try
                         {
-                            var totalFileCount = zipArchive.Entries.Count;
-                            var currentFile = 0;
-                            foreach (var entry in zipArchive.Entries)
+                            var baseDir = ContainerPathUtils.GetContainerFolder(containerInfo.Id);
+                            using (var zipArchive = ZipFile.OpenRead(file))
                             {
-                                currentFile++;
-                                if (entry.Name == Consts.CONTAINER_META_FILE)
-                                    continue;
-                                modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.FullName} ({storageUSC.GetString(entry.Length, 1, true)}B)");
-                                var extractFileName = Path.Combine(baseDir, entry.FullName);
-                                var extractFileFolder = Path.GetDirectoryName(extractFileName);
-                                if (!Directory.Exists(extractFileFolder))
-                                    Directory.CreateDirectory(extractFileFolder);
-                                entry.ExtractToFile(extractFileName);
+                                var totalFileCount = zipArchive.Entries.Count;
+                                var currentFile = 0;
+                                foreach (var entry in zipArchive.Entries)
+                                {
+                                    currentFile++;
+                                    if (entry.Name == Consts.CONTAINER_META_FILE)
+                                        continue;
+                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.FullName} ({storageUSC.GetString(entry.Length, 1, true)}B)");
+                                    var extractFileName = Path.Combine(baseDir, entry.FullName);
+                                    var extractFileFolder = Path.GetDirectoryName(extractFileName);
+                                    if (!Directory.Exists(extractFileFolder))
+                                        Directory.CreateDirectory(extractFileFolder);
+                                    entry.ExtractToFile(extractFileName);
+                                }
                             }
+                            modalLoading.UpdateProgress(100, "解压完成");
                         }
-                        modalLoading.UpdateProgress(100, "解压完成");
-                    }
-                    catch (Exception ex)
-                    {
-                        modalAlert.Show("导入容器失败", $"解压文件过程中出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
-                    }
-                    finally
-                    {
-                        modalLoading.Close();
-                    }
-                });
-            }));
+                        catch (Exception ex)
+                        {
+                            modalAlert.Show("导入容器失败", $"解压文件过程中出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
+                        }
+                        finally
+                        {
+                            modalLoading.Close();
+                        }
+                    });
+                }}
+            });
         }
     }
 }

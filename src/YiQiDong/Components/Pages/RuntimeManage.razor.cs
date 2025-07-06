@@ -151,14 +151,6 @@ namespace YiQiDong.Components.Pages
                     {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
                     {x=>x.SelectAction, afterSelectFileAction},
                 });
-             new Dictionary<string, object>()
-             {
-                 [nameof(Controls.FileSelectControl.Dir)] = lastImportDir,
-                 [nameof(Controls.FileSelectControl.FileFilter)] = "*.yrt",
-                 [nameof(Controls.FileSelectControl.FileDoubleClickToDownload)] = false,
-                 [nameof(Controls.FileSelectControl.FileDoubleClickCustomAction)] = afterSelectFileAction,
-                 [nameof(Controls.FileSelectControl.SelectAction)] = afterSelectFileAction
-             });
         }
         private CancellationTokenSource uploadCts;
         private async Task onInputRuntimeFileChanged(string runtimeId)

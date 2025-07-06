@@ -51,7 +51,7 @@ namespace YiQiDong.Components.Controls
             }
 
             var idAndName = ContainerManager.Instance.GenerateNewContainerIdAndName(currentImageInfo.DefaultId ?? currentImageInfo.Id, currentImageInfo.Name);
-            modalWindow.Show<ContainerCreateControl>("导入容器", new DialogParameters<ContainerCreateControl>
+            modalWindow.Show("导入容器", new DialogParameters<ContainerCreateControl>
             {
                 {x=>x.Model,containerInfo},
                 {x=>x.OkAction,t =>

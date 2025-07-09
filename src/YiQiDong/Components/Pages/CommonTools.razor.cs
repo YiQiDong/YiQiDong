@@ -18,8 +18,15 @@ namespace YiQiDong.Components.Pages
             if (OperatingSystem.IsLinux())
             {
                 toolList.Add(ToolInfo.Create<NetworkInterfaceManage>("网卡管理", "fa fa-sitemap"));
-                toolList.Add(ToolInfo.Create<LinuxFirewallManage_iptables>("防火墙管理[iptables]","fa fa-shield"));
+                toolList.Add(ToolInfo.Create<LinuxFirewallManage_iptables>("防火墙管理[iptables]", "fa fa-shield"));
             }
+            var hostsFile = "/etc/hosts";
+            if (OperatingSystem.IsWindows())
+                hostsFile = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\System32\drivers\etc\hosts";
+            toolList.Add(ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.TextEditControl>("Hosts文件", "fa fa-file-text", new()
+            {
+                [nameof(Quick.Blazor.Bootstrap.Admin.TextEditControl.File)] = hostsFile
+            }));
             toolList.AddRange(
             [
                 ToolInfo.Create<FileManageControl>("文件管理","fa fa-folder"),

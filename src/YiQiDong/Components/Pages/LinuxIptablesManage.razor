@@ -18,11 +18,6 @@
         <TabPane Key="2">
             <Tab>示例</Tab>
             <ChildContent>
-                <h4>允许任何连接</h4>
-                <label>iptables默认是允许所有连接，所以一般来说不会配此规则</label>
-                <pre>:INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]</pre>
                 <h4>禁止任何连接</h4>
                 <label>一般来说下面其他的规则需要搭配此规则</label>
                 <pre>:INPUT DROP [0:0]

@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Utils;
@@ -27,7 +28,7 @@ public partial class LinuxIptablesManage : ComponentBase
         }
     }
 
-    public static void CheckAndApplyIptablesRules(bool ignoreWhenFileNotExist = true)
+    public static void CheckAndApplyIptablesRules(bool ignoreWhenFileNotExist = true, Action<string> logHandler = null)
     {
         var fullConfigFile = FolderUtils.GetPathUnderDataDir(CONFIG_FILE);
         var isConfigExist = File.Exists(fullConfigFile);
@@ -35,11 +36,15 @@ public partial class LinuxIptablesManage : ComponentBase
             return;
         string content = null;
         if (isConfigExist)
-            File.ReadAllText(fullConfigFile);
+            content = File.ReadAllText(fullConfigFile);
 
+        logHandler?.Invoke($"> iptables -F");
         var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F");
+        logHandler?.Invoke($"ExitCode: {ret.ExitCode}");
+        logHandler?.Invoke($"{ret.Output}{ret.Error}");
         if (ret.ExitCode != 0)
             throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+
 
         var tmpFile = Path.GetTempFileName();
         try
@@ -52,9 +57,16 @@ public partial class LinuxIptablesManage : ComponentBase
                     writer.WriteLine(content);
                 writer.WriteLine("COMMIT");
             }
+            logHandler?.Invoke($"> iptables-restore < \"{tmpFile}\"");
             ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{tmpFile}\"");
+            logHandler?.Invoke($"ExitCode: {ret.ExitCode}");
+            logHandler?.Invoke($"{ret.Output}{ret.Error}");
             if (ret.ExitCode != 0)
                 throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+        }
+        catch
+        {
+            throw;
         }
         finally
         {
@@ -82,11 +94,12 @@ public partial class LinuxIptablesManage : ComponentBase
             modalLoading.Close();
         }
 
+        var sb = new StringBuilder();
         try
         {
             modalLoading.Show("应用", "正在应用规则...", true);
             await Task.Delay(1000);
-            CheckAndApplyIptablesRules(false);
+            CheckAndApplyIptablesRules(false, line => sb.AppendLine(line));
         }
         catch (Exception ex)
         {
@@ -97,6 +110,6 @@ public partial class LinuxIptablesManage : ComponentBase
         {
             modalLoading.Close();
         }
-        modalAlert.Show("成功", "保存成功！");
+        modalAlert.Show("保存成功", sb.ToString());
     }
 }

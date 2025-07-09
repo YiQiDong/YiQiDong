@@ -3,16 +3,27 @@
         <TabPane Key="config">
             <Tab>配置</Tab>
             <ChildContent>
-                <EditForm Model="@this">
-                    <div class="form-group">
-                        <InputTextArea class="form-control" rows="15" @bind-Value="Content" />
-                    </div>
-                    <div class="btn-toolbar mb-1">
-                        <div class="input-group mb-1 ml-2">
-                            <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
+                @if (hasIptables)
+                {
+                    <span class="badge badge-pill badge-success">@iptablesVersion</span>
+                    <EditForm Model="@this">
+                        <div class="form-group">
+                            <InputTextArea class="form-control" rows="15" @bind-Value="Content" />
                         </div>
+                        <div class="btn-toolbar mb-1">
+                            <div class="input-group mb-1 ml-2">
+                                <button type="button" class="btn btn-secondary" @onclick="Save">保存</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+                else
+                {
+                    <div class="alert alert-warning" role="alert">
+                        <h4 class="alert-heading">iptables错误</h4>
+                        <p>@iptablesVersion</p>
                     </div>
-                </EditForm>
+                }
             </ChildContent>
         </TabPane>
         <TabPane Key="2">
@@ -32,6 +43,17 @@
                 <h4>允许Ping</h4>
                 <pre>-A INPUT -p icmp -j ACCEPT
 -A OUTPUT -p icmp -j ACCEPT</pre>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="3">
+            <Tab>帮助</Tab>
+            <ChildContent>
+                <h4>清空全部规则，允许任何连接</h4>
+                <label>如果由于配置失误，无法访问弈启动了。可能通过Console口连接或者连接显示器、键盘在服务器上执行下面的指令。</label>
+                <pre>iptables -F #清空默认表 (filter) 的所有规则
+iptables -P INPUT ACCEPT #设置INPUT链默认接受
+iptables -P FORWARD ACCEPT #设置FORWARD链默认接受
+iptables -P OUTPUT ACCEPT #设置OUTPUT链默认接受</pre>
             </ChildContent>
         </TabPane>
     </Tabs>

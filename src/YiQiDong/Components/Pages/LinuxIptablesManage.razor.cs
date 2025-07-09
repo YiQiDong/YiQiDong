@@ -13,6 +13,8 @@ public partial class LinuxIptablesManage : ComponentBase
     private ModalLoading modalLoading;
     private string Content;
     private string fullConfigFile;
+    private bool hasIptables = false;
+    private string iptablesVersion;
 
     protected override void OnInitialized()
     {
@@ -26,6 +28,9 @@ public partial class LinuxIptablesManage : ComponentBase
         {
             Content = ExceptionUtils.GetExceptionString(ex);
         }
+        var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -V");
+        hasIptables = ret.ExitCode == 0;
+        iptablesVersion = $"{ret.Output}{ret.Error}".Trim();
     }
 
     public static void CheckAndApplyIptablesRules(bool ignoreWhenFileNotExist = true, Action<string> logHandler = null)
@@ -94,12 +99,11 @@ public partial class LinuxIptablesManage : ComponentBase
             modalLoading.Close();
         }
 
-        var sb = new StringBuilder();
         try
         {
             modalLoading.Show("应用", "正在应用规则...", true);
             await Task.Delay(1000);
-            CheckAndApplyIptablesRules(false, line => sb.AppendLine(line));
+            CheckAndApplyIptablesRules(false);
         }
         catch (Exception ex)
         {
@@ -110,6 +114,6 @@ public partial class LinuxIptablesManage : ComponentBase
         {
             modalLoading.Close();
         }
-        modalAlert.Show("保存成功", sb.ToString());
+        modalAlert.Show("成功", "保存成功!");
     }
 }

@@ -11,7 +11,7 @@ public class OsPlatformManager
         {
             try
             {
-                Components.Pages.LinuxIptablesManage.CheckAndApplyIptablesRules();
+                Components.Pages.LinuxFirewallManage_iptables.CheckAndApplyIptablesRules();
             }
             catch (Exception ex)
             {

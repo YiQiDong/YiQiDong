@@ -18,7 +18,7 @@ namespace YiQiDong.Components.Pages
             if (OperatingSystem.IsLinux())
             {
                 toolList.Add(ToolInfo.Create<NetworkInterfaceManage>("网卡管理", "fa fa-sitemap"));
-                toolList.Add(ToolInfo.Create<LinuxIptablesManage>("iptables管理","fa fa-shield"));
+                toolList.Add(ToolInfo.Create<LinuxFirewallManage_iptables>("防火墙管理[iptables]","fa fa-shield"));
             }
             toolList.AddRange(
             [

@@ -39,8 +39,17 @@ public partial class LinuxFirewallManage_iptables : ComponentBase
         if (ignoreWhenFileNotExist && !isConfigExist)
             return;
 
-        logHandler?.Invoke($"> iptables -F");
-        var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F");
+        //INPUT链默认允许
+        logHandler?.Invoke($"> iptables -P INPUT ACCEPT");
+        var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -P INPUT ACCEPT");
+        logHandler?.Invoke($"ExitCode: {ret.ExitCode}");
+        logHandler?.Invoke($"{ret.Output}{ret.Error}");
+        if (ret.ExitCode != 0)
+            throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+
+        //清空INPUT链
+        logHandler?.Invoke($"> iptables -F INPUT");
+        ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F INPUT");
         logHandler?.Invoke($"ExitCode: {ret.ExitCode}");
         logHandler?.Invoke($"{ret.Output}{ret.Error}");
         if (ret.ExitCode != 0)

@@ -32,28 +32,24 @@
                 <pre># 操作filter表
 *filter
 
-# 启用防火墙，禁止任何连接
+# 禁止任何入站连接
 :INPUT DROP [0:0]
-:OUTPUT DROP [0:0]
 
-# 允许连接TCP：22端口
+# 入站规则：允许TCP 22端口
 -A INPUT -p tcp --dport 22 -j ACCEPT
--A OUTPUT -p tcp --sport 22 -j ACCEPT
 
-# 允许指定IP地址连接TCP：22端口
+# 入站规则：允许指定IP地址连接TCP 22端口
 -A INPUT -s 192.168.31.193 -p tcp --dport 22 -j ACCEPT
--A OUTPUT -d 192.168.31.193 -p tcp --sport 22 -j ACCEPT
 
-# 允许连接UDP：8000端口
+# 入站规则：允许UDP 8000端口
 -A INPUT -p udp --dport 8000 -j ACCEPT
--A OUTPUT -p udp --sport 8000 -j ACCEPT
 
-# 允许Ping
+# 入站规则：允许Ping
 -A INPUT -p icmp -j ACCEPT
--A OUTPUT -p icmp -j ACCEPT
 
 # 提交规则
-COMMIT</pre>
+COMMIT
+# 结束提交规则</pre>
             </ChildContent>
         </TabPane>
         <TabPane Key="3">

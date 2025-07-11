@@ -1,0 +1,55 @@
+﻿<div class="modal-body">
+    <EditForm Model="@this">
+        <DataAnnotationsValidator />
+        @if (isConnected)
+        {
+            <div class="input-group mb-1">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">地址</span>
+                </div>
+                <InputText class="form-control" @bind-Value="address" readonly />
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" @onclick="stop">断开</button>
+                </div>                
+            </div>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">数据</span>
+                </div>
+                <InputText class="form-control" @bind-Value="data" />
+                <div class="input-group-append">
+                    @if (isSending)
+                    {
+                        <button type="button" class="btn btn-secondary" disabled>发送</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="send">发送</button>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="input-group mb-1">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">地址</span>
+                </div>
+                <InputText class="form-control" @bind-Value="address" />
+                <div class="input-group-append">
+                    @if (isConnecting)
+                    {
+                        <button type="button" class="btn btn-secondary" disabled>连接</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="start">连接</button>
+                    }
+                </div>
+            </div>
+        }
+    </EditForm>
+    <LogViewControl @ref="logViewControl">
+
+    </LogViewControl>
+</div>

@@ -11,7 +11,8 @@
             base.OnParametersSet();
             tools = new[]
             {
-                ToolInfo.Create<PingTestControl>("Ping测试","fa fa-bolt")
+                ToolInfo.Create<PingTestControl>("Ping测试","fa fa-bolt"),
+                ToolInfo.Create<TcpTestControl>("TCP测试","fa fa-bolt")
             };
         }
 }

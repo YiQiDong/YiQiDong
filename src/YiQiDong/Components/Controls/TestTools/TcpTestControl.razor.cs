@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Net.Sockets;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Utils;
 
@@ -38,9 +40,12 @@ public partial class TcpTestControl : ComponentBase, IDisposable
             tcpClient = new();
             tcpClient.SendTimeout = 10 * 1000;
             tcpClient.ReceiveTimeout = 30 * 1000;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             await tcpClient.ConnectAsync(host, port);
+            stopwatch.Stop();
             writer = new StreamWriter(tcpClient.GetStream());
-            pushLog($"已连接到[{address}].");
+            pushLog($"已连接到[{address}],用时: {stopwatch.ElapsedMilliseconds}ms");
             beginRead(tcpClient);
             isConnected = true;
         }
@@ -86,6 +91,12 @@ public partial class TcpTestControl : ComponentBase, IDisposable
                 stop();
             }
         });
+    }
+
+    private void onDataKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !isSending)
+            send();
     }
 
     private void send()

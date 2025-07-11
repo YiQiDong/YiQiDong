@@ -5,7 +5,7 @@ using Quick.Blazor.Bootstrap.Utils;
 
 namespace YiQiDong.Components.Controls.TestTools;
 
-public partial class TcpTestControl : ComponentBase
+public partial class TcpTestControl : ComponentBase, IDisposable
 {
     private string address;
     private string data;
@@ -56,8 +56,8 @@ public partial class TcpTestControl : ComponentBase
     {
         writer?.Dispose();
         writer = null;
-        tcpClient.Close();
-        tcpClient.Dispose();
+        tcpClient?.Close();
+        tcpClient?.Dispose();
         isConnected = false;
         InvokeAsync(StateHasChanged);
     }
@@ -113,5 +113,10 @@ public partial class TcpTestControl : ComponentBase
     private void pushLog(string line)
     {
         logViewControl.AddLine($"{DateTime.Now.ToLongTimeString()}: {line}");
+    }
+
+    public void Dispose()
+    {
+        stop();
     }
 }

@@ -6,7 +6,7 @@ using Quick.Blazor.Bootstrap.Utils;
 
 namespace YiQiDong.Components.Controls.TestTools;
 
-public partial class PingTestControl : ComponentBase
+public partial class PingTestControl : ComponentBase,IDisposable
 {
     private string host;
     private bool isTesting = false;
@@ -72,5 +72,10 @@ public partial class PingTestControl : ComponentBase
             pushLog("测试时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
         }
         pushLog("测试结束.");
+    }
+
+    public void Dispose()
+    {
+        stop();
     }
 }

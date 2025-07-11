@@ -38,9 +38,6 @@ public partial class LinuxFirewallManage_iptables : ComponentBase
         var isConfigExist = File.Exists(fullConfigFile);
         if (ignoreWhenFileNotExist && !isConfigExist)
             return;
-        string content = null;
-        if (isConfigExist)
-            content = File.ReadAllText(fullConfigFile);
 
         logHandler?.Invoke($"> iptables -F");
         var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell("iptables -F");
@@ -49,33 +46,14 @@ public partial class LinuxFirewallManage_iptables : ComponentBase
         if (ret.ExitCode != 0)
             throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
 
+        if (!isConfigExist)
+            return;
 
-        var tmpFile = Path.GetTempFileName();
-        try
-        {
-            using (var fs = File.OpenWrite(tmpFile))
-            using (var writer = new StreamWriter(fs))
-            {
-                writer.WriteLine("*filter");
-                if (!string.IsNullOrEmpty(content))
-                    writer.WriteLine(content);
-                writer.WriteLine("COMMIT");
-            }
-            logHandler?.Invoke($"> iptables-restore < \"{tmpFile}\"");
-            ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{tmpFile}\"");
-            logHandler?.Invoke($"ExitCode: {ret.ExitCode}");
-            logHandler?.Invoke($"{ret.Output}{ret.Error}");
-            if (ret.ExitCode != 0)
-                throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
-        }
-        catch
-        {
-            throw;
-        }
-        finally
-        {
-            File.Delete(tmpFile);
-        }
+        ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"iptables-restore < \"{fullConfigFile}\"");
+        logHandler?.Invoke($"ExitCode: {ret.ExitCode}");
+        logHandler?.Invoke($"{ret.Output}{ret.Error}");
+        if (ret.ExitCode != 0)
+            throw new IOException($"退出码:{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
     }
 
     private async Task Save()

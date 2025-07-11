@@ -36,6 +36,7 @@
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.7" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		
 	</ItemGroup>
 
 	<ItemGroup>

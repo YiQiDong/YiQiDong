@@ -1,0 +1,17 @@
+﻿@using YiQiDong.Components.Controls.TestTools
+@using static YiQiDong.Components.Controls.CommonToolsControl
+
+<YiQiDong.Components.Controls.CommonToolsControl Tools="@tools" />
+
+@code{
+        private ToolInfo[] tools;
+
+        protected override void OnParametersSet()
+        {
+            base.OnParametersSet();
+            tools = new[]
+            {
+                ToolInfo.Create<PingTestControl>("Ping测试","fa fa-bolt")
+            };
+        }
+}

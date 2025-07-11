@@ -1,2 +1,19 @@
-﻿<YiQiDong.Components.Controls.CommonToolsControl Tools="@tools">
+﻿@using YiQiDong.Components.Controls
+@using static YiQiDong.Components.Controls.CommonToolsControl
+<YiQiDong.Components.Controls.CommonToolsControl Tools="@tools">
 </YiQiDong.Components.Controls.CommonToolsControl>
+
+@code{
+        private ToolInfo[] tools;
+
+        protected override void OnParametersSet()
+        {
+            base.OnParametersSet();
+            tools = new[]
+            {
+                ToolInfo.Create<GlashServerControl>("Glash服务端","fa fa-server"),
+                ToolInfo.Create<GlashAgentControl>("Glash代理端","fa fa-black-tie"),
+                ToolInfo.Create<Glash.Blazor.Client.Main>("Glash客户端","fa fa-coffee")
+            };
+        }
+}

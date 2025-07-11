@@ -35,8 +35,9 @@
 # 禁止任何入站连接
 :INPUT DROP [0:0]
 
-# 入站规则：允许TCP 22端口
+# 入站规则：允许TCP 22和80端口
 -A INPUT -p tcp --dport 22 -j ACCEPT
+-A INPUT -p tcp --dport 80 -j ACCEPT
 
 # 入站规则：允许指定IP地址连接TCP 22端口
 -A INPUT -s 192.168.31.193 -p tcp --dport 22 -j ACCEPT
@@ -47,7 +48,7 @@
 # 入站规则：允许Ping
 -A INPUT -p icmp -j ACCEPT
 
-# 提交规则
+# 开始提交规则
 COMMIT
 # 结束提交规则</pre>
             </ChildContent>
@@ -57,9 +58,10 @@ COMMIT
             <ChildContent>
                 <h4>清空全部规则，允许任何连接</h4>
                 <label>如果由于配置失误，无法访问弈启动了。可能通过Console口连接或者连接显示器、键盘执行下面的指令。</label>
-                <pre>iptables -F #清空默认表 (filter) 的所有规则
-iptables -P INPUT ACCEPT #设置INPUT链默认接受
-iptables -P OUTPUT ACCEPT #设置OUTPUT链默认接受</pre>
+                <pre># 清空INPUT链的所有规则
+iptables -F INPUT
+# 设置INPUT链默认接受
+iptables -P INPUT ACCEPT</pre>
             </ChildContent>
         </TabPane>
     </Tabs>

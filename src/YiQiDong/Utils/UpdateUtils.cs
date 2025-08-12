@@ -19,7 +19,7 @@ namespace YiQiDong.Utils
             //检查压缩包中的版本
             var configJsonEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.CONFIG_JSON_FILENAME);
             if (configJsonEntry == null)
-                throw new ApplicationException("选择的文件不是有效的弈启动程序文件！");
+                throw new ApplicationException("选择的文件不是有效的易启动程序文件！");
 
             using (var stream = configJsonEntry.OpenEntryStream())
             using (var reader = new StreamReader(stream))
@@ -30,9 +30,9 @@ namespace YiQiDong.Utils
                 var arch = jObj[nameof(Consts.ARCH)].GetValue<string>();
 
                 if (string.IsNullOrEmpty(version))
-                    throw new ApplicationException("选择的文件中未包含版本信息，不是有效的弈启动程序文件！");
+                    throw new ApplicationException("选择的文件中未包含版本信息，不是有效的易启动程序文件！");
                 if (string.IsNullOrEmpty(arch))
-                    throw new ApplicationException("选择的文件中未包含架构信息，不是有效的弈启动程序文件！");
+                    throw new ApplicationException("选择的文件中未包含架构信息，不是有效的易启动程序文件！");
                 if (!RuntimeUtils.IsMatchRID(arch))
                     throw new ApplicationException($"选择的文件中的架构[{arch}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
                 return new VersionAndArch()

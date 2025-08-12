@@ -25,7 +25,7 @@ namespace _build.Resources
         public void Invoke()
         {
             Console.WriteLine("----------------------------------");
-            Console.WriteLine("  欢迎使用[适用于弈启动的mosquitto项目]编译脚本");
+            Console.WriteLine("  欢迎使用[适用于易启动的mosquitto项目]编译脚本");
             Console.WriteLine("----------------------------------");
 
             var snapcraftClient = new SnapcraftClient();
@@ -128,7 +128,7 @@ namespace _build.Resources
                         }),
                         Encoding.UTF8);
                     var outFile = $"bin/{Id}-{mosquittoVersion}-{rid}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ymg";
-                    Console.WriteLine($"正在制作弈启动镜像[{rid}]...");
+                    Console.WriteLine($"正在制作易启动镜像[{rid}]...");
                     using (var archive = SharpCompress.Archives.Zip.ZipArchive.Create())
                     {
                         archive.AddAllFromDirectory(tmpPublishFolder);

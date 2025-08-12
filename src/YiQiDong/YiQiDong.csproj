@@ -5,8 +5,8 @@
 		<RollForward>Major</RollForward>
 		<ImplicitUsings>true</ImplicitUsings>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AssemblyTitle>弈启动</AssemblyTitle>
-		<Product>弈启动</Product>
+		<AssemblyTitle>易启动</AssemblyTitle>
+		<Product>易启动</Product>
 		<Authors>张鹏</Authors>
 		<Description>跨平台应用程序运行平台</Description>
 		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>

@@ -91,7 +91,7 @@ namespace _build.Resources
                     archive.ExtractToDirectory(tmpPublishFolder);
                 var tmpTomcatFolder = Directory.GetDirectories(tmpPublishFolder).FirstOrDefault();
 
-                Console.WriteLine($"正在打包弈启动运行库文件...");
+                Console.WriteLine($"正在打包易启动运行库文件...");
 
                 var Environments = new YiQiDong.Agent.AgentTypes.TextConfigs.EnvironmentVariableInfo[]
                 {

@@ -14,7 +14,7 @@ namespace YiQiDong.Model;
 internal partial class ConfigModelSerializerContext : JsonSerializerContext { }
 
 /// <summary>
-/// 弈启动配置模型类
+/// 易启动配置模型类
 /// </summary>
 public class ConfigModel
 {

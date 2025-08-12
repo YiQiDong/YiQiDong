@@ -257,7 +257,7 @@ fi";
                 File.WriteAllText(Path.Combine(tmpFolder, "bin", $"start_{Id}.ps1"), start_postgresql_ps1_content, Encoding.UTF8);
                 File.WriteAllText(Path.Combine(tmpFolder, "bin", $"start_{Id}.sh"), start_postgresql_sh_content, Encoding.UTF8);
                 var outFile = $"bin/{Name}-{version}-{rid}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ymg";
-                Console.WriteLine($"正在制作弈启动镜像[{rid}]...");
+                Console.WriteLine($"正在制作易启动镜像[{rid}]...");
                 using (var archive = SharpCompress.Archives.Zip.ZipArchive.Create())
                 {
                     archive.AddAllFromDirectory(tmpFolder);

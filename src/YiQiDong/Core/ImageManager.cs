@@ -140,7 +140,7 @@ namespace YiQiDong.Core
                         //读取镜像文件元信息
                         var imageMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.IMAGE_META_FILE);
                         if (imageMetaEntry == null)
-                            throw new FileNotFoundException("文件中未找到弈启动镜像元信息");
+                            throw new FileNotFoundException("文件中未找到易启动镜像元信息");
                         var imageMetaContent = string.Empty;
                         using (var imageMetaEntryStream = imageMetaEntry.OpenEntryStream())
                         using (var reader = new StreamReader(imageMetaEntryStream))

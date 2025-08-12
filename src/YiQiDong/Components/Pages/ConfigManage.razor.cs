@@ -69,9 +69,9 @@ namespace YiQiDong.Components.Pages
                 passwordManageModel = new PasswordManageModel();
                 if (isNeedRestartService)
                 {
-                    modalAlert.Show("提示", "修改配置成功！检测到有配置修改后需要重新启动弈启动后生效，是否现在重启弈启动服务？", () =>
+                    modalAlert.Show("提示", "修改配置成功！检测到有配置修改后需要重新启动易启动后生效，是否现在重启易启动服务？", () =>
                     {
-                        modalLoading.Show("正在重启弈启动服务", "准备中...", true);
+                        modalLoading.Show("正在重启易启动服务", "准备中...", true);
                         Task.Delay(1000).ContinueWith(async t =>
                         {
                             try
@@ -79,13 +79,13 @@ namespace YiQiDong.Components.Pages
                                 modalLoading.UpdateProgress(null, "正在停止容器与群集...");
                                 Program.StopContainerAndCluster();
 
-                                modalLoading.UpdateContent("重启弈启动服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请访问新设置的URL地址。");
+                                modalLoading.UpdateContent("重启易启动服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请访问新设置的URL地址。");
                                 await Task.Delay(1000);
                                 restartService();
                             }
                             catch (Exception ex)
                             {
-                                modalAlert.Show("重启弈启动服务出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
+                                modalAlert.Show("重启易启动服务出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
                                 modalLoading.Close();
                             }
                         });
@@ -93,20 +93,20 @@ namespace YiQiDong.Components.Pages
                 }
                 else if (isNeedRestartWebService)
                 {
-                    modalAlert.Show("提示", "修改配置成功！需要重新启动弈启动Web服务后生效，是否现在重启弈启动Web服务？", () =>
+                    modalAlert.Show("提示", "修改配置成功！需要重新启动易启动Web服务后生效，是否现在重启易启动Web服务？", () =>
                     {
-                        modalLoading.Show("正在重启弈启动Web服务", "准备中...", true);
+                        modalLoading.Show("正在重启易启动Web服务", "准备中...", true);
                         Task.Delay(1000).ContinueWith(async t =>
                         {
                             try
                             {
-                                modalLoading.UpdateContent("重启弈启动Web服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请刷新页面或者访问新设置的URL地址。");
+                                modalLoading.UpdateContent("重启易启动Web服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请刷新页面或者访问新设置的URL地址。");
                                 await Task.Delay(1000);
                                 await restartWebService();
                             }
                             catch (Exception ex)
                             {
-                                modalAlert.Show("重启弈启动Web服务出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
+                                modalAlert.Show("重启易启动Web服务出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
                                 modalLoading.Close();
                             }
                         });
@@ -154,7 +154,7 @@ namespace YiQiDong.Components.Pages
             if (!string.IsNullOrEmpty(argUpdateFile) && File.Exists(argUpdateFile))
                 dir = Path.GetDirectoryName(argUpdateFile);
 
-            modalWindow.Show("选择弈启动更新文件", new DialogParameters<FileSelectControl>()
+            modalWindow.Show("选择易启动更新文件", new DialogParameters<FileSelectControl>()
             {
                 {x=>x.FileFilter, "*.zip"},
                 {x=> x.SelectAction, t =>
@@ -171,7 +171,7 @@ namespace YiQiDong.Components.Pages
             try
             {
                 var versionAndArch = UpdateUtils.GetVersionAndArchFromUpdateFile(updateFile);
-                modalAlert.Show("更新", $"确定要将弈启动程序由版本[{Consts.Version}]更新到[{versionAndArch.Version}]？", () =>
+                modalAlert.Show("更新", $"确定要将易启动程序由版本[{Consts.Version}]更新到[{versionAndArch.Version}]？", () =>
                 {
                     modalAlert.Close();
                     Task.Run(() => beginUpdate(updateFile, deleteUpdateFile));

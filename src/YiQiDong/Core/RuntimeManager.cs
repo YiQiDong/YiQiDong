@@ -128,7 +128,7 @@ namespace YiQiDong.Core
                         //读取运行库文件元信息
                         var runtimeMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.RUNTIME_META_FILE);
                         if (runtimeMetaEntry == null)
-                            throw new FileNotFoundException("文件中未找到弈启动运行库元信息");
+                            throw new FileNotFoundException("文件中未找到易启动运行库元信息");
                         var runtimeMetaContent = string.Empty;
                         using (var runtimeMetaEntryStream = runtimeMetaEntry.OpenEntryStream())
                         using (var reader = new StreamReader(runtimeMetaEntryStream))

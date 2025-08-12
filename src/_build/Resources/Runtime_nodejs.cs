@@ -107,7 +107,7 @@ namespace _build.Resources
                     foreach (var item in Directory.GetFiles(extraFolder))
                         File.Move(item, Path.Combine(tmpFolder, Path.GetFileName(item)));
                     Directory.Delete(extraFolder);
-                    Console.WriteLine($"正在打包弈启动运行库文件...");
+                    Console.WriteLine($"正在打包易启动运行库文件...");
                     //生成元信息文件
                     var metaObj = new YiQiDong.Core.Protocol.V1.Model.RuntimeInfo()
                     {

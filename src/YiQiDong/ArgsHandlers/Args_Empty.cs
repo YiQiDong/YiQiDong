@@ -27,7 +27,7 @@ namespace YiQiDong.ArgsHandlers
         {
             while (true)
             {
-                Console.WriteLine("-------欢迎使用弈启动--------");
+                Console.WriteLine("-------欢迎使用易启动--------");
                 Console.WriteLine($"版本：{Consts.Version}");
                 Console.WriteLine($"架构：{Consts.ARCH}");
                 Console.WriteLine("-----------------------------");
@@ -143,7 +143,7 @@ namespace YiQiDong.ArgsHandlers
         [SupportedOSPlatform("windows")]
         private static void Invoke_Shotcut()
         {
-            var lnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "弈启动.lnk");
+            var lnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "易启动.lnk");
             if (File.Exists(lnkFile))
             {
                 ConsoleUtils.ExecuteAction("正在删除旧的桌面快捷方式", () => { File.Delete(lnkFile); });

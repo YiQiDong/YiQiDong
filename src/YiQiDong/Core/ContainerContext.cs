@@ -459,7 +459,7 @@ public class ContainerContext : IDisposable
                 {
                     BaseStream = new Quick.Protocol.Streams.InputOutputStream(process.StandardOutput.BaseStream, process.StandardInput.BaseStream),
                     Password = nameof(YiQiDong),
-                    ServerProgram = "弈启动容器接口管理器",
+                    ServerProgram = "易启动容器接口管理器",
                     InstructionSet = new[] { YiQiDong.Protocol.V1.Instruction.Instance }
                 };
                 options.RegisterCommandExecuterManager(commandExecuterManager);

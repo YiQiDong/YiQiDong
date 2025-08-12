@@ -7,7 +7,7 @@ namespace YiQiDong.Protocol.V1
         public static QpInstruction Instance = new QpInstruction()
         {
             Id = typeof(Instruction).Namespace,
-            Name = "弈启动协议V1",
+            Name = "易启动协议V1",
             CommandInfos = new QpCommandInfo[]
             {
                 QpCommandInfo.Create(new QpCommands.Register.Request()),

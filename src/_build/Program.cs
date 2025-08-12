@@ -18,14 +18,14 @@ var version = "1.1." + DateTime.Now.ToString("yyyy.Mdd");
 var baseFolder = Environment.CurrentDirectory;
 
 Console.WriteLine("----------------------------------");
-Console.WriteLine("  欢迎使用弈启动编译脚本");
+Console.WriteLine("  欢迎使用易启动编译脚本");
 Console.WriteLine("----------------------------------");
 
 Console.WriteLine("请选择编译类型：");
 
 var selectedBuildType = QbSelect.ArrowSelect(new Dictionary<string, string>()
 {
-    ["YiQiDong"] = "弈启动",
+    ["YiQiDong"] = "易启动",
     ["Images"] = "常用镜像",
     ["Runtimes"] = "常用运行库"
 }.ToArray()
@@ -38,7 +38,7 @@ Console.WriteLine("正在删除Release目录...");
 //先删除Release目录
 QbFolder.DeleteFolders("src", "Release", SearchOption.AllDirectories);
 
-//如果是制作弈启动程序包
+//如果是制作易启动程序包
 if (selectedBuildType == "YiQiDong")
 {
     Console.WriteLine("请选择编译架构(一个都不勾选代表全选)：");

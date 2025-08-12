@@ -138,7 +138,7 @@ namespace YiQiDong.ArgsHandlers
             var executeFileName = Process.GetCurrentProcess().MainModule.FileName;
             if (OperatingSystem.IsWindows())
             {
-                var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "create", Consts.SERVICE_NAME_WIN32, "binPath=", $"{executeFileName} -service", "start=", "delayed-auto", "DisplayName=", "弈启动");
+                var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "create", Consts.SERVICE_NAME_WIN32, "binPath=", $"{executeFileName} -service", "start=", "delayed-auto", "DisplayName=", "易启动");
                 ConsoleUtils.ExecuteProcessStartInfo("正在安装服务", psi, true);
             }
             else if (OperatingSystem.IsMacOS())
@@ -257,7 +257,7 @@ namespace YiQiDong.ArgsHandlers
                 ConsoleUtils.ExecuteShell("正在删除服务", $"rm {GetSystemdSystemFolder()}/{serviceFile}");
                 ConsoleUtils.ExecuteShell("正在重新加载服务列表...", $"systemctl {GetSystemdAddonParameter()} daemon-reload");
                 if (UnixUtils.IsRuningWithRoot())
-                    ConsoleUtils.ExecuteShell("正在检查《弈启动》服务是否删除完成", $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
+                    ConsoleUtils.ExecuteShell("正在检查《易启动》服务是否删除完成", $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
             }
             Console.WriteLine("-----------------------------");
             Console.WriteLine("卸载完成");

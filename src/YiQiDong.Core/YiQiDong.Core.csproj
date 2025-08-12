@@ -3,9 +3,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>true</ImplicitUsings>
 		<PackageIcon>logo.png</PackageIcon>
-		<PackageTags>弈启动;YiQiDong</PackageTags>
-		<Description>弈启动核心库</Description>
-		<Product>弈启动</Product>
+		<PackageTags>易启动;YiQiDong</PackageTags>
+		<Description>易启动核心库</Description>
+		<Product>易启动</Product>
 		<Version>2.5.2</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsAotCompatible>true</IsAotCompatible>

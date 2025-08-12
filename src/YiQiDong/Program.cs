@@ -47,7 +47,7 @@ namespace YiQiDong
             try
             {
                 Console.WriteLine($@"---------------------
-  弈启动 [{Consts.Version}]
+  易启动 [{Consts.Version}]
 ---------------------");
                 //设置数据目录
                 var dataDir = Config.DataFolder;

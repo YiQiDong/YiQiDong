@@ -37,7 +37,7 @@ namespace _build.Resources
             string URL_TEMPLATE = "{0}/{1}/consul_{1}_{2}.zip";
 
             Console.WriteLine("----------------------------------");
-            Console.WriteLine("  欢迎使用[适用于弈启动的Consul项目]编译脚本");
+            Console.WriteLine("  欢迎使用[适用于易启动的Consul项目]编译脚本");
             Console.WriteLine("----------------------------------");
 
             HttpClient httpClient = new HttpClient();
@@ -184,7 +184,7 @@ retry_join = [""192.168.1.72""]
                         }),
                         Encoding.UTF8);
                     var outFile = $"bin/{Id}-{consulVersion}-{rid}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ymg";
-                    Console.WriteLine($"正在制作弈启动镜像[{rid}]...");
+                    Console.WriteLine($"正在制作易启动镜像[{rid}]...");
                     using (var archive = SharpCompress.Archives.Zip.ZipArchive.Create())
                     {
                         archive.AddAllFromDirectory(tmpPublishFolder);

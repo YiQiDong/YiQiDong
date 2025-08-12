@@ -185,7 +185,7 @@ ALLOWED_DOMAINS = 127.0.0.1,xxx.xxx.com"
                             }),
                             Encoding.UTF8);
                     var outFile = $"bin/{Name}-{giteaVersion}-{arch}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ymg";
-                    Console.WriteLine($"正在制作弈启动镜像[{arch}]...");
+                    Console.WriteLine($"正在制作易启动镜像[{arch}]...");
 
                     using (var archive = SharpCompress.Archives.Zip.ZipArchive.Create())
                     {

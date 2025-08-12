@@ -131,7 +131,7 @@ namespace YiQiDong.Agent
                 return;
             }
             cts = new CancellationTokenSource();
-            LogInfo("正在连接到弈启动...");
+            LogInfo("正在连接到易启动...");
             var options = new QpStreamClientOptions()
             {
                 BaseStream = new InputOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput()),
@@ -143,7 +143,7 @@ namespace YiQiDong.Agent
             Client = new QpStreamClient(options);
             Client.Disconnected += (sender, e) =>
             {
-                Console.Error.WriteLine("与弈启动南向接口的连接已断开，容器进程正在退出...");
+                Console.Error.WriteLine("与易启动南向接口的连接已断开，容器进程正在退出...");
                 Dispose();
             };
             try
@@ -152,7 +152,7 @@ namespace YiQiDong.Agent
             }
             catch
             {
-                Console.Error.WriteLine("连接到弈启动失败，容器进程正在退出...");
+                Console.Error.WriteLine("连接到易启动失败，容器进程正在退出...");
                 return;
             }
             try
@@ -167,7 +167,7 @@ namespace YiQiDong.Agent
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("向弈启动注册容器失败，原因：" + ExceptionUtils.GetExceptionString(ex));
+                Console.Error.WriteLine("向易启动注册容器失败，原因：" + ExceptionUtils.GetExceptionString(ex));
                 return;
             }
             if (!string.IsNullOrEmpty(Container.LogIgnoreList))

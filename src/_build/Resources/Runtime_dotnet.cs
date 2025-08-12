@@ -115,7 +115,7 @@ namespace _build.Resources
                                 break;
                             }
                     }
-                    Console.WriteLine($"正在打包弈启动运行库文件...");
+                    Console.WriteLine($"正在打包易启动运行库文件...");
                     //生成元信息文件
                     var metaObj = new YiQiDong.Core.Protocol.V1.Model.RuntimeInfo()
                     {

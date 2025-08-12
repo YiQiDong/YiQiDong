@@ -40,7 +40,7 @@ namespace _build.Resources.Core
             });
 
             Console.WriteLine("----------------------------------");
-            Console.WriteLine($"  欢迎使用[适用于弈启动的{imageName}项目]编译脚本");
+            Console.WriteLine($"  欢迎使用[适用于易启动的{imageName}项目]编译脚本");
             Console.WriteLine("----------------------------------");
 
             HttpClient httpClient = new HttpClient();
@@ -126,7 +126,7 @@ namespace _build.Resources.Core
                     beforeZipHandleDelegate?.Invoke(version, rid, tmpPublishFolder);
 
                     var outFile = $"bin/{imageId}-{version}-{rid}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ymg";
-                    Console.WriteLine($"正在制作弈启动镜像[{rid}]...");
+                    Console.WriteLine($"正在制作易启动镜像[{rid}]...");
                     using (var archive = SharpCompress.Archives.Zip.ZipArchive.Create())
                     {
                         archive.AddAllFromDirectory(tmpPublishFolder);
@@ -153,7 +153,7 @@ namespace _build.Resources.Core
         {
 
             Console.WriteLine("----------------------------------");
-            Console.WriteLine($"  欢迎使用[适用于弈启动的{runtimeName}项目]编译脚本");
+            Console.WriteLine($"  欢迎使用[适用于易启动的{runtimeName}项目]编译脚本");
             Console.WriteLine("----------------------------------");
 
             HttpClient httpClient = new HttpClient();
@@ -239,7 +239,7 @@ namespace _build.Resources.Core
                     beforeZipHandleDelegate?.Invoke(version, rid, tmpPublishFolder);
 
                     var outFile = $"bin/{runtimeId}-{version}-{rid}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.yrt";
-                    Console.WriteLine($"正在制作弈启动运行库[{rid}]...");
+                    Console.WriteLine($"正在制作易启动运行库[{rid}]...");
                     using (var archive = SharpCompress.Archives.Zip.ZipArchive.Create())
                     {
                         archive.AddAllFromDirectory(tmpPublishFolder);

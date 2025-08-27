@@ -82,7 +82,7 @@
     @if (Container.IsConnected)
     {
         <div class="btn-toolbar" role="toolbar">
-            @if (Container.ConfigFiles != null)
+            @if (Container.ConfigFiles != null && Container.ConfigFiles.Length > 0)
             {
                 <div class="btn-group ml-2">
                     <button type="button" class="btn btn-sm btn-secondary"

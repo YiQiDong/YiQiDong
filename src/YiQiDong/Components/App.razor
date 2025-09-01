@@ -16,6 +16,18 @@
 
 <body>
     <Routes @rendermode="RenderMode.InteractiveServer" />
+    <script>
+        var exports = exports || {};
+    </script>
+    <script src="detect-browser/index.js"></script>
+    <script>
+        setTimeout(function () {
+            const browser = detect();
+            const el = document.getElementById('loginWindowWarning');
+            if (el != null)
+                el.innerHTML = '<br/>' + '操作系统: ' + browser.os + '<br/>' + '浏览器: ' + browser.name + ' ' + browser.version + '<br/>提示：如果长时间停留在此界面，可能是浏览器版本太低，请更新浏览器到最新版本后再试。';
+        }, 5000);        
+    </script>
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/Quick.Blazor.Bootstrap.Terminal/TerminalControl_Polyfill.js"></script>
     <script src="_content/XtermBlazor/XtermBlazor.min.js"></script>

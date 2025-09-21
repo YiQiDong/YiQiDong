@@ -199,8 +199,11 @@ namespace YiQiDong.Components.Pages
 
         private void btnRestart_Click()
         {
-            modalLoading.Show("重启", "正在重新启动程序...", true);
-            restartService();
+            modalAlert.Show("重启", "确定现在重启程序？", () =>
+            {
+                modalLoading.Show("重启", null, true);
+                restartService();
+            });
         }
 
         private async Task beginUpdate(string updateFile, bool deleteUpdateFile)

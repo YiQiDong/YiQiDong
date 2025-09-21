@@ -64,6 +64,8 @@ namespace YiQiDong.Components.Pages
                 Program.Config.DefaultHtml = configModel.DefaultHtml;
                 Program.Config.AgentInitInterval = configModel.AgentInitInterval;
                 Program.Config.AgentTransportTimeout = configModel.AgentTransportTimeout;
+                Program.Config.StartScript = configModel.StartScript;
+                Program.Config.StopScript = configModel.StopScript;
                 Program.Config.Save();
 
                 passwordManageModel = new PasswordManageModel();

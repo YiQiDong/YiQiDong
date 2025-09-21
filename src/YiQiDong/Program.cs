@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components;
 using Blazored.LocalStorage;
+using Quick.Shell.Utils;
 
 namespace YiQiDong
 {
@@ -72,6 +73,12 @@ namespace YiQiDong
                         Glash.Blazor.Client.Global.Instance.OnModelCreating(modelBuilder);
                     });
                     ConfigDbContext.CacheContext.LoadCache();
+                    if (!string.IsNullOrEmpty(Config.StartScript))
+                    {
+                        Console.WriteLine("正在执行启动脚本...");
+                        var ret = ProcessUtils.ExecuteShell(Config.StartScript);
+                        Console.WriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+                    }
                     Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
                     //异步加载
@@ -109,6 +116,12 @@ namespace YiQiDong
                 }
                 var startWebServiceTask = StartWebService();
                 startWebServiceTask.Wait();
+                if (!string.IsNullOrEmpty(Config.StopScript))
+                {
+                    Console.WriteLine("正在执行停止脚本...");
+                    var ret = ProcessUtils.ExecuteShell(Config.StopScript);
+                    Console.WriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+                }
                 waitForExitTask = new Task(() => Console.WriteLine("[停止完成]"));
                 return waitForExitTask;
             }

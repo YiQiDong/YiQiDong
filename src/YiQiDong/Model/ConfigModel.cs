@@ -52,6 +52,14 @@ public class ConfigModel
     /// 容器传输超时时间
     /// </summary>
     public int AgentTransportTimeout { get; set; } = 60000;
+    /// <summary>
+    /// 启动脚本
+    /// </summary>
+    public string StartScript { get; set; }
+    /// <summary>
+    /// 停止脚本
+    /// </summary>
+    public string StopScript { get; set; }
 
     public static string GetDefaultDataFolder()
     {

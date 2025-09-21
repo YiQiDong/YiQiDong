@@ -197,6 +197,12 @@ namespace YiQiDong.Components.Pages
             btnStartUpdate_Click(argUpdateFile, false);
         }
 
+        private void btnRestart_Click()
+        {
+            modalLoading.Show("重启", "正在重新启动程序...", true);
+            restartService();
+        }
+
         private async Task beginUpdate(string updateFile, bool deleteUpdateFile)
         {
             //在非Windows环境加载Quick.Build.dll文件，防止替换程序文件后，重启服务时出现BadImageFormatException

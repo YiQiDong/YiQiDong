@@ -167,6 +167,16 @@
             </div>
         </ChildContent>
     </TabPane>
+    <TabPane Key="Restart">
+        <Tab>重启</Tab>
+        <ChildContent>
+            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                <div class="card-body">
+                    <button type="button" class="btn btn-secondary" @onclick="btnRestart_Click">开始重启</button>
+                </div>
+            </div>
+        </ChildContent>
+    </TabPane>
 </Tabs>
 
 <ModalWindow @ref="modalWindow" DialogCentered="false" DialogSizeExtraLarge="true" ModalBodyCls="p-0"></ModalWindow>

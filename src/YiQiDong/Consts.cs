@@ -2,8 +2,8 @@
 
 public class Consts
 {
-    public const string Version = "1.1.x.x";
-    public const string ARCH = "any";
+public const string Version = "1.1.2025.921";
+public const string ARCH = "win-x64";
 
     public const string RUNTIMES_FOLDER = "Runtimes";
     public const string RUNTIME_META_FILE = "YiQiDong.Runtime.json";

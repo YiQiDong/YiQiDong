@@ -25,7 +25,7 @@ namespace YiQiDong.Utils
         private static Dictionary<string, string> GetSystemInfo(string command, string sp = ":")
         {
             var ret = ProcessUtils.ExecuteShell(command);
-            return ConsoleUtils.ConsoleOutputParse(ret.Output);
+            return ConsoleUtils.ConsoleOutputParse(ret.Output, sp);
         }
 
         public SystemInfoWatcher()

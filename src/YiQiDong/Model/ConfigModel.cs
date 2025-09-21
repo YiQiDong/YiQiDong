@@ -53,6 +53,10 @@ public class ConfigModel
     /// </summary>
     public int AgentTransportTimeout { get; set; } = 60000;
     /// <summary>
+    /// 环境变量
+    /// </summary>
+    public string EnvironmentVariables { get; set; }
+    /// <summary>
     /// 启动脚本
     /// </summary>
     public string StartScript { get; set; }

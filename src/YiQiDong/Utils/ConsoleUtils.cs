@@ -9,6 +9,22 @@ namespace YiQiDong.Utils;
 
 public class ConsoleUtils
 {
+    public static Dictionary<string, string> ConsoleOutputParse(string output, string sp = ":")
+    {
+        Dictionary<string, string> dict = new();
+        var lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in lines)
+        {
+            var index = line.IndexOf(sp);
+            if (index <= 0)
+                continue;
+            var key = line.Substring(0, index).Trim();
+            var value = line.Substring(index + sp.Length).Trim(' ', '\"');
+            dict[key] = value;
+        }
+        return dict;
+    }
+
     public static void ConsoleWrite(string message, ConsoleColor foregroundColor)
     {
         var preForegroundColor = Console.ForegroundColor;

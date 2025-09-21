@@ -73,6 +73,13 @@ namespace YiQiDong
                         Glash.Blazor.Client.Global.Instance.OnModelCreating(modelBuilder);
                     });
                     ConfigDbContext.CacheContext.LoadCache();
+                    if (!string.IsNullOrEmpty(Config.EnvironmentVariables))
+                    {
+                        Console.WriteLine("正在设置环境变量...");
+                        var dict = ConsoleUtils.ConsoleOutputParse(Config.EnvironmentVariables, "=");
+                        foreach (var item in dict)
+                            Environment.SetEnvironmentVariable(item.Key, item.Value);
+                    }
                     if (!string.IsNullOrEmpty(Config.StartScript))
                     {
                         Console.WriteLine("正在执行启动脚本...");
@@ -103,7 +110,6 @@ namespace YiQiDong
                             Console.WriteLine(StartErrorMessage);
                         }
                     });
-
                     //检查备份目录是否存在，如果不存在，则创建
                     var backupFolder = FolderUtils.GetBackupDir();
                     if (!Directory.Exists(backupFolder))

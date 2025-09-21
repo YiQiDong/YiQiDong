@@ -24,19 +24,8 @@ namespace YiQiDong.Utils
 
         private static Dictionary<string, string> GetSystemInfo(string command, string sp = ":")
         {
-            Dictionary<string, string> dict = new();
             var ret = ProcessUtils.ExecuteShell(command);
-            var lines = ret.Output.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var line in lines)
-            {
-                var index = line.IndexOf(sp);
-                if (index <= 0)
-                    continue;
-                var key = line.Substring(0, index).Trim();
-                var value = line.Substring(index + sp.Length).Trim(' ', '\"');
-                dict[key] = value;
-            }
-            return dict;
+            return ConsoleUtils.ConsoleOutputParse(ret.Output);
         }
 
         public SystemInfoWatcher()

@@ -84,13 +84,21 @@
                             <ValidationMessage For="@(() => configModel.AgentTransportTimeout)" />
                         </div>
                         <div class="form-group">
+                            <label>环境变量</label>
+                            <InputTextArea class="form-control" @bind-Value="configModel.EnvironmentVariables" />
+                            <small class="form-text text-muted">一行一条记录，用等号分隔</small>
+                            <ValidationMessage For="@(() => configModel.EnvironmentVariables)" />
+                        </div>
+                        <div class="form-group">
                             <label>启动脚本</label>
                             <InputTextArea class="form-control" @bind-Value="configModel.StartScript" />
+                            <small class="form-text text-muted">程序启动时执行的脚本</small>
                             <ValidationMessage For="@(() => configModel.StartScript)" />
                         </div>
                         <div class="form-group">
                             <label>停止脚本</label>
                             <InputTextArea class="form-control" @bind-Value="configModel.StopScript" />
+                            <small class="form-text text-muted">程序停止时执行的脚本</small>
                             <ValidationMessage For="@(() => configModel.StopScript)" />
                         </div>
                         <button type="submit" class="btn btn-secondary col-sm-5 col-md-4 col-lg-2">保存</button>

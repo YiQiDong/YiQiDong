@@ -64,6 +64,7 @@ namespace YiQiDong.Components.Pages
                 Program.Config.DefaultHtml = configModel.DefaultHtml;
                 Program.Config.AgentInitInterval = configModel.AgentInitInterval;
                 Program.Config.AgentTransportTimeout = configModel.AgentTransportTimeout;
+                Program.Config.EnvironmentVariables = configModel.EnvironmentVariables;
                 Program.Config.StartScript = configModel.StartScript;
                 Program.Config.StopScript = configModel.StopScript;
                 Program.Config.Save();

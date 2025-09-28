@@ -1,0 +1,88 @@
+﻿@using System.Security.Cryptography
+@using System.Text
+@using YiQiDong.Core.Utils
+<div class="modal-body">
+    <EditForm Model="@this">
+        <DataAnnotationsValidator />
+        <div class="form-row align-items-center">
+            <div class="col-auto">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">数量</div>
+                    </div>
+                    <InputNumber class="form-control" @bind-Value="count" min="1" />
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">格式</div>
+                    </div>
+                    <InputSelect class="form-control" @bind-Value="format">
+                        <option value="N">00000000000000000000000000000000</option>
+                        <option value="D">00000000-0000-0000-0000-000000000000</option>
+                        <option value="B">{00000000-0000-0000-0000-000000000000}</option>
+                        <option value="P">(00000000-0000-0000-0000-000000000000)</option>
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">大写</div>
+                    </div>
+                    <div class="form-control">
+                        <div class="form-group form-check">
+                            <InputCheckbox class="form-check-input" @bind-Value="upcase" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-secondary" @onclick="Generate">生成</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>结果</label>
+            <InputTextArea class="form-control" rows="10" @bind-Value="result" readonly />
+        </div>
+    </EditForm>
+</div>
+
+<ModalLoading @ref="modalLoading"></ModalLoading>
+<ModalAlert @ref="modalAlert"></ModalAlert>
+@code
+{
+    private ModalLoading modalLoading;
+    private ModalAlert modalAlert;
+    private int count = 1;
+    private string format = "D";
+    private bool upcase = false;
+    private string result;
+    private async Task Generate()
+    {
+        try
+        {
+            result = null;
+            modalLoading.Show("生成中", $"正在生成{count}项GUID...", true);
+            await Task.Run(() =>
+            {
+                var sb = new StringBuilder();
+                for (var i = 0; i < count; i++)
+                {
+                    var newGuid = Guid.NewGuid().ToString(format);
+                    if (upcase)
+                        newGuid = newGuid.ToUpper();
+                    sb.AppendLine(newGuid);
+                }
+                result = sb.ToString();
+                InvokeAsync(StateHasChanged);
+                modalLoading.Close();
+            });
+        }
+        catch (Exception ex)
+        {
+            modalAlert.Show("错误", ExceptionUtils.GetExceptionMessage(ex));
+        }
+    }
+}

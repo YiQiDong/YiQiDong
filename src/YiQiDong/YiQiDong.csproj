@@ -12,8 +12,6 @@
 		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>partial</TrimMode>
-		<PublishSingleFile>true</PublishSingleFile>
-		<SelfContained>true</SelfContained>
 		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>		
 	</PropertyGroup>
 

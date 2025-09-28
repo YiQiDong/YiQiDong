@@ -37,6 +37,7 @@ namespace YiQiDong.Components.Pages
                 }),
                 ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理下载","fa fa-cloud-download"),
                 ToolInfo.Create<CommonTools_TestTools>("测试工具集", "fa fa-bolt"),
+                ToolInfo.Create<CommonTools_DevTools>("开发工具集", "fa fa-bolt")
             ]);
             if (Program.IsStartSuccess)
             {

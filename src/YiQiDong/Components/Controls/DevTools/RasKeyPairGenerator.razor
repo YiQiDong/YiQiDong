@@ -1,0 +1,56 @@
+﻿@using System.Security.Cryptography
+@using YiQiDong.Core.Utils
+<div class="modal-body">
+    <EditForm Model="@this">
+        <DataAnnotationsValidator />
+        <div class="input-group mb-1">
+            <div class="input-group-prepend">
+                <span class="input-group-text">密钥长度</span>
+            </div>
+            <InputNumber class="form-control" @bind-Value="keySize" min="512" step="512" />
+            <div class="input-group-append">
+                <button type="button" class="btn btn-secondary" @onclick="Generate">生成</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>公钥</label>
+            <InputTextArea class="form-control" rows="5" @bind-Value="publicKey" readonly />
+        </div>
+        <div class="form-group">
+            <label>私钥</label>
+            <InputTextArea class="form-control" rows="10" @bind-Value="privateKey" readonly />
+        </div>
+    </EditForm>
+</div>
+
+<ModalLoading @ref="modalLoading"></ModalLoading>
+<ModalAlert @ref="modalAlert"></ModalAlert>
+@code
+{
+    private ModalLoading modalLoading;
+    private ModalAlert modalAlert;
+    private int keySize = 1024;
+    private string publicKey;
+    private string privateKey;
+    private async Task Generate()
+    {
+        try
+        {
+            publicKey = null;
+            privateKey = null;
+            modalLoading.Show("生成中", $"正在生成{keySize}位RSA密钥对...", true);
+            await Task.Run(() =>
+            {
+                var rSACryptoServiceProvider = RSA.Create(keySize);
+                publicKey = rSACryptoServiceProvider.ToXmlString(includePrivateParameters: false);
+                privateKey = rSACryptoServiceProvider.ToXmlString(includePrivateParameters: true);
+                InvokeAsync(StateHasChanged);
+                modalLoading.Close();
+            });
+        }
+        catch (Exception ex)
+        {
+            modalAlert.Show("错误", ExceptionUtils.GetExceptionMessage(ex));
+        }
+    }
+}

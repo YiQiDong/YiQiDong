@@ -31,8 +31,8 @@
 		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="4.4.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="4.4.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="4.4.5" />
-		<PackageReference Include="Quick.Protocol.AllClients" Version="2.6.0" />
-		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.0" />
+		<PackageReference Include="Quick.Protocol.AllClients" Version="2.6.1" />
+		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.1" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.9" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />

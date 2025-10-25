@@ -21,19 +21,19 @@
 		<PackageReference Include="Glash.Blazor.Agent" Version="1.5.13" />
 		<PackageReference Include="Glash.Blazor.Server" Version="1.5.13" />
 		<PackageReference Include="Glash.Blazor.Client" Version="1.5.13" />
-		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.205">
+		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.228">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="NLog" Version="6.0.4" />
+		<PackageReference Include="NLog" Version="6.0.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="4.4.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="4.4.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="4.4.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="4.4.5" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="4.4.5" />
-		<PackageReference Include="Quick.Protocol.AllClients" Version="2.6.3" />
-		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.3" />
-		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.9" />
+		<PackageReference Include="Quick.Protocol.AllClients" Version="2.6.4" />
+		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.4" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.10" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		

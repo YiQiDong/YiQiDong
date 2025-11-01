@@ -11,5 +11,4 @@ public class Response : AbstractQpSerializer<Response>
     /// Session编号
     /// </summary>
     public string SessionId { get; set; }
-    public FieldForGet[] Items { get; set; }
 }

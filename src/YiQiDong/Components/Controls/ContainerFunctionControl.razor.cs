@@ -1,19 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
 using Quick.Fields;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Controls;
 
-public partial class ContainerFunctionControl
+public partial class ContainerFunctionControl : IDisposable
 {
     [Parameter]
     public ContainerContext Container { get; set; }
@@ -23,11 +18,22 @@ public partial class ContainerFunctionControl
     private bool isExecuting = false;
     private ModalLoading modalLoading;
     private Quick.Blazor.Bootstrap.QuickFields.Controls controls;
+    private string functionSessionId;
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
+        {
+            if (Function.HasSession)
+            {
+                functionSessionId = Container.OpenFunctionSession(Function);
+                Container.AddFunctionSessionChangedNoticeHandler(functionSessionId, t =>
+                {
+                    controls.SetFields(t.Items);
+                });
+            }
             executeFunction();
+        }
     }
 
     private void executeFunction(FieldForGet field = null, FieldForGet[] fieldForGetArray = null)
@@ -96,5 +102,14 @@ public partial class ContainerFunctionControl
     private void OnFieldChanged(FieldForGet field, FieldForGet[] fields)
     {
         executeFunction(field, fields);
+    }
+
+    public void Dispose()
+    {
+        if (Function.HasSession && !string.IsNullOrEmpty(functionSessionId))
+        {
+            Container.RemoveFunctionSessionChangedNoticeHandler(functionSessionId);
+            Container.CloseFunctionSession(Function, functionSessionId);
+        }
     }
 }

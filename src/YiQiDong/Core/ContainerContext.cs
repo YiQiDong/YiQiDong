@@ -156,6 +156,7 @@ public class ContainerContext : IDisposable
         noticeHandlerManager.Register<ContainerInitedNotice>(handleContainerInitedNotice);
         noticeHandlerManager.Register<ContainerStartedNotice>(handleContainerStartedNotice);
         noticeHandlerManager.Register<ContainerStopedNotice>(handleContainerStopedNotice);
+        noticeHandlerManager.Register<FunctionSessionChangedNotice>(handleFunctionSessionChangedNotice);
         InitLogFactory();
     }
 
@@ -302,6 +303,27 @@ public class ContainerContext : IDisposable
     private void handleContainerStopedNotice(QpChannel channel, ContainerStopedNotice notice)
     {
         addConsoleHistory("[平台]容器停止完成.");
+    }
+
+    private Dictionary<string, Action<FunctionSessionChangedNotice>> functionSessionChangedNoticeHandlerDict = new();
+
+    public void AddFunctionSessionChangedNoticeHandler(string sessionId, Action<FunctionSessionChangedNotice> handler)
+    {
+        lock (functionSessionChangedNoticeHandlerDict)
+            functionSessionChangedNoticeHandlerDict[sessionId] = handler;
+    }
+
+    public void RemoveFunctionSessionChangedNoticeHandler(string sessionId)
+    {
+        lock (functionSessionChangedNoticeHandlerDict)
+            if (functionSessionChangedNoticeHandlerDict.ContainsKey(sessionId))
+                functionSessionChangedNoticeHandlerDict.Remove(sessionId);
+    }
+
+    private void handleFunctionSessionChangedNotice(QpChannel channel, FunctionSessionChangedNotice notice)
+    {
+        if (functionSessionChangedNoticeHandlerDict.TryGetValue(notice.SessionId, out var handler))
+            handler.Invoke(notice);
     }
 
     public void BeginEnable()
@@ -767,6 +789,19 @@ public class ContainerContext : IDisposable
         var ret = ProcessChannel?.SendCommand(
             new YiQiDong.Protocol.V1.QpCommands.GetFunctionList.Request()).Result;
         return ret?.Items;
+    }
+
+    public string OpenFunctionSession(FunctionInfo function)
+    {
+        var ret = ProcessChannel?.SendCommand(
+            new YiQiDong.Protocol.V1.QpCommands.OpenFunctionSession.Request() { FunctionId = function.Id }, function.ExecuteTimeout).Result;
+        return ret?.SessionId;
+    }
+
+    public void CloseFunctionSession(FunctionInfo function, string sessionId)
+    {
+        _ = ProcessChannel?.SendCommand(
+            new YiQiDong.Protocol.V1.QpCommands.CloseFunctionSession.Request() { SessionId = sessionId }, function.ExecuteTimeout).Result;
     }
 
     public FieldForGet[] ExecuteFunction(FunctionInfo function, string[] fieldIds = null, FieldForPost[] fields = null)

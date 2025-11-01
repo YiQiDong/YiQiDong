@@ -29,7 +29,7 @@ namespace YiQiDong.Protocol.V1
                 QpNoticeInfo.Create(new QpNotices.ContainerInitedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerStartedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerStopedNotice()),
-                QpNoticeInfo.Create(new QpNotices.FunctionSessionChangeNotice())
+                QpNoticeInfo.Create(new QpNotices.FunctionSessionChangedNotice())
             }
         };
     }

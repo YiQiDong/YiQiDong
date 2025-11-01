@@ -1,5 +1,4 @@
 ﻿using Quick.Fields;
-using System;
 using YiQiDong.Core.Protocol.V1.Model;
 using YiQiDong.Protocol.V1.Model;
 
@@ -42,5 +41,16 @@ namespace YiQiDong.Core
         /// 停止进程
         /// </summary>
         void Stop();
+        /// <summary>
+        /// 打开功能Session
+        /// </summary>
+        /// <param name="functionId">功能编号</param>
+        /// <returns></returns>
+        string OpenFunctionSession(Quick.Protocol.QpChannel channel, string functionId);
+        /// <summary>
+        /// 关闭功能Session
+        /// </summary>
+        /// <param name="sessionId"></param>
+        void CloseFunctionSession(string sessionId);
     }
 }

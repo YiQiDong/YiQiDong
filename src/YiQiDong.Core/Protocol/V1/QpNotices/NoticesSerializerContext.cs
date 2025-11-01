@@ -7,5 +7,6 @@ namespace YiQiDong.Protocol.V1.QpNotices;
 [JsonSerializable(typeof(ContainerStartedNotice))]
 [JsonSerializable(typeof(ContainerStopedNotice))]
 [JsonSerializable(typeof(FunctionListChangedNotice))]
+[JsonSerializable(typeof(FunctionSessionChangeNotice))]
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 internal partial class NoticesSerializerContext : JsonSerializerContext { }

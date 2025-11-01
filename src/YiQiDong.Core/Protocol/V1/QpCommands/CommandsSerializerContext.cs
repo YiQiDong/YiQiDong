@@ -47,3 +47,13 @@ internal partial class StopCommandSerializerContext : JsonSerializerContext { }
 [JsonSerializable(typeof(Using.Response))]
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 internal partial class UsingCommandSerializerContext : JsonSerializerContext { }
+
+[JsonSerializable(typeof(OpenFunctionSession.Request))]
+[JsonSerializable(typeof(OpenFunctionSession.Response))]
+[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+internal partial class OpenFunctionSessionSerializerContext : JsonSerializerContext { }
+
+[JsonSerializable(typeof(CloseFunctionSession.Request))]
+[JsonSerializable(typeof(CloseFunctionSession.Response))]
+[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+internal partial class CloseFunctionSessionSerializerContext : JsonSerializerContext { }

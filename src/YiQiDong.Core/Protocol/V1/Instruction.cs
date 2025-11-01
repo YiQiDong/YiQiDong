@@ -18,7 +18,9 @@ namespace YiQiDong.Protocol.V1
                 QpCommandInfo.Create(new QpCommands.Start.Request()),
                 QpCommandInfo.Create(new QpCommands.Stop.Request()),
                 QpCommandInfo.Create(new QpCommands.AddReverseProxyRule.Request()),
-                QpCommandInfo.Create(new QpCommands.Exit.Request())
+                QpCommandInfo.Create(new QpCommands.Exit.Request()),
+                QpCommandInfo.Create(new QpCommands.OpenFunctionSession.Request()),
+                QpCommandInfo.Create(new QpCommands.CloseFunctionSession.Request())
             },
             NoticeInfos = new QpNoticeInfo[]
             {
@@ -26,7 +28,8 @@ namespace YiQiDong.Protocol.V1
                 QpNoticeInfo.Create(new QpNotices.FunctionListChangedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerInitedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerStartedNotice()),
-                QpNoticeInfo.Create(new QpNotices.ContainerStopedNotice())
+                QpNoticeInfo.Create(new QpNotices.ContainerStopedNotice()),
+                QpNoticeInfo.Create(new QpNotices.FunctionSessionChangeNotice())
             }
         };
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace YiQiDong.Protocol.V1.Model
+﻿namespace YiQiDong.Protocol.V1.Model
 {
     /// <summary>
     /// 功能信息
@@ -17,6 +13,10 @@ namespace YiQiDong.Protocol.V1.Model
         /// 名称
         /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 是否拥有Session
+        /// </summary>
+        public bool HasSession { get; set; } = false;
         /// <summary>
         /// 执行超时时间(单位：毫秒)
         /// </summary>

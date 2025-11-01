@@ -1,7 +1,4 @@
-﻿using Quick.Fields;
-using Quick.Protocol;
-using System;
-using System.Collections.Generic;
+﻿using Quick.Protocol;
 using System.ComponentModel;
 using System.Text.Json.Serialization.Metadata;
 using YiQiDong.Protocol.V1.Model;

@@ -8,5 +8,9 @@ namespace YiQiDong.Protocol.V1.Model
         /// 功能编号
         /// </summary>
         public string FunctionId { get; set; }
+        /// <summary>
+        /// Session编号
+        /// </summary>
+        public string SessionId { get; set; }
     }
 }

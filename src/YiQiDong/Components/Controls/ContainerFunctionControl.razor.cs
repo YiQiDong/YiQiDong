@@ -26,13 +26,19 @@ public partial class ContainerFunctionControl : IDisposable
         {
             if (Function.HasSession)
             {
-                functionSessionId = Container.OpenFunctionSession(Function);
-                Container.AddFunctionSessionChangedNoticeHandler(functionSessionId, t =>
+                Task.Run(() =>
                 {
-                    controls.SetFields(t.Items);
+                    functionSessionId = Container.OpenFunctionSession(Function);
+                    Container.AddFunctionSessionChangedNoticeHandler(functionSessionId, t =>
+                        {
+                            controls.SetFields(t.Items);
+                        });
                 });
             }
-            executeFunction();
+            else
+            {
+                executeFunction();
+            }
         }
     }
 
@@ -108,8 +114,11 @@ public partial class ContainerFunctionControl : IDisposable
     {
         if (Function.HasSession && !string.IsNullOrEmpty(functionSessionId))
         {
-            Container.RemoveFunctionSessionChangedNoticeHandler(functionSessionId);
-            Container.CloseFunctionSession(Function, functionSessionId);
+            Task.Run(() =>
+            {
+                Container.RemoveFunctionSessionChangedNoticeHandler(functionSessionId);
+                Container.CloseFunctionSession(Function, functionSessionId);
+            });
         }
     }
 }

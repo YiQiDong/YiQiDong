@@ -1,11 +1,19 @@
 ﻿using _build;
 using Quick.Build;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using YiQiDong;
+using YiQiDong.Protocol.V1.Model;
 
 var appFolder = QbFolder.GetAppFolder();
 if (appFolder == Environment.CurrentDirectory)
@@ -26,6 +34,7 @@ Console.WriteLine("请选择编译类型：");
 var selectedBuildType = QbSelect.ArrowSelect(new Dictionary<string, string>()
 {
     ["YiQiDong"] = "易启动",
+    ["YiQiDong.TestImage"] = "易启动测试镜像",
     ["Images"] = "常用镜像",
     ["Runtimes"] = "常用运行库"
 }.ToArray()
@@ -96,6 +105,45 @@ if (selectedBuildType == "YiQiDong")
         QbFile.WriteLine(ConstsFile, ConstsVersionLine, preVersionLine);
         QbFile.WriteLine(ConstsFile, ConstsArchLine, preArchLine);
     }
+}
+else if(selectedBuildType =="YiQiDong.TestImage")
+{
+    var productName = "易启动测试镜像";
+    var outFolder = "bin";
+    var productDir = selectedBuildType;
+    var publishFolder = $"src/{productDir}/bin/Release/publish";
+    var outFile = Path.Combine(outFolder, $"{productName}-{version}.ymg");
+
+    //再删除ymg文件
+    QbFile.Delete(outFile);
+
+    Console.WriteLine("正在发布项目...");
+    QbCommand.Run("dotnet", $"publish src/{productDir} -c Release");
+    //生成元信息文件                
+    var metaObj = new ImageInfo()
+    {
+        DefaultId = selectedBuildType,
+        Name = productName,
+        Version = version,
+        BuildTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+        Description = $"{productName} 是一个测试用的镜像。",
+        Platform = new[] { "any" },
+        Runtime = new[] { $"dotnet-8.0" },
+        AgentStartup = $"{selectedBuildType}.dll"
+    };
+    var metaFile = Path.Combine(publishFolder, IResource.IMAGE_META_FILE);
+    File.WriteAllText(metaFile, JsonSerializer.Serialize(metaObj, new JsonSerializerOptions()
+    {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    }), Encoding.UTF8);
+    Console.WriteLine("正在制作易启动镜像...");
+    using (var archive = ZipArchive.Create())
+    {
+        archive.AddAllFromDirectory(publishFolder);
+        archive.SaveTo(outFile, CompressionType.LZMA);
+    }
+    Console.WriteLine("完成");
 }
 else if (selectedBuildType == "Images")
 {

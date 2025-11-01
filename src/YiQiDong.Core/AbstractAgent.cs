@@ -129,8 +129,8 @@ public abstract class AbstractAgent : IAgent
     public string OpenFunctionSession(Quick.Protocol.QpChannel channel, string functionId)
     {
         var function = GetSessionFunction(functionId);
-        var functionInstance = function.Create(channel);
         var sessionId = Guid.NewGuid().ToString("N");
+        var functionInstance = function.Create(sessionId, channel);
 
         lock (sessionFunctionDict)
             sessionFunctionDict[sessionId] = functionInstance;

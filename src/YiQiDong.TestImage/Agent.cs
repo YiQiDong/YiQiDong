@@ -10,7 +10,8 @@ public class Agent : AbstractAgent
         if (AgentContext.IsContainerRuning)
         {
             AddFunction(new Functions.TestFunction());
-            AddFunction(new Functions.TestSessionFunction());
+            AddFunction(new Functions.AutoRefreshTimeFunction());
+            AddFunction(new Functions.TaskExecuteFunction());
         }
     }
 }

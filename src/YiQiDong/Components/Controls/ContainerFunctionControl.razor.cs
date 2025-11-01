@@ -59,7 +59,7 @@ public partial class ContainerFunctionControl : IDisposable
         {
             try
             {
-                var ret = Container.ExecuteFunction(Function, field?.GetFullFieldIds(), fields);
+                var ret = Container.ExecuteFunction(Function, field?.GetFullFieldIds(), fields, functionSessionId);
                 controls.SetFields(ret);
             }
             catch (Exception ex)

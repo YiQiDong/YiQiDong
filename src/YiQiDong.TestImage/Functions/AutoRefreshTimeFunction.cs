@@ -1,23 +1,21 @@
 using System;
 using Quick.Fields;
 using Quick.Protocol;
-using YiQiDong.Agent;
 using YiQiDong.Core;
 
 namespace YiQiDong.TestImage.Functions;
 
-public class TestSessionFunction : AbstractSessionFunction
+public class AutoRefreshTimeFunction : AbstractSessionFunction
 {
-    public override string Name => "测试Session功能";
-    public TestSessionFunction() { }
-    public TestSessionFunction(string sessionId, QpChannel channel) : base(sessionId, channel) { }
-    public override AbstractSessionFunction Create(string sessionId,QpChannel channel) => new TestSessionFunction(sessionId,channel);
+    public override string Name => "自动刷新时间功能";
+    public AutoRefreshTimeFunction() { }
+    public AutoRefreshTimeFunction(string sessionId, QpChannel channel) : base(sessionId, channel) { }
+    public override AbstractSessionFunction Create(string sessionId,QpChannel channel) => new AutoRefreshTimeFunction(sessionId,channel);
 
     private CancellationTokenSource cts;
 
     public override void Start()
     {
-        AgentContext.LogInfo($"Session[{SessionId}]已启动");
         cts = new();
         _ = beginShowTime(cts.Token);
     }
@@ -36,12 +34,6 @@ public class TestSessionFunction : AbstractSessionFunction
                     Type = FieldType.InputText,
                     Input_ReadOnly = true,
                     Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                },
-                new ()
-                {
-                    Id="btnRefresh",
-                    Name = "刷新",
-                    Type = FieldType.Button
                 }
             ]);
             await Task.Delay(1000, cancellationToken);
@@ -51,6 +43,5 @@ public class TestSessionFunction : AbstractSessionFunction
     public override void Stop()
     {
         cts.Cancel();
-        AgentContext.LogInfo($"Session[{SessionId}]已停止");
     }
 }

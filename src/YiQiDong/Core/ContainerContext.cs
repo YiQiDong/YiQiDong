@@ -804,13 +804,14 @@ public class ContainerContext : IDisposable
             new YiQiDong.Protocol.V1.QpCommands.CloseFunctionSession.Request() { SessionId = sessionId }, function.ExecuteTimeout).Result;
     }
 
-    public FieldForGet[] ExecuteFunction(FunctionInfo function, string[] fieldIds = null, FieldForPost[] fields = null)
+    public FieldForGet[] ExecuteFunction(FunctionInfo function, string[] fieldIds = null, FieldForPost[] fields = null, string sessionId = null)
     {
         var request = new FunctionRequest()
         {
             FunctionId = function.Id,
             FieldIds = fieldIds,
-            Fields = fields
+            Fields = fields,
+            SessionId = sessionId
         };
         var ret = ProcessChannel?.SendCommand(
             new YiQiDong.Protocol.V1.QpCommands.ExecuteFunction.Request() { Data = request }, function.ExecuteTimeout).Result;

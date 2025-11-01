@@ -1,5 +1,7 @@
 using Quick.Fields;
 using Quick.Protocol;
+using YiQiDong.Agent;
+using YiQiDong.Core.Utils;
 
 namespace YiQiDong.Core;
 
@@ -11,7 +13,7 @@ public abstract class AbstractSessionFunction : AbstractFunction
     public abstract AbstractSessionFunction Create(string sessionId, QpChannel channel);
     public abstract void Start();
     public abstract void Stop();
-    
+
     public AbstractSessionFunction() { }
     public AbstractSessionFunction(string sessionId, QpChannel channel)
     {

@@ -65,9 +65,11 @@ namespace YiQiDong.Components.Controls
                         var fileSize = fs.Length;
                         using (var reader = new StreamReader(fs, true))
                         {
-                            while (!cts.IsCancellationRequested && !reader.EndOfStream)
+                            while (!cts.IsCancellationRequested)
                             {
                                 var line = await reader.ReadLineAsync();
+                                if (line == null)
+                                    break;
                                 var position = fs.Position;
                                 modalLoading.UpdateProgress(Convert.ToInt32(position * 100 / fileSize), $"读取中[{position}/{fileSize}]...");
                                 lineList.Add(line);

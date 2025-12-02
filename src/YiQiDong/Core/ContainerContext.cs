@@ -66,7 +66,7 @@ public class ContainerContext : IDisposable
     private YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
     {
         channel.Disconnected += Channel_Disconnected;
-        addConsoleHistory($"[平台]容器连接成功.");
+        pushLog(LogLevel.Info, $"[平台]容器连接成功.");
         //如果需要手动触发容器初始化完成通知，则延迟1秒后触发
         if (ContainerInfo.ManualRaiseContainerInitedNotice)
         {
@@ -227,7 +227,7 @@ public class ContainerContext : IDisposable
     private void handleContainerInitedNotice(QpChannel channel, ContainerInitedNotice notice)
     {
         Process?.Refresh();
-        addConsoleHistory($"[平台]容器启用完成.");
+        pushLog(LogLevel.Info, $"[平台]容器启用完成.");
         Task.Run(async () =>
         {
             //获取容器配置文件
@@ -249,12 +249,12 @@ public class ContainerContext : IDisposable
                 startCrontabSchedule = NCrontab.CrontabSchedule.TryParse(ContainerInfo.StartCron);
                 if (startCrontabSchedule == null)
                 {
-                    addConsoleHistory($"[平台]设置的定时启动表示式[{ContainerInfo.StartCron}]无效！");
+                    pushLog(LogLevel.Info, $"[平台]设置的定时启动表示式[{ContainerInfo.StartCron}]无效！");
                 }
                 else
                 {
                     startCronNextExecuteTime = startCrontabSchedule.GetNextOccurrence(DateTime.Now);
-                    addConsoleHistory($"[平台]容器已设置定时启动表示式[{ContainerInfo.StartCron}]，下次执行时间：{startCronNextExecuteTime}");
+                    pushLog(LogLevel.Info, $"[平台]容器已设置定时启动表示式[{ContainerInfo.StartCron}]，下次执行时间：{startCronNextExecuteTime}");
                 }
             }
             if (!string.IsNullOrEmpty(ContainerInfo.StopCron))
@@ -262,12 +262,12 @@ public class ContainerContext : IDisposable
                 stopCrontabSchedule = NCrontab.CrontabSchedule.TryParse(ContainerInfo.StopCron);
                 if (stopCrontabSchedule == null)
                 {
-                    addConsoleHistory($"[平台]设置的定时停止表示式[{ContainerInfo.StopCron}]无效！");
+                    pushLog(LogLevel.Info, $"[平台]设置的定时停止表示式[{ContainerInfo.StopCron}]无效！");
                 }
                 else
                 {
                     stopCronNextExecuteTime = stopCrontabSchedule.GetNextOccurrence(DateTime.Now);
-                    addConsoleHistory($"[平台]容器已设置定时停止表示式[{ContainerInfo.StopCron}]，下次执行时间：{stopCronNextExecuteTime}");
+                    pushLog(LogLevel.Info, $"[平台]容器已设置定时停止表示式[{ContainerInfo.StopCron}]，下次执行时间：{stopCronNextExecuteTime}");
                 }
             }
             if (!string.IsNullOrEmpty(ContainerInfo.RestartCron))
@@ -275,12 +275,12 @@ public class ContainerContext : IDisposable
                 restartCrontabSchedule = NCrontab.CrontabSchedule.TryParse(ContainerInfo.RestartCron);
                 if (restartCrontabSchedule == null)
                 {
-                    addConsoleHistory($"[平台]设置的定时重启表示式[{ContainerInfo.RestartCron}]无效！");
+                    pushLog(LogLevel.Info, $"[平台]设置的定时重启表示式[{ContainerInfo.RestartCron}]无效！");
                 }
                 else
                 {
                     restartCronNextExecuteTime = restartCrontabSchedule.GetNextOccurrence(DateTime.Now);
-                    addConsoleHistory($"[平台]容器已设置定时重启表示式[{ContainerInfo.RestartCron}]，下次执行时间：{restartCronNextExecuteTime}");
+                    pushLog(LogLevel.Info, $"[平台]容器已设置定时重启表示式[{ContainerInfo.RestartCron}]，下次执行时间：{restartCronNextExecuteTime}");
                 }
             }
 
@@ -297,12 +297,12 @@ public class ContainerContext : IDisposable
 
     private void handleContainerStartedNotice(QpChannel channel, ContainerStartedNotice notice)
     {
-        addConsoleHistory("[平台]容器启动完成.");
+        pushLog(LogLevel.Info, "[平台]容器启动完成.");
     }
 
     private void handleContainerStopedNotice(QpChannel channel, ContainerStopedNotice notice)
     {
-        addConsoleHistory("[平台]容器停止完成.");
+        pushLog(LogLevel.Info, "[平台]容器停止完成.");
     }
 
     private Dictionary<string, Action<FunctionSessionChangedNotice>> functionSessionChangedNoticeHandlerDict = new();
@@ -336,11 +336,11 @@ public class ContainerContext : IDisposable
 
         if (Process == null)
         {
-            addConsoleHistory("[平台]正在启用容器...");
+            pushLog(LogLevel.Info, "[平台]正在启用容器...");
             var imageInfo = containerInfo.Image;
             if (imageInfo == null)
             {
-                addConsoleHistory($"[错误]容器关联的镜像[{containerInfo.ImageId}]不存在！");
+                pushLog(LogLevel.Error, $"容器关联的镜像[{containerInfo.ImageId}]不存在！");
                 return;
             }
             var imageFolder = ImagePathUtils.GetImageFolder(imageInfo.Id);
@@ -354,7 +354,7 @@ public class ContainerContext : IDisposable
                     var runtimeInfo = RuntimeManager.Instance.Get(runtimeId);
                     if (runtimeInfo == null)
                     {
-                        addConsoleHistory($"[平台][警告]未找到编号为[{runtimeId}]的运行库。");
+                        pushLog(LogLevel.Warn, $"[平台]未找到编号为[{runtimeId}]的运行库。");
                         continue;
                     }
                     runtimeList.Add(runtimeInfo);
@@ -365,7 +365,7 @@ public class ContainerContext : IDisposable
             {
                 if (runtimes == null)
                 {
-                    addConsoleHistory($"[平台][错误]容器未配置镜像要求的运行库[{string.Join(",", imageInfo.Runtime)}]");
+                    pushLog(LogLevel.Error, $"[平台]容器未配置镜像要求的运行库[{string.Join(",", imageInfo.Runtime)}]");
                     return;
                 }
                 foreach (var line in imageInfo.Runtime)
@@ -374,7 +374,7 @@ public class ContainerContext : IDisposable
                     var runtime = runtimes.FirstOrDefault(t => t.Name == nameAndVersion.Name);
                     if (runtime == null)
                     {
-                        addConsoleHistory($"[平台][错误]容器未配置镜像要求的运行库[{line}]");
+                        pushLog(LogLevel.Error, $"[平台]容器未配置镜像要求的运行库[{line}]");
                         return;
                     }
                     var containerRuntimeVersion = Version.Parse(runtime.Version);
@@ -384,7 +384,7 @@ public class ContainerContext : IDisposable
                     var imageRuntimeVersion = Version.Parse(imageRuntimeVersionString);
                     if (containerRuntimeVersion < imageRuntimeVersion)
                     {
-                        addConsoleHistory($"[平台][错误]容器配置运行库[{nameAndVersion.Name}]的版本[{runtime.Version}]小于镜像中要求的运行库版本[{nameAndVersion.Version}]");
+                        pushLog(LogLevel.Error, $"[平台]容器配置运行库[{nameAndVersion.Name}]的版本[{runtime.Version}]小于镜像中要求的运行库版本[{nameAndVersion.Version}]");
                         return;
                     }
                 }
@@ -449,8 +449,8 @@ public class ContainerContext : IDisposable
             }
             try
             {
-                addConsoleHistory("[平台]容器进程文件名：" + psi.FileName);
-                addConsoleHistory("[平台]容器进程参数：" + string.Join(" ", psi.ArgumentList));
+                pushLog(LogLevel.Info, "[平台]容器进程文件名：" + psi.FileName);
+                pushLog(LogLevel.Info, "[平台]容器进程参数：" + string.Join(" ", psi.ArgumentList));
                 //添加镜像目录、容器目录环境变量
                 psi.Environment["IMAGE_DIR"] = imageFolder;
                 psi.Environment["CONTAINER_DIR"] = containerFolder;
@@ -475,7 +475,7 @@ public class ContainerContext : IDisposable
                 process.EnableRaisingEvents = true;
                 process.ErrorDataReceived += Process_ErrorDataReceived;
                 process.BeginErrorReadLine();
-                addConsoleHistory($"[平台]容器进程已创建，进程ID:{process.Id}");
+                pushLog(LogLevel.Info, $"[平台]容器进程已创建，进程ID:{process.Id}");
 
                 var options = new Quick.Protocol.Streams.QpStreamServerOptions()
                 {
@@ -493,7 +493,7 @@ public class ContainerContext : IDisposable
                 {
                     if (process.HasExited)
                     {
-                        addConsoleHistory($"[平台]容器进程已退出，退出码：{process.ExitCode}");
+                        pushLog(LogLevel.Info, $"[平台]容器进程已退出，退出码：{process.ExitCode}");
                         if (ContainerInfo.Enable)
                         {
                             Task.Delay(5000).ContinueWith(t =>
@@ -520,14 +520,14 @@ public class ContainerContext : IDisposable
             }
             catch (Exception ex)
             {
-                addConsoleHistory($"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
+                pushLog(LogLevel.Error, $"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
             }
         }
     }
 
     private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
     {
-        addConsoleHistory($"[错误]" + e.Data);
+        pushLog(LogLevel.Error, e.Data);
     }
 
     private void Process_OnProtocolError(Stream stream, ReadOnlySequence<byte> bytes)
@@ -542,9 +542,9 @@ public class ContainerContext : IDisposable
                 line = encoding.GetString(bytes) + line;
                 isFirstLine = false;
             }
-            addConsoleHistory($"[错误]" + line);
+            pushLog(LogLevel.Error, line);
         }
-        addConsoleHistory($"[平台]容器进程输出数据格式错误，正在退出进程。。。");
+        pushLog(LogLevel.Error, $"[平台]容器进程输出数据格式错误，正在退出进程。。。");
         try
         {
             Process?.Kill(true);
@@ -554,7 +554,7 @@ public class ContainerContext : IDisposable
 
     public void BeginDisable()
     {
-        addConsoleHistory("[平台]正在禁用容器...");
+        pushLog(LogLevel.Info, "[平台]正在禁用容器...");
         ctsCron?.Cancel();
         if (ProcessChannel != null)
         {
@@ -575,7 +575,7 @@ public class ContainerContext : IDisposable
             }
             catch (Exception ex)
             {
-                addConsoleHistory("[平台]向容器发送退出指令出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
+                pushLog(LogLevel.Info, "[平台]向容器发送退出指令出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
             }
             ProcessChannel?.Stop();
             ProcessChannel = null;
@@ -591,17 +591,17 @@ public class ContainerContext : IDisposable
             }
             catch (Exception ex)
             {
-                addConsoleHistory("[平台]禁用结束进程时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
+                pushLog(LogLevel.Info, "[平台]禁用结束进程时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
             }
             Process = null;
             ProcessChannel = null;
         }
-        addConsoleHistory("[平台]容器禁用完成.");
+        pushLog(LogLevel.Info, "[平台]容器禁用完成.");
     }
 
     private void Channel_Disconnected(object sender, EventArgs e)
     {
-        addConsoleHistory($"[平台]到容器的连接已经断开.");
+        pushLog(LogLevel.Info, $"[平台]到容器的连接已经断开.");
         IsConnected = false;
 
         lock (reverseProxyRuleList)
@@ -665,21 +665,21 @@ public class ContainerContext : IDisposable
         var currentTime = DateTime.Now;
         if (startCrontabSchedule != null && currentTime >= startCronNextExecuteTime)
         {
-            addConsoleHistory("[平台]到达设置的自动启动时间，开始启动容器...");
+            pushLog(LogLevel.Info, "[平台]到达设置的自动启动时间，开始启动容器...");
             try { Start(); }
             catch { }
             startCronNextExecuteTime = startCrontabSchedule.GetNextOccurrence(currentTime);
         }
         if (stopCrontabSchedule != null && currentTime >= stopCronNextExecuteTime)
         {
-            addConsoleHistory("[平台]到达设置的自动停止时间，开始停止容器...");
+            pushLog(LogLevel.Info, "[平台]到达设置的自动停止时间，开始停止容器...");
             try { Stop().Wait(); }
             catch { }
             stopCronNextExecuteTime = stopCrontabSchedule.GetNextOccurrence(currentTime);
         }
         if (restartCrontabSchedule != null && currentTime >= restartCronNextExecuteTime)
         {
-            addConsoleHistory("[平台]到达设置的自动重启时间，开始重启容器...");
+            pushLog(LogLevel.Info, "[平台]到达设置的自动重启时间，开始重启容器...");
             try { Restart().Wait(); }
             catch { }
             restartCronNextExecuteTime = restartCrontabSchedule.GetNextOccurrence(currentTime);
@@ -710,9 +710,9 @@ public class ContainerContext : IDisposable
             new YiQiDong.Protocol.V1.QpCommands.Start.Request()).ContinueWith(t =>
         {
             if (t.IsFaulted)
-                addConsoleHistory("[平台]发送启动指令出错，原因：" + ExceptionUtils.GetExceptionString(t.Exception.InnerException));
+                pushLog(LogLevel.Error, "[平台]发送启动指令出错，原因：" + ExceptionUtils.GetExceptionString(t.Exception.InnerException));
             else
-                addConsoleHistory("[平台]发送启动指令成功.");
+                pushLog(LogLevel.Info, "[平台]发送启动指令成功.");
         });
     }
     private void executeScripts(string scripts)
@@ -753,11 +753,11 @@ public class ContainerContext : IDisposable
         {
             await ProcessChannel.SendCommand
                 (new YiQiDong.Protocol.V1.QpCommands.Stop.Request()).ConfigureAwait(false);
-            addConsoleHistory("[平台]发送停止指令成功.");
+            pushLog(LogLevel.Info, "[平台]发送停止指令成功.");
         }
         catch (Exception ex)
         {
-            addConsoleHistory("[平台]发送停止指令出错，原因：" + ExceptionUtils.GetExceptionString(ex));
+            pushLog(LogLevel.Error, "[平台]发送停止指令出错，原因：" + ExceptionUtils.GetExceptionString(ex));
         }
         //如果有停止脚本，则执行
         if (!string.IsNullOrEmpty(ContainerInfo.StopScript))

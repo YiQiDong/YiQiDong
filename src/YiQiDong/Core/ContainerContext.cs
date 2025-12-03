@@ -334,194 +334,171 @@ public class ContainerContext : IDisposable
         if (containerInfo == null)
             return;
 
-        if (Process == null)
+        if (Process != null)
+            return;
+
+        pushLog(LogLevel.Info, "[平台]正在启用容器...");
+        var imageInfo = containerInfo.Image;
+        if (imageInfo == null)
         {
-            pushLog(LogLevel.Info, "[平台]正在启用容器...");
-            var imageInfo = containerInfo.Image;
-            if (imageInfo == null)
+            pushLog(LogLevel.Error, $"容器关联的镜像[{containerInfo.ImageId}]不存在！");
+            return;
+        }
+        var imageFolder = ImagePathUtils.GetImageFolder(imageInfo.Id);
+        var containerFolder = ContainerPathUtils.GetContainerFolder(containerInfo.Id);
+        RuntimeInfo[] runtimes = null;
+        if (ContainerInfo.RuntimeIds != null && ContainerInfo.RuntimeIds.Length > 0)
+        {
+            List<RuntimeInfo> runtimeList = new List<RuntimeInfo>();
+            foreach (var runtimeId in ContainerInfo.RuntimeIds)
             {
-                pushLog(LogLevel.Error, $"容器关联的镜像[{containerInfo.ImageId}]不存在！");
+                var runtimeInfo = RuntimeManager.Instance.Get(runtimeId);
+                if (runtimeInfo == null)
+                {
+                    pushLog(LogLevel.Warn, $"[平台]未找到编号为[{runtimeId}]的运行库。");
+                    continue;
+                }
+                runtimeList.Add(runtimeInfo);
+            }
+            runtimes = runtimeList.ToArray();
+        }
+        if (imageInfo.Runtime != null && imageInfo.Runtime.Length > 0)
+        {
+            if (runtimes == null)
+            {
+                pushLog(LogLevel.Error, $"[平台]容器未配置镜像要求的运行库[{string.Join(",", imageInfo.Runtime)}]");
                 return;
             }
-            var imageFolder = ImagePathUtils.GetImageFolder(imageInfo.Id);
-            var containerFolder = ContainerPathUtils.GetContainerFolder(containerInfo.Id);
-            RuntimeInfo[] runtimes = null;
-            if (ContainerInfo.RuntimeIds != null && ContainerInfo.RuntimeIds.Length > 0)
+            foreach (var line in imageInfo.Runtime)
             {
-                List<RuntimeInfo> runtimeList = new List<RuntimeInfo>();
-                foreach (var runtimeId in ContainerInfo.RuntimeIds)
+                var nameAndVersion = NameAndVersion.Parse(line);
+                var runtime = runtimes.FirstOrDefault(t => t.Name == nameAndVersion.Name);
+                if (runtime == null)
                 {
-                    var runtimeInfo = RuntimeManager.Instance.Get(runtimeId);
-                    if (runtimeInfo == null)
-                    {
-                        pushLog(LogLevel.Warn, $"[平台]未找到编号为[{runtimeId}]的运行库。");
-                        continue;
-                    }
-                    runtimeList.Add(runtimeInfo);
-                }
-                runtimes = runtimeList.ToArray();
-            }
-            if (imageInfo.Runtime != null && imageInfo.Runtime.Length > 0)
-            {
-                if (runtimes == null)
-                {
-                    pushLog(LogLevel.Error, $"[平台]容器未配置镜像要求的运行库[{string.Join(",", imageInfo.Runtime)}]");
+                    pushLog(LogLevel.Error, $"[平台]容器未配置镜像要求的运行库[{line}]");
                     return;
                 }
-                foreach (var line in imageInfo.Runtime)
+                var containerRuntimeVersion = Version.Parse(runtime.Version);
+                var imageRuntimeVersionString = nameAndVersion.Version;
+                if (!imageRuntimeVersionString.Contains("."))
+                    imageRuntimeVersionString += ".0";
+                var imageRuntimeVersion = Version.Parse(imageRuntimeVersionString);
+                if (containerRuntimeVersion < imageRuntimeVersion)
                 {
-                    var nameAndVersion = NameAndVersion.Parse(line);
-                    var runtime = runtimes.FirstOrDefault(t => t.Name == nameAndVersion.Name);
-                    if (runtime == null)
-                    {
-                        pushLog(LogLevel.Error, $"[平台]容器未配置镜像要求的运行库[{line}]");
-                        return;
-                    }
-                    var containerRuntimeVersion = Version.Parse(runtime.Version);
-                    var imageRuntimeVersionString = nameAndVersion.Version;
-                    if (!imageRuntimeVersionString.Contains("."))
-                        imageRuntimeVersionString += ".0";
-                    var imageRuntimeVersion = Version.Parse(imageRuntimeVersionString);
-                    if (containerRuntimeVersion < imageRuntimeVersion)
-                    {
-                        pushLog(LogLevel.Error, $"[平台]容器配置运行库[{nameAndVersion.Name}]的版本[{runtime.Version}]小于镜像中要求的运行库版本[{nameAndVersion.Version}]");
-                        return;
-                    }
+                    pushLog(LogLevel.Error, $"[平台]容器配置运行库[{nameAndVersion.Name}]的版本[{runtime.Version}]小于镜像中要求的运行库版本[{nameAndVersion.Version}]");
+                    return;
                 }
             }
-            ProcessStartInfo psi = null;
-            var processFileName = imageInfo.AgentExecute;
-            if (string.IsNullOrEmpty(processFileName))
-                processFileName = "dotnet";
+        }
+        ProcessStartInfo psi = null;
+        var processFileName = imageInfo.AgentExecute;
+        if (string.IsNullOrEmpty(processFileName))
+            processFileName = "dotnet";
 
-            var tmpFileName = Path.Combine(imageFolder, processFileName);
-            if (File.Exists(tmpFileName))
-            {
-                processFileName = tmpFileName;
-                //如果是在非Windows上运行，则检查添加文件可执行权限
-                if (!OperatingSystem.IsWindows())
-                    Utils.Unix.UnixUtils.AddExecutePermissionToFile(processFileName);
-            }
-            psi = new ProcessStartInfo(processFileName);
-            //如果是最老的镜像
-            if (string.IsNullOrEmpty(containerInfo.Image.AgentStartup) && string.IsNullOrEmpty(containerInfo.Image.AgentExecute))
-            {
-                psi.WorkingDirectory = containerFolder;
+        var tmpFileName = Path.Combine(imageFolder, processFileName);
+        if (File.Exists(tmpFileName))
+        {
+            processFileName = tmpFileName;
+            //如果是在非Windows上运行，则检查添加文件可执行权限
+            if (!OperatingSystem.IsWindows())
+                Utils.Unix.UnixUtils.AddExecutePermissionToFile(processFileName);
+        }
+        psi = new ProcessStartInfo(processFileName);
+        //如果是最老的镜像
+        if (string.IsNullOrEmpty(containerInfo.Image.AgentStartup) && string.IsNullOrEmpty(containerInfo.Image.AgentExecute))
+        {
+            psi.WorkingDirectory = containerFolder;
 #if DEBUG
-                var executeFileAgentDir = Path.GetFullPath(FolderUtils.GetPathUnderProgramDir("../../../YiQiDong/bin/Debug"));
-                psi.ArgumentList.Add(Path.Combine(executeFileAgentDir, $"{EXECUTE_FILE_AGENT}.dll"));
+            var executeFileAgentDir = Path.GetFullPath(FolderUtils.GetPathUnderProgramDir("../../../YiQiDong/bin/Debug"));
+            psi.ArgumentList.Add(Path.Combine(executeFileAgentDir, $"{EXECUTE_FILE_AGENT}.dll"));
 #else
                 var executeFileName = FolderUtils.GetPathUnderProgramDir(EXECUTE_FILE_AGENT);
                 if (OperatingSystem.IsWindows())
                     executeFileName += ".exe";
                 psi.FileName = executeFileName;
 #endif
-                psi.ArgumentList.Add("-agent");
-                psi.ArgumentList.Add(containerInfo.Id);
-                containerInfo.ManualRaiseContainerInitedNotice = false;
-            }
-            //如果是老镜像
-            else if (File.Exists(Path.Combine(imageFolder, "YiQiDong.Protocol.dll")))
+            psi.ArgumentList.Add("-agent");
+            psi.ArgumentList.Add(containerInfo.Id);
+            containerInfo.ManualRaiseContainerInitedNotice = false;
+        }
+        //如果是老镜像
+        else if (File.Exists(Path.Combine(imageFolder, "YiQiDong.Protocol.dll")))
+        {
+            psi.WorkingDirectory = containerFolder;
+            if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
             {
-                psi.WorkingDirectory = containerFolder;
-                if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
-                {
-                    var agentStartup = imageInfo.AgentStartup;
-                    var agentStartupFullPath = Path.Combine(imageFolder, agentStartup);
-                    if (File.Exists(agentStartupFullPath))
-                        agentStartup = agentStartupFullPath;
-                    psi.ArgumentList.Add(agentStartup);
-                }
-                psi.ArgumentList.Add($"YiQiDong.ContainerId=\"{containerInfo.Id}\"");
-                psi.ArgumentList.Add($"YiQiDong.DataFolder=\"{FolderUtils.GetDataDir()}\"");
-                psi.ArgumentList.Add($"YiQiDong.TransportTimeout=\"{Program.Config.AgentTransportTimeout}\"");
-                containerInfo.ManualRaiseContainerInitedNotice = true;
+                var agentStartup = imageInfo.AgentStartup;
+                var agentStartupFullPath = Path.Combine(imageFolder, agentStartup);
+                if (File.Exists(agentStartupFullPath))
+                    agentStartup = agentStartupFullPath;
+                psi.ArgumentList.Add(agentStartup);
             }
-            //否则是新镜像
-            else
+            psi.ArgumentList.Add($"YiQiDong.ContainerId=\"{containerInfo.Id}\"");
+            psi.ArgumentList.Add($"YiQiDong.DataFolder=\"{FolderUtils.GetDataDir()}\"");
+            psi.ArgumentList.Add($"YiQiDong.TransportTimeout=\"{Program.Config.AgentTransportTimeout}\"");
+            containerInfo.ManualRaiseContainerInitedNotice = true;
+        }
+        //否则是新镜像
+        else
+        {
+            psi.WorkingDirectory = imageFolder;
+            if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
+                psi.ArgumentList.Add(imageInfo.AgentStartup);
+            psi.ArgumentList.Add(containerInfo.Name);
+            psi.ArgumentList.Add(containerInfo.Id);
+            containerInfo.ManualRaiseContainerInitedNotice = false;
+        }
+        try
+        {
+            pushLog(LogLevel.Info, "[平台]容器进程文件名：" + psi.FileName);
+            pushLog(LogLevel.Info, "[平台]容器进程参数：" + string.Join(" ", psi.ArgumentList));
+            //添加镜像目录、容器目录环境变量
+            psi.Environment["IMAGE_DIR"] = imageFolder;
+            psi.Environment["CONTAINER_DIR"] = containerFolder;
+
+            //添加运行库的其他环境变量
+            foreach (var item in RuntimeManager.Instance.GetRuntimesEnvironment(runtimes))
+                psi.Environment[item.Key] = item.Value;
+            //添加镜像的其他环境变量
+            foreach (var item in ImageManager.Instance.GetImageEnvironment(imageInfo))
+                psi.Environment[item.Key] = item.Value;
+            //添加容器配置的环境变量
+            foreach (var item in ContainerInfo.GetEnvironmentVariables())
+                psi.Environment[item.Key] = item.Value;
+
+            //添加PATH路径
+            var pathList = new List<string>();
+            pathList.AddRange(ImageManager.Instance.GetImagePath(imageInfo));
+            pathList.AddRange(RuntimeManager.Instance.GetRuntimesPath(runtimes));
+
+            //启动进程
+            var process = RuntimeUtils.StartProcess(psi, pathList);
+            process.EnableRaisingEvents = true;
+            process.ErrorDataReceived += Process_ErrorDataReceived;
+            process.BeginErrorReadLine();
+            pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process?.Id}]已创建");
+
+            var options = new Quick.Protocol.Streams.QpStreamServerOptions()
             {
-                psi.WorkingDirectory = imageFolder;
-                if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
-                    psi.ArgumentList.Add(imageInfo.AgentStartup);
-                psi.ArgumentList.Add(containerInfo.Name);
-                psi.ArgumentList.Add(containerInfo.Id);
-                containerInfo.ManualRaiseContainerInitedNotice = false;
-            }
-            try
+                BaseStream = new Quick.Protocol.Streams.InputOutputStream(process.StandardOutput.BaseStream, process.StandardInput.BaseStream),
+                Password = nameof(YiQiDong),
+                ServerProgram = "易启动容器接口管理器",
+                InstructionSet = new[] { YiQiDong.Protocol.V1.Instruction.Instance }
+            };
+            options.RegisterCommandExecuterManager(commandExecuterManager);
+            options.RegisterNoticeHandlerManager(noticeHandlerManager);
+            options.ProtocolErrorHandler = Process_OnProtocolError;
+            Process = process;
+            ProcessChannel = new Quick.Protocol.Streams.QpStreamServerChannel(options);
+            process.WaitForExitAsync().ContinueWith(task =>
             {
-                pushLog(LogLevel.Info, "[平台]容器进程文件名：" + psi.FileName);
-                pushLog(LogLevel.Info, "[平台]容器进程参数：" + string.Join(" ", psi.ArgumentList));
-                //添加镜像目录、容器目录环境变量
-                psi.Environment["IMAGE_DIR"] = imageFolder;
-                psi.Environment["CONTAINER_DIR"] = containerFolder;
-
-                //添加运行库的其他环境变量
-                foreach (var item in RuntimeManager.Instance.GetRuntimesEnvironment(runtimes))
-                    psi.Environment[item.Key] = item.Value;
-                //添加镜像的其他环境变量
-                foreach (var item in ImageManager.Instance.GetImageEnvironment(imageInfo))
-                    psi.Environment[item.Key] = item.Value;                
-                //添加容器配置的环境变量
-                foreach (var item in ContainerInfo.GetEnvironmentVariables())
-                    psi.Environment[item.Key] = item.Value;
-
-                //添加PATH路径
-                var pathList = new List<string>();
-                pathList.AddRange(ImageManager.Instance.GetImagePath(imageInfo));
-                pathList.AddRange(RuntimeManager.Instance.GetRuntimesPath(runtimes));
-
-                //启动进程
-                var process = RuntimeUtils.StartProcess(psi, pathList);
-                process.EnableRaisingEvents = true;
-                process.ErrorDataReceived += Process_ErrorDataReceived;
-                process.BeginErrorReadLine();
-                pushLog(LogLevel.Info, $"[平台]容器进程已创建，进程ID:{process.Id}");
-
-                var options = new Quick.Protocol.Streams.QpStreamServerOptions()
-                {
-                    BaseStream = new Quick.Protocol.Streams.InputOutputStream(process.StandardOutput.BaseStream, process.StandardInput.BaseStream),
-                    Password = nameof(YiQiDong),
-                    ServerProgram = "易启动容器接口管理器",
-                    InstructionSet = new[] { YiQiDong.Protocol.V1.Instruction.Instance }
-                };
-                options.RegisterCommandExecuterManager(commandExecuterManager);
-                options.RegisterNoticeHandlerManager(noticeHandlerManager);
-                options.ProtocolErrorHandler = Process_OnProtocolError;
-                Process = process;
-                ProcessChannel = new Quick.Protocol.Streams.QpStreamServerChannel(options);
-                process.WaitForExitAsync().ContinueWith(task =>
-                {
-                    if (process.HasExited)
-                    {
-                        pushLog(LogLevel.Info, $"[平台]容器进程已退出，退出码：{process.ExitCode}");
-                        if (ContainerInfo.Enable)
-                        {
-                            Task.Delay(5000).ContinueWith(t =>
-                            {
-                                if (Process == null)
-                                    BeginEnable();
-                            });
-                        }
-                        Process = null;
-                        ProcessChannel = null;
-                    }
-                    else
-                    {
-                        if (!ContainerInfo.Enable)
-                        {
-                            try { process.Kill(true); }
-                            catch { }
-                            Process = null;
-                            ProcessChannel = null;
-                            return;
-                        }
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                pushLog(LogLevel.Error, $"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
-            }
+                pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process.Id}]已退出，退出码：{process.ExitCode}");
+                _ = afterContainerDisconnected();
+            });
+        }
+        catch (Exception ex)
+        {
+            pushLog(LogLevel.Error, $"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
         }
     }
 
@@ -599,30 +576,79 @@ public class ContainerContext : IDisposable
         pushLog(LogLevel.Info, "[平台]容器禁用完成.");
     }
 
-    private void Channel_Disconnected(object sender, EventArgs e)
+    private async Task afterContainerDisconnected()
     {
-        pushLog(LogLevel.Info, $"[平台]到容器的连接已经断开.");
         IsConnected = false;
 
-        lock (reverseProxyRuleList)
-            reverseProxyRuleList.Clear();
-        RaiseEvent_ReverseProxyRuleListChanged();
-        ReverseProxyManager.Instance.RemoveRules($"/{ContainerInfo.Id}/");
-        if (ProcessChannel != null)
+        var process = Process;
+        var processChannel = ProcessChannel;
+
+        if (process == null || processChannel == null)
+            return;
+            
+        Process = null;
+        ProcessChannel = null;
+
+
+        
+        //清空代理规则
+        try
         {
-            ProcessChannel.Disconnected -= Channel_Disconnected;
-            ProcessChannel.Stop();
-            ProcessChannel = null;
+            lock (reverseProxyRuleList)
+                reverseProxyRuleList.Clear();
+            RaiseEvent_ReverseProxyRuleListChanged();
+            ReverseProxyManager.Instance.RemoveRules($"/{ContainerInfo.Id}/");
         }
-        if (Process != null)
+        catch (Exception ex)
         {
-            try { Process.Kill(true); }
-            catch { }
-            Process = null;
-            ProcessChannel = null;
+            pushLog(LogLevel.Error, $"[PID:{process?.Id}]清空代理规则时出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
         }
+        try
+        {
+            //停止连接通道
+            if (processChannel != null)
+            {
+                processChannel.Disconnected -= Channel_Disconnected;
+                processChannel.Stop();
+            }
+        }
+        catch (Exception ex)
+        {
+            pushLog(LogLevel.Error, $"[PID:{process?.Id}]停止连接通道时出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
+        }
+        try
+        {
+            //杀死进程
+            if (process != null && !process.HasExited)
+            {
+                process.Kill(true);
+                pushLog(LogLevel.Info, $"[PID:{process?.Id}]发送杀死进程命令完成。");
+                while (!process.HasExited)
+                {
+                    await Task.Delay(10 * 1000);
+                    if (process.HasExited)
+                        break;
+                    pushLog(LogLevel.Info, $"[PID:{process?.Id}]发送杀死进程命令后，进程仍未退出！");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            pushLog(LogLevel.Error, $"[PID:{process?.Id}]杀死进程出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
+        }
+
         if (ContainerInfo.Enable)
-            Task.Delay(1000).ContinueWith(t => BeginEnable());
+        {
+            await Task.Delay(5000);
+            if (Process == null)
+                BeginEnable();
+        }
+    }
+
+    private void Channel_Disconnected(object sender, EventArgs e)
+    {
+        pushLog(LogLevel.Info, $"[平台][PID:{Process?.Id}]到容器的连接已经断开，原因：{ExceptionUtils.GetExceptionMessage(ProcessChannel?.LastException)}");
+        _ = afterContainerDisconnected();
     }
 
     private CancellationTokenSource ctsCron;

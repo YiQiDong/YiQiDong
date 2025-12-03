@@ -585,7 +585,7 @@ public class ContainerContext : IDisposable
 
         if (process == null || processChannel == null)
             return;
-            
+
         Process = null;
         ProcessChannel = null;
 
@@ -621,20 +621,21 @@ public class ContainerContext : IDisposable
             //杀死进程
             if (process != null && !process.HasExited)
             {
+                pushLog(LogLevel.Info, $"[平台]正在向进程[PID:{process?.Id}]发送退出命令。。。");
                 process.Kill(true);
-                pushLog(LogLevel.Info, $"[PID:{process?.Id}]发送杀死进程命令完成。");
+                pushLog(LogLevel.Info, $"向进程[PID:{process?.Id}]发送退出命令完成。");
                 while (!process.HasExited)
                 {
                     await Task.Delay(10 * 1000);
                     if (process.HasExited)
                         break;
-                    pushLog(LogLevel.Info, $"[PID:{process?.Id}]发送杀死进程命令后，进程仍未退出！");
+                    pushLog(LogLevel.Info, $"向进程[PID:{process?.Id}]发送退出命令后，进程仍未退出！");
                 }
             }
         }
         catch (Exception ex)
         {
-            pushLog(LogLevel.Error, $"[PID:{process?.Id}]杀死进程出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
+            pushLog(LogLevel.Error, $"向进程[PID:{process?.Id}]发送退出命令出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
         }
 
         if (ContainerInfo.Enable)

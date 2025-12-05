@@ -84,7 +84,11 @@ namespace YiQiDong.Core
             foreach (var container in ContainerList.ToArray())
             {
                 container.ContainerInfo.Enable = false;
-                stopTaskList.Add(container.Stop(false));
+                stopTaskList.Add(Task.Run(async () =>
+                {
+                    await container.Stop(false);
+                    container.Disable();
+                }));
             }
             Task.WaitAll(stopTaskList.ToArray());
         }

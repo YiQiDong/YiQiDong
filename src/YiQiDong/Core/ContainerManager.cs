@@ -87,7 +87,7 @@ namespace YiQiDong.Core
                 stopTaskList.Add(Task.Run(async () =>
                 {
                     await container.Stop(false);
-                    container.Disable();
+                    container.BeginDisable();
                 }));
             }
             Task.WaitAll(stopTaskList.ToArray());

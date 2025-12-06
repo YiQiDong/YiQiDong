@@ -6,7 +6,7 @@
 		<PackageTags>易启动;YiQiDong</PackageTags>
 		<Description>易启动核心库</Description>
 		<Product>易启动</Product>
-		<Version>2.6.7</Version>
+		<Version>2.6.8</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsAotCompatible>true</IsAotCompatible>
 		<IncludeSymbols>true</IncludeSymbols>

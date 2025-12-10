@@ -25,6 +25,9 @@ namespace YiQiDong.ArgsHandlers
                     new HostBuilder().RunConsoleAsync().Wait();
                     Program.Stop();
                     break;
+                case "-prepare":
+                    Args_Prepare.Invoke(args);
+                    break;
                 case "-service":
                     Args_Service.Invoke(args);
                     break;

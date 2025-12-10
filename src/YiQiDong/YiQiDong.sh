@@ -118,8 +118,14 @@ start()
         echo "Starting YiQiDong"
         chmod +x $YIQIDONG_HOME/YiQiDong
         export DOTNET_EnableWriteXorExecute=0
+        rm -f $YIQIDONG_HOME/YiQiDong.env.sh
+        $YIQIDONG_HOME/YiQiDong -prepare > $YIQIDONG_HOME/YiQiDong.env.sh
+        . $YIQIDONG_HOME/YiQiDong.env.sh
+        rm -f $YIQIDONG_HOME/YiQiDong.env.sh
         $YIQIDONG_HOME/YiQiDong -service &
         RETVAL=0
+        cat $YIQIDONG_HOME/YiQiDong.env.sh
+        echo $LANG
         echo " OK"
         return $RETVAL
     fi

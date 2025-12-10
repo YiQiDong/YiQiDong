@@ -24,6 +24,27 @@
                             <InputText class="form-control" @bind-Value="configModel.DataFolder" />
                             <ValidationMessage For="@(() => configModel.DataFolder)" />
                         </div>
+                        @if (OperatingSystem.IsLinux())
+                        {
+                            <div class="form-group">
+                                <label>语言</label>
+                                <InputSelect class="form-control" @bind-Value="configModel.LinuxOSLang">
+                                    <option value="">默认</option>
+                                    <option value="zh_CN.UTF-8">中文（中国）</option>
+                                    <option value="en_US.UTF-8">英文（美国）</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => configModel.LinuxOSLang)" />
+                            </div>
+                            <div class="form-group">
+                                <label>时区</label>
+                                <InputSelect class="form-control" @bind-Value="configModel.LinuxOSTimeZone">
+                                    <option value="">默认</option>
+                                    <option value="Asia/Shanghai">中国标准时间</option>
+                                    <option value="Etc/UTC">协调世界时</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => configModel.LinuxOSTimeZone)" />
+                            </div>
+                        }
                         <div class="form-group">
                             <label>默认HTML</label>
                             <InputTextArea class="form-control" rows="5" @bind-Value="configModel.DefaultHtml" />
@@ -45,17 +66,20 @@
                         <DataAnnotationsValidator />
                         <div class="form-group">
                             <label>原密码</label>
-                            <InputText class="form-control" type="password" @bind-Value="passwordManageModel.OldPassword" />
+                            <InputText class="form-control" type="password"
+                                @bind-Value="passwordManageModel.OldPassword" />
                             <ValidationMessage For="@(() => passwordManageModel.OldPassword)" />
                         </div>
                         <div class="form-group">
                             <label>新密码</label>
-                            <InputText class="form-control" type="password" @bind-Value="passwordManageModel.NewPassword" />
+                            <InputText class="form-control" type="password"
+                                @bind-Value="passwordManageModel.NewPassword" />
                             <ValidationMessage For="@(() => passwordManageModel.NewPassword)" />
                         </div>
                         <div class="form-group">
                             <label>再次输入新密码</label>
-                            <InputText class="form-control" type="password" @bind-Value="passwordManageModel.NewPassword2" />
+                            <InputText class="form-control" type="password"
+                                @bind-Value="passwordManageModel.NewPassword2" />
                             <ValidationMessage For="@(() => passwordManageModel.NewPassword2)" />
                         </div>
                         <button type="submit" class="btn btn-secondary col-sm-5 col-md-4 col-lg-2">保存</button>
@@ -64,32 +88,6 @@
             </div>
         </ChildContent>
     </TabPane>
-    @if (OperatingSystem.IsLinux())
-    {
-        <TabPane Key="LanguageAndTimeZone">
-            <Tab>语言与时区</Tab>
-            <ChildContent>
-                <div class="form-group">
-                    <label>语言</label>
-                    <InputSelect class="form-control" @bind-Value="configModel.LinuxOSLang">
-                        <option value="">默认</option>
-                        <option value="zh_CN.UTF-8">中文（中国）</option>
-                        <option value="en_US.UTF-8">英文（美国）</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => configModel.LinuxOSLang)" />
-                </div>
-                <div class="form-group">
-                    <label>时区</label>
-                    <InputSelect class="form-control" @bind-Value="configModel.LinuxOSTimeZone">
-                        <option value="">默认</option>
-                        <option value="Asia/Shanghai">中国标准时间</option>
-                        <option value="Etc/UTC">协调世界时</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => configModel.LinuxOSTimeZone)" />
-                </div>
-            </ChildContent>
-        </TabPane>
-    }
     <TabPane Key="Advance">
         <Tab>高级</Tab>
         <ChildContent>
@@ -133,18 +131,18 @@
             </div>
         </ChildContent>
     </TabPane>
-    @if(Program.IsStartSuccess)
+    @if (Program.IsStartSuccess)
     {
-    <TabPane Key="ClusterManage">
-        <Tab>集群</Tab>
-        <ChildContent>
-            <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
-                <div class="card-body">
-                    <YiQiDong.Components.Pages.ClusterManage></YiQiDong.Components.Pages.ClusterManage>
+        <TabPane Key="ClusterManage">
+            <Tab>集群</Tab>
+            <ChildContent>
+                <div class="card" style="border-top: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                    <div class="card-body">
+                        <YiQiDong.Components.Pages.ClusterManage></YiQiDong.Components.Pages.ClusterManage>
+                    </div>
                 </div>
-            </div>
-        </ChildContent>
-    </TabPane>
+            </ChildContent>
+        </TabPane>
     }
     <TabPane Key="Update">
         <Tab>更新</Tab>
@@ -157,7 +155,9 @@
                             <div class="input-group">
                                 <div class="btn btn-sm btn-secondary col-sm-5 col-md-4 col-lg-2">
                                     <i class="fa fa-upload" aria-hidden="true"></i> 上传
-                                    <input @ref="inputUpdateFile" id="inputUpdateFile" type="file" accept=".zip" style="width: 0px; height: 0px; visibility: collapse;" @onchange="@(e=>onInputUpdateFileChanged())">
+                                    <input @ref="inputUpdateFile" id="inputUpdateFile" type="file" accept=".zip"
+                                        style="width: 0px; height: 0px; visibility: collapse;"
+                                        @onchange="@(e => onInputUpdateFileChanged())">
                                     <label title="上传"
                                         style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer"
                                         for="inputUpdateFile">

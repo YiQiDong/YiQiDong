@@ -53,6 +53,14 @@ public class ConfigModel
     /// </summary>
     public int AgentTransportTimeout { get; set; } = 60000;
     /// <summary>
+    /// Linux系统语言
+    /// </summary>
+    public string LinuxOSLang { get; set; }
+    /// <summary>
+    /// Linux系统时区
+    /// </summary>
+    public string LinuxOSTimeZone { get; set; }
+    /// <summary>
     /// 环境变量
     /// </summary>
     public string EnvironmentVariables { get; set; }

@@ -64,6 +64,32 @@
             </div>
         </ChildContent>
     </TabPane>
+    @if (OperatingSystem.IsLinux())
+    {
+        <TabPane Key="LanguageAndTimeZone">
+            <Tab>语言与时区</Tab>
+            <ChildContent>
+                <div class="form-group">
+                    <label>语言</label>
+                    <InputSelect class="form-control" @bind-Value="configModel.LinuxOSLang">
+                        <option value="">默认</option>
+                        <option value="zh_CN.UTF-8">中文（中国）</option>
+                        <option value="en_US.UTF-8">英文（美国）</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => configModel.LinuxOSLang)" />
+                </div>
+                <div class="form-group">
+                    <label>时区</label>
+                    <InputSelect class="form-control" @bind-Value="configModel.LinuxOSTimeZone">
+                        <option value="">默认</option>
+                        <option value="Asia/Shanghai">中国标准时间</option>
+                        <option value="Etc/UTC">协调世界时</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => configModel.LinuxOSTimeZone)" />
+                </div>
+            </ChildContent>
+        </TabPane>
+    }
     <TabPane Key="Advance">
         <Tab>高级</Tab>
         <ChildContent>

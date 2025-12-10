@@ -46,6 +46,18 @@ namespace YiQiDong.Components.Pages
 
             base.OnInitialized();
         }
+
+        private bool isStringChanged(string a, string b)
+        {
+            if (a == null)
+            {
+                if (b != null)
+                    return true;
+                return false;
+            }
+            return a == b;
+        }
+
         private void ModifyConfigModel()
         {
             try
@@ -56,7 +68,9 @@ namespace YiQiDong.Components.Pages
                 //是否需要重启服务
                 var isNeedRestartService = Program.Config.DataFolder != configModel.DataFolder
                     || Program.Config.AgentInitInterval != configModel.AgentInitInterval
-                    || Program.Config.AgentTransportTimeout != configModel.AgentTransportTimeout;
+                    || Program.Config.AgentTransportTimeout != configModel.AgentTransportTimeout
+                    || isStringChanged(Program.Config.LinuxOSLang, configModel.LinuxOSLang)
+                    || isStringChanged(Program.Config.LinuxOSTimeZone, configModel.LinuxOSTimeZone);
 
                 Program.Config.Title = configModel.Title;
                 Program.Config.Urls = configModel.Urls;
@@ -64,6 +78,8 @@ namespace YiQiDong.Components.Pages
                 Program.Config.DefaultHtml = configModel.DefaultHtml;
                 Program.Config.AgentInitInterval = configModel.AgentInitInterval;
                 Program.Config.AgentTransportTimeout = configModel.AgentTransportTimeout;
+                Program.Config.LinuxOSLang = configModel.LinuxOSLang;
+                Program.Config.LinuxOSTimeZone = configModel.LinuxOSTimeZone;
                 Program.Config.EnvironmentVariables = configModel.EnvironmentVariables;
                 Program.Config.StartScript = configModel.StartScript;
                 Program.Config.StopScript = configModel.StopScript;

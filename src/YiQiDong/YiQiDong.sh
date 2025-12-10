@@ -124,8 +124,6 @@ start()
         rm -f $YIQIDONG_HOME/YiQiDong.env.sh
         $YIQIDONG_HOME/YiQiDong -service &
         RETVAL=0
-        cat $YIQIDONG_HOME/YiQiDong.env.sh
-        echo $LANG
         echo " OK"
         return $RETVAL
     fi

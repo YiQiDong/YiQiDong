@@ -10,13 +10,13 @@ using SharpCompress.Archives;
 
 namespace _build.Resources;
 
-public class Runtime_dotTrace_tools : IResource
+public class Runtime_dotMemory_tools : IResource
 {
-    public string Id => "dotTrace-tools";
+    public string Id => "dotMemory-tools";
 
-    public string Name => "dotTrace Tools";
+    public string Name => "dotMemory Tools";
 
-    public string PackageIdPrefix = "JetBrains.dotTrace.CommandLineTools";
+    public string PackageIdPrefix = "JetBrains.dotMemory.Console";
 
     public void Invoke()
     {
@@ -84,20 +84,20 @@ public class Runtime_dotTrace_tools : IResource
                     Name = Id,
                     Version = version,
                     BuildTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    Description = "The dotTrace console tool lets you start a profiling session and get performance snapshots from the command line.",
+                    Description = "The dotMemory console tool lets you start a profiling session and get memory snapshots from the command line.",
                     Platform = new[] { arch },
                     Environment = new Dictionary<string, string>()
                     {
-                        ["DOTTRACE_ROOT"] = "$RUNTIME_DIR",
+                        ["DOTMEMORY_ROOT"] = "$RUNTIME_DIR",
                     },
                     Path = ["$RUNTIME_DIR"],
                     ExecuteFiles = [
-                        "$RUNTIME_DIR/dottrace",
+                        "$RUNTIME_DIR/dotmemory",
                         "$RUNTIME_DIR/runtime-dotnet.sh",
                         "$RUNTIME_DIR/" + arch +"/dotnet/dotnet"],
                     TestCommand = new Dictionary<string, string[]>()
                     {
-                        ["帮助"] = ["dottrace"]
+                        ["帮助"] = ["dotmemory"]
                     }
                 };
                 if (arch.StartsWith("win-"))

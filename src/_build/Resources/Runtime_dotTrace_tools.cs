@@ -31,8 +31,7 @@ public class Runtime_dotTrace_tools : IResource
              CancellationToken.None)
         .Result
         .Where(t => !t.IsPrerelease)
-        .OrderByDescending(t => t)
-        .Take(10);
+        .OrderByDescending(t => t);
 
         Console.WriteLine($"请选择{Name}版本：");
         var version = QbSelect.ArrowSelect(versions.Select(t => t.ToString()).ToDictionary(t => t, t => t).ToArray(), selectedForegroundColor: ConsoleColor.Green);

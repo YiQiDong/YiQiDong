@@ -25,12 +25,12 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="NLog" Version="6.0.6" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2025.5.1216" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2025.5.1216" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2025.5.1216" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2025.5.1216" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2025.5.1216" />
+		<PackageReference Include="NLog" Version="6.0.7" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2025.6.1216" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2025.6.1216" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2025.6.1216" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2025.6.1216" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2025.6.1216" />
 		<PackageReference Include="Quick.Protocol.AllClients" Version="2.6.6" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.6" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.1" />

@@ -12,15 +12,13 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using YiQiDong;
 using YiQiDong.Protocol.V1.Model;
 
 var appFolder = QbFolder.GetAppFolder();
 if (appFolder == Environment.CurrentDirectory)
     Environment.CurrentDirectory = Path.GetFullPath("../../../../../");
-
-//版本号
-var version = "1.1." + DateTime.Now.ToString("yyyy.Mdd");
 
 //准备目录变量
 var baseFolder = Environment.CurrentDirectory;
@@ -60,12 +58,15 @@ if (selectedBuildType == "YiQiDong")
     var ConstsFile = "src/YiQiDong/Consts.cs";
     var ConstsVersionLine = 4;
     var ConstsArchLine = 5;
-    var preVersionLine = QbFile.ReadLine(ConstsFile, ConstsVersionLine);
+    var versionLine = QbFile.ReadLine(ConstsFile, ConstsVersionLine);
     var preArchLine = QbFile.ReadLine(ConstsFile, ConstsArchLine);
+
+    var versionRegex = new Regex(@"""(?<Version>.*?)""", RegexOptions.Singleline);
+    //版本号
+    var version = versionRegex.Match(versionLine).Groups["Version"].Value;
 
     try
     {
-        QbFile.WriteLine(ConstsFile, ConstsVersionLine, $"public const string Version = \"{version}\";");
         foreach (var rid in selectArchs)
         {
             QbFile.WriteLine(ConstsFile, ConstsArchLine, $"public const string ARCH = \"{rid}\";");
@@ -102,12 +103,13 @@ if (selectedBuildType == "YiQiDong")
     }
     finally
     {
-        QbFile.WriteLine(ConstsFile, ConstsVersionLine, preVersionLine);
         QbFile.WriteLine(ConstsFile, ConstsArchLine, preArchLine);
     }
 }
 else if(selectedBuildType =="YiQiDong.TestImage")
 {
+    //版本号
+    var version = "1.1." + DateTime.Now.ToString("yyyy.Mdd");
     var productName = "易启动测试镜像";
     var outFolder = "bin";
     var productDir = selectedBuildType;

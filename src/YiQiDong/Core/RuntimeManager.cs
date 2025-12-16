@@ -163,48 +163,44 @@ namespace YiQiDong.Core
 
                         //解压运行库文件
                         var currentEntryCount = 0;
-                        using (var reader = archive.ExtractAllEntries())
+                        foreach (var entry in archive.Entries)
                         {
-                            while (reader.MoveToNextEntry())
+                            if (cancellationToken.IsCancellationRequested)
+                                break;
+                            currentEntryCount++;
+                            progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
+
+                            if (entry.IsDirectory)
                             {
-                                if (cancellationToken.IsCancellationRequested)
-                                    break;
-                                var entry = reader.Entry;
-                                currentEntryCount++;
-                                progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
-
-                                if (entry.IsDirectory)
-                                {
-                                    var dir = Path.Combine(tmpRuntimeDir, entry.Key);
-                                    if (!Directory.Exists(dir))
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dir);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                        }
-                                }
-                                else
-                                {
-                                    var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
-                                    var dir = Path.GetDirectoryName(ex_file);
-                                    if (!Directory.Exists(dir))
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dir);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                        }
-
-                                    using (var fs = File.OpenWrite(ex_file))
+                                var dir = Path.Combine(tmpRuntimeDir, entry.Key);
+                                if (!Directory.Exists(dir))
+                                    try
                                     {
-                                        if (entry.Size != 0)
-                                            await Task.Run(() => reader.WriteEntryTo(fs));
+                                        Directory.CreateDirectory(dir);
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                    }
+                            }
+                            else
+                            {
+                                var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
+                                var dir = Path.GetDirectoryName(ex_file);
+                                if (!Directory.Exists(dir))
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                    }
+
+                                using (var fs = File.OpenWrite(ex_file))
+                                {
+                                    if (entry.Size != 0)
+                                        await Task.Run(() => entry.WriteTo(fs));
                                 }
                             }
                         }

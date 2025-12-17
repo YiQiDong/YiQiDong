@@ -3,8 +3,7 @@
     FileFilter="@FileFilter"
     SelectedPath="@SelectedPath"
     FileDoubleClickToDownload="@FileDoubleClickToDownload"
-    FileDoubleClickCustomAction="@onFileDoubleClick"
-    DownloadFileAction="Download">
+    FileDoubleClickCustomAction="@onFileDoubleClick">
     <ToolbarAddonButtons>
         @if (string.IsNullOrEmpty(fileManageControl.SelectedPath) || !System.IO.File.Exists(fileManageControl.SelectedPath))
         {

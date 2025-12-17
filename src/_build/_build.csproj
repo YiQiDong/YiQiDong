@@ -5,6 +5,7 @@
 		<ImplicitUsings>true</ImplicitUsings>
 		<TargetFramework>net8.0</TargetFramework>
 		<RollForward>Major</RollForward>
+    	<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>

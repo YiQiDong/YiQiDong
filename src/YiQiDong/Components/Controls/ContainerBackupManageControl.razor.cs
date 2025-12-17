@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using YiQiDong.Controllers;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Model;
@@ -20,8 +21,6 @@ namespace YiQiDong.Components.Controls
         private ModalWindow modalWindow;
         private ModalLoading modalLoading;
         private UnitStringConverting storageUSC = UnitStringConverting.StorageUnitStringConverting;
-
-        private void Download(IJSRuntime JSRuntime, string path) => FileManageControl.HttpDownload(JSRuntime, path);
 
         private void ImportContainer()
         {

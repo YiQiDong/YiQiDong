@@ -22,8 +22,6 @@ namespace YiQiDong.Components.Controls
 
         private Quick.Blazor.Bootstrap.Admin.FileManageControl fileManageControl;
 
-        private void Download(IJSRuntime JSRuntime, string path) => FileManageControl.HttpDownload(JSRuntime, path);
-
         private void Select()
         {
             SelectAction?.Invoke(fileManageControl.SelectedPath);

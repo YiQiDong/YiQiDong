@@ -1,0 +1,51 @@
+﻿@using Quick.Blazor.Bootstrap.Utils
+<div class="modal-body">
+    <EditForm Model="@this" OnValidSubmit="Ok">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <input type="datetime-local" class="form-control" @bind-value="DateAndTime" step="1" />
+        </div>
+        <button type="submit" class="btn btn-primary col-sm-5 col-md-4 col-lg-2">保存</button>
+    </EditForm>
+</div>
+<ModalAlert @ref="modalAlert" />
+@code {
+    private DateTime DateAndTime = DateTime.Now;
+    private ModalAlert modalAlert;
+    private void Ok()
+    {
+        try
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                using (var commandContext = new Quick.Shell.PowerShell.PowerShellCommandContext())
+                {
+                    commandContext.Open();
+                    var ret = commandContext.ExecuteCommand($"Set-Date -Date \"{DateAndTime:yyyy-MM-dd HH:mm:ss}\"", true);
+                    commandContext.Close();
+                    if (ret.ExitCode != 0)
+                        throw new IOException($"退出码：{ret.ExitCode}，消息：{string.Join(Environment.NewLine, ret.Output)}");
+                }
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                //关闭NTP时间同步
+                Quick.Shell.Utils.ProcessUtils.ExecuteShell($"timedatectl set-ntp no");
+                //设置时间
+                var ret = Quick.Shell.Utils.ProcessUtils.ExecuteShell($"timedatectl set-time \"{DateAndTime:yyyy-MM-dd HH:mm:ss}\"",
+                true);
+                if (ret.ExitCode != 0)
+                    throw new IOException($"退出码：{ret.ExitCode}，消息：{ret.Output}{ret.Error}");
+            }
+            else
+            {
+                throw new NotImplementedException("未实现此功能");
+            }
+            modalAlert.Show("成功", "设置日期时间成功！");
+        }
+        catch (Exception ex)
+        {
+            modalAlert.Show("错误", $"设置日期时间时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
+        }
+    }
+}

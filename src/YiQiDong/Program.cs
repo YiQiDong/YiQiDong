@@ -152,6 +152,7 @@ namespace YiQiDong
                     .AddInteractiveServerComponents()
                     .AddHubOptions(options =>
                     {
+                        options.EnableDetailedErrors = true;
                         //设置最大包大小为100 MB
                         options.MaximumReceiveMessageSize = 100 * 1024 * 1024;
                     });

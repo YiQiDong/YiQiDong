@@ -12,7 +12,10 @@ namespace YiQiDong.Components.Pages
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
-            var toolList = new List<ToolInfo>();
+            var toolList = new List<ToolInfo>
+            {
+                ToolInfo.Create<DateTimeManage>("日期时间", "fa fa-clock-o")
+            };
             if (OperatingSystem.IsLinux())
             {
                 toolList.Add(ToolInfo.Create<CommonTools_LinuxTools>("Linux工具箱", "fa fa-archive"));

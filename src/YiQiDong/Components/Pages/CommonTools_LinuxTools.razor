@@ -1,4 +1,5 @@
-﻿@using YiQiDong.Components.Pages.DevTools
+﻿@using YiQiDong.Components.Pages.LinuxTools
+@using YiQiDong.Components.Pages.TestTools
 @using static YiQiDong.Components.Controls.CommonToolsControl
 
 <YiQiDong.Components.Controls.CommonToolsControl Tools="@tools" />
@@ -11,8 +12,8 @@
             base.OnParametersSet();
             tools = new[]
             {
-                ToolInfo.Create<RasKeyPairGenerator>("RSA密钥对生成","fa fa-bolt"),
-                ToolInfo.Create<GuidGenerator>("GUID生成","fa fa-bolt"),
+                ToolInfo.Create<NetworkInterfaceManage>("网卡管理", "fa fa-sitemap"),
+                ToolInfo.Create<FirewallManage_iptables>("防火墙管理[iptables]", "fa fa-shield")
             };
         }
 }

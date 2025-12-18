@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Utils;
 
-namespace YiQiDong.Components.Controls.TestTools;
+namespace YiQiDong.Components.Pages.TestTools;
 
 public partial class TcpTestControl : ComponentBase, IDisposable
 {

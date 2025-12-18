@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Utils;
 
-namespace YiQiDong.Components.Controls.TestTools;
+namespace YiQiDong.Components.Pages.TestTools;
 
 public partial class PingTestControl : ComponentBase,IDisposable
 {

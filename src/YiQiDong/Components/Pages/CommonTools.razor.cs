@@ -8,8 +8,6 @@ namespace YiQiDong.Components.Pages
     public partial class CommonTools : ComponentBase
     {
         private ToolInfo[] tools;
-        private ModalLoading modalLoading;
-        private ModalAlert modalAlert;
 
         protected override void OnParametersSet()
         {
@@ -17,8 +15,7 @@ namespace YiQiDong.Components.Pages
             var toolList = new List<ToolInfo>();
             if (OperatingSystem.IsLinux())
             {
-                toolList.Add(ToolInfo.Create<NetworkInterfaceManage>("网卡管理", "fa fa-sitemap"));
-                toolList.Add(ToolInfo.Create<LinuxFirewallManage_iptables>("防火墙管理[iptables]", "fa fa-shield"));
+                toolList.Add(ToolInfo.Create<CommonTools_LinuxTools>("Linux工具箱", "fa fa-archive"));
             }
             var hostsFile = "/etc/hosts";
             if (OperatingSystem.IsWindows())
@@ -36,8 +33,8 @@ namespace YiQiDong.Components.Pages
                     [nameof(Quick.Blazor.Bootstrap.Terminal.TerminalControl.WorkingDir)]=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
                 }),
                 ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理下载","fa fa-cloud-download"),
-                ToolInfo.Create<CommonTools_TestTools>("测试工具集", "fa fa-bolt"),
-                ToolInfo.Create<CommonTools_DevTools>("开发工具集", "fa fa-bolt")
+                ToolInfo.Create<CommonTools_TestTools>("测试工具箱", "fa fa-archive"),
+                ToolInfo.Create<CommonTools_DevTools>("开发工具箱", "fa fa-archive")
             ]);
             if (Program.IsStartSuccess)
             {

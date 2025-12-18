@@ -4,8 +4,7 @@ using System.Net.Sockets;
 using YiQiDong.Core.Utils;
 using static YiQiDong.Components.Controls.EditNetworkInterfaceControl;
 
-#pragma warning disable CA1416
-namespace YiQiDong.Components.Pages
+namespace YiQiDong.Components.Pages.LinuxTools
 {
     public partial class NetworkInterfaceManage
     {
@@ -134,4 +133,3 @@ namespace YiQiDong.Components.Pages
         }
     }
 }
-#pragma warning restore CA1416

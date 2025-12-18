@@ -3,9 +3,9 @@ using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Utils;
 using YiQiDong.Utils;
 
-namespace YiQiDong.Components.Pages;
+namespace YiQiDong.Components.Pages.LinuxTools;
 
-public partial class LinuxFirewallManage_iptables : ComponentBase
+public partial class FirewallManage_iptables : ComponentBase
 {
     private const string CONFIG_FILE = "iptables_rules.conf";
     private ModalAlert modalAlert;

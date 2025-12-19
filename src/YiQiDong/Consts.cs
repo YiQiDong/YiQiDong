@@ -2,7 +2,7 @@
 
 public class Consts
 {
-    public const string Version = "2025.4.1218";
+    public const string Version = "2025.5.1219";
     public const string ARCH = "any";
 
     public const string RUNTIMES_FOLDER = "Runtimes";

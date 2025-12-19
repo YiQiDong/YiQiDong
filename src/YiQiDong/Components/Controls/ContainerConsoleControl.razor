@@ -5,30 +5,27 @@
             {
                 @if (Container.IsConnected)
                 {
-                    @if (!YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(Container.ContainerInfo.Name))
+                    @if (Container.ContainerInfo.AutoStart)
                     {
-                        @if (Container.ContainerInfo.AutoStart)
-                        {
-                            <button type="button" title="停止" class="btn btn-sm btn-secondary"
-                                @onclick="@(e => StopContainer(Container))">
-                                <i class="fa fa-stop" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" title="重启" class="btn btn-sm btn-secondary"
-                                @onclick="@(e => RestartContainer(Container))">
-                                <i class="fa fa-refresh" aria-hidden="true"></i>
-                            </button>
-                        }
-                        else
-                        {
-                            <button type="button" title="启动" class="btn btn-sm btn-secondary"
-                                @onclick="@(e => StartContainer(Container))">
-                                <i class="fa fa-play" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" title="禁用" class="btn btn-sm btn-secondary"
-                                @onclick="() => DisableContainer(Container)">
-                                <i class="fa fa-chain-broken" aria-hidden="true"></i>
-                            </button>
-                        }
+                        <button type="button" title="停止" class="btn btn-sm btn-secondary"
+                            @onclick="@(e => StopContainer(Container))">
+                            <i class="fa fa-stop" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" title="重启" class="btn btn-sm btn-secondary"
+                            @onclick="@(e => RestartContainer(Container))">
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" title="启动" class="btn btn-sm btn-secondary"
+                            @onclick="@(e => StartContainer(Container))">
+                            <i class="fa fa-play" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" title="禁用" class="btn btn-sm btn-secondary"
+                            @onclick="() => DisableContainer(Container)">
+                            <i class="fa fa-chain-broken" aria-hidden="true"></i>
+                        </button>
                     }
                 }
                 else

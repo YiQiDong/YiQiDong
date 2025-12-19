@@ -230,7 +230,7 @@ namespace YiQiDong.Components.Pages
             try
             {
                 modalLoading.UpdateProgress(null, "正在停止容器与群集...");
-                Program.StopContainerAndCluster();
+                Program.StopContainers();
 
                 var installDir = Environment.CurrentDirectory;
                 var tmpDir = installDir;

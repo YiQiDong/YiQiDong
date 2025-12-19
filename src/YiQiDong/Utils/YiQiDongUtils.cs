@@ -10,7 +10,7 @@ public class YiQiDongUtils
 {
     public static void RestartService()
     {
-        Program.StopContainerAndCluster();
+        Program.StopContainers();
         
         if (OperatingSystem.IsWindows())
         {

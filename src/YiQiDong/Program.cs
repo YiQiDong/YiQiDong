@@ -1,5 +1,4 @@
 using BlazorDownloadFile;
-using YiQiDong.Cluster;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
@@ -94,8 +93,6 @@ namespace YiQiDong
                             ImageManager.Instance.Init();
                             Console.WriteLine("正在启动容器管理器...");
                             ContainerManager.Instance.Init();
-                            Console.WriteLine("正在启动集群管理器...");
-                            ClusterManager.Instance.Init();
                         }
                         catch (Exception ex)
                         {
@@ -177,8 +174,6 @@ namespace YiQiDong
                 if (IsStartSuccess)
                     app.UseGlashServer("/glash", Glash.Blazor.Server.Global.Instance.ConnectionPassword);
                 app.UseNorthInterface();
-                if (IsStartSuccess)
-                    app.UseClusterInterface();
                 app.UseAntiforgery();
                 app.MapStaticAssets();
                 if (IsStartSuccess)
@@ -201,18 +196,16 @@ namespace YiQiDong
             await app.StopAsync();
         }
 
-        public static void StopContainerAndCluster()
+        public static void StopContainers()
         {
             SystemInfoContext.Dispose();
             Console.WriteLine("正在停止容器管理器...");
             ContainerManager.Instance.Stop();
-            Console.WriteLine("正在停止集群管理器...");
-            ClusterManager.Instance.Stop();
         }
 
         public static void Stop()
         {
-            StopContainerAndCluster();
+            StopContainers();
             StopWebService().Wait();
             waitForExitTask.Start();
         }

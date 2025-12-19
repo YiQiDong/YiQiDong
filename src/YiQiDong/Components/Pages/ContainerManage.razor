@@ -69,10 +69,6 @@
                         {
                             <span class="badge badge-secondary ml-2">停止</span>
                         }
-                        @if (YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(t.ContainerInfo.Name))
-                        {
-                            <span class="badge badge-info ml-2">集群</span>
-                        }
                     }
                     else
                     {
@@ -147,38 +143,35 @@
                         <div class="btn-group mr-2">
                             @if (t.ContainerInfo.Enable)
                             {
-                                @if (!YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(t.ContainerInfo.Name))
+                                @if (t.ContainerInfo.AutoStart)
                                 {
-                                    @if (t.ContainerInfo.AutoStart)
+                                    @if (t.IsConnected)
                                     {
-                                        @if (t.IsConnected)
-                                        {
-                                            <button type="button" title="停止" class="btn btn-sm btn-secondary" @onclick="() => StopContainer(t)">
-                                                <i class="fa fa-stop" aria-hidden="true"></i>
-                                            </button>
-                                            <button type="button" title="重启" class="btn btn-sm btn-secondary" @onclick="@(e => RestartContainer(t))">
-                                                <i class="fa fa-refresh" aria-hidden="true"></i>
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" title="禁用" class="btn btn-sm btn-secondary" @onclick="() => DisableContainer(t)">
-                                                <i class="fa fa-chain-broken" aria-hidden="true"></i>
-                                            </button>
-                                        }
+                                        <button type="button" title="停止" class="btn btn-sm btn-secondary" @onclick="() => StopContainer(t)">
+                                            <i class="fa fa-stop" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" title="重启" class="btn btn-sm btn-secondary" @onclick="@(e => RestartContainer(t))">
+                                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                                        </button>
                                     }
                                     else
                                     {
-                                        @if (t.IsConnected)
-                                        {
-                                            <button type="button" title="启动" class="btn btn-sm btn-secondary" @onclick="()=>StartContainer(t)">
-                                                <i class="fa fa-play" aria-hidden="true"></i>
-                                            </button>
-                                        }
                                         <button type="button" title="禁用" class="btn btn-sm btn-secondary" @onclick="() => DisableContainer(t)">
                                             <i class="fa fa-chain-broken" aria-hidden="true"></i>
                                         </button>
                                     }
+                                }
+                                else
+                                {
+                                    @if (t.IsConnected)
+                                    {
+                                        <button type="button" title="启动" class="btn btn-sm btn-secondary" @onclick="()=>StartContainer(t)">
+                                            <i class="fa fa-play" aria-hidden="true"></i>
+                                        </button>
+                                    }
+                                    <button type="button" title="禁用" class="btn btn-sm btn-secondary" @onclick="() => DisableContainer(t)">
+                                        <i class="fa fa-chain-broken" aria-hidden="true"></i>
+                                    </button>
                                 }
                             }
                             else
@@ -194,15 +187,12 @@
                                 <button type="button" title="备份" class="btn btn-sm btn-secondary" @onclick="()=>BackupContainer(t)">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                 </button>
-                                @if (!YiQiDong.Cluster.ClusterManager.Instance.ContainsContainer(t.ContainerInfo.Name))
-                                {
-                                    <button type="button" title="编辑" class="btn btn-sm btn-secondary" @onclick="() => EditContainer(t.ContainerInfo)">
-                                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                                    </button>
-                                    <button type="button" title="删除" class="btn btn-sm btn-secondary" @onclick="() => DeleteContainer(t)">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                    </button>
-                                }
+                                <button type="button" title="编辑" class="btn btn-sm btn-secondary" @onclick="() => EditContainer(t.ContainerInfo)">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" title="删除" class="btn btn-sm btn-secondary" @onclick="() => DeleteContainer(t)">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
                             </div>
                         }
                     </div>

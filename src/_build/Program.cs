@@ -3,13 +3,8 @@ using Quick.Build;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -49,7 +44,7 @@ QbFolder.DeleteFolders("src", "Release", SearchOption.AllDirectories);
 if (selectedBuildType == "YiQiDong")
 {
     Console.WriteLine("请选择编译架构(一个都不勾选代表全选)：");
-    var allArchs = new[] { "win-x64", "linux-x64", "linux-arm64", "linux-arm", "osx-x64" };
+    var allArchs = new[] { "win-x64", "linux-x64", "linux-arm64", "linux-arm"/*, "osx-x64"*/ };
     var selectArchs = QbSelect.MultiSelect(allArchs.ToDictionary(t => t, t => t).ToArray(), selectedForegroundColor: ConsoleColor.Green);
     if (selectArchs == null || selectArchs.Length == 0)
         selectArchs = allArchs;

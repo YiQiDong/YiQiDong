@@ -1,16 +1,10 @@
 ﻿using Octokit;
 using Quick.Build;
 using SharpCompress.Archives;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace _build.Resources
 {
@@ -85,7 +79,7 @@ namespace _build.Resources
                 ["win-x64"] = "x64_windows",
                 ["linux-x64"] = "x64_linux",
                 ["linux-arm64"] = "aarch64_linux",
-                ["osx-x64"] = "x64_mac",
+                //["osx-x64"] = "x64_mac",
             };
             Console.WriteLine("请选择打包架构(一个都不勾选代表全选)：");
             var selectArchs = QbSelect.MultiSelect(archDict.ToArray(), selectedForegroundColor: ConsoleColor.Green);

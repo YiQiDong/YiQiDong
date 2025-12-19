@@ -66,7 +66,7 @@ namespace _build.Resources
                 ["linux-x64"] = "linux-x64",
                 ["linux-arm64"] = "linux-arm64",
                 ["linux-arm"] = "linux-arm32",
-                ["osx-x64"] = "macos-x64"
+                //["osx-x64"] = "macos-x64"
             };
             Console.WriteLine("请选择打包架构(一个都不勾选代表全选)：");
             var selectArchs = QbSelect.MultiSelect(archDict.ToArray(), selectedForegroundColor: ConsoleColor.Green);

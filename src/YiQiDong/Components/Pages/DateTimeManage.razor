@@ -9,10 +9,13 @@
         <button type="submit" class="btn btn-primary col-sm-5 col-md-4 col-lg-2">保存</button>
     </EditForm>
 </div>
+<ModalLoading @ref="modalLoading" />
 <ModalAlert @ref="modalAlert" />
 @code {
     private DateTime DateAndTime = DateTime.Now;
-    private ModalAlert modalAlert;
+
+    private ModalLoading modalLoading;
+    private ModalAlert modalAlert;    
 
     private void modify()
     {
@@ -43,7 +46,7 @@
             {
                 throw new NotImplementedException("未实现此功能");
             }
-            modalAlert.Show("成功", "设置日期时间成功！");
+            modalLoading.Show("成功","设置日期时间成功，正在重启程序...",true);
             YiQiDongUtils.RestartService();
         }
         catch (Exception ex)

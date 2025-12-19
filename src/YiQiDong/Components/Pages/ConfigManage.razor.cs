@@ -95,9 +95,7 @@ namespace YiQiDong.Components.Pages
                         {
                             try
                             {
-                                modalLoading.UpdateProgress(null, "正在停止容器与群集...");
-                                Program.StopContainerAndCluster();
-
+                                modalLoading.UpdateProgress(null, "正在重启服务...");
                                 modalLoading.UpdateContent("重启易启动服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请访问新设置的URL地址。");
                                 await Task.Delay(1000);
                                 restartService();

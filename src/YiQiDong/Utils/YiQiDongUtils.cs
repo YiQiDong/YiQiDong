@@ -10,6 +10,8 @@ public class YiQiDongUtils
 {
     public static void RestartService()
     {
+        Program.StopContainerAndCluster();
+        
         if (OperatingSystem.IsWindows())
         {
             ProcessUtils.ExecuteShell("sc restart YiQiDong.Service", true);

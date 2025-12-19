@@ -15,12 +15,13 @@
     private DateTime DateAndTime = DateTime.Now;
 
     private ModalLoading modalLoading;
-    private ModalAlert modalAlert;    
+    private ModalAlert modalAlert;
 
     private void modify()
     {
         try
         {
+            modalLoading.Show("设置中", "正在设置日期时间...", true);
             if (OperatingSystem.IsWindows())
             {
                 using (var commandContext = new Quick.Shell.PowerShell.PowerShellCommandContext())
@@ -46,11 +47,12 @@
             {
                 throw new NotImplementedException("未实现此功能");
             }
-            modalLoading.Show("成功","设置日期时间成功，正在重启程序...",true);
+            modalLoading.UpdateContent("设置日期时间成功，正在重启程序...");
             YiQiDongUtils.RestartService();
         }
         catch (Exception ex)
         {
+            modalLoading.Close();
             modalAlert.Show("错误", $"设置日期时间时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
         }
     }

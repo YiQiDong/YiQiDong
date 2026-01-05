@@ -122,7 +122,7 @@ public abstract class AbstractAgent : IAgent
         {
             return
             [
-                    new FieldForGet(){ Name="错误",Description=ExceptionUtils.GetExceptionString(ex), Type = FieldType.Alert }
+                new FieldForGet(){ Name="错误",Description=ExceptionUtils.GetExceptionString(ex), Type = FieldType.Alert }
             ];
         }
     }

@@ -33,6 +33,7 @@ public partial class ContainerFunctionControl : IDisposable
                         {
                             controls.SetFields(t.Items);
                         });
+                    executeFunction();
                 });
             }
             else

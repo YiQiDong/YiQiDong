@@ -1,6 +1,5 @@
 using Quick.Fields;
 using Quick.Protocol;
-using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core;
 
@@ -19,8 +18,6 @@ public abstract class AbstractSessionFunction : AbstractFunction
         SessionId = sessionId;
         Channel = channel;
     }
-
-    public override FieldForGet[] Execute(FunctionRequest request) => [];
 
     protected void OnSessionChanged(FieldForGet[] fields)
     {

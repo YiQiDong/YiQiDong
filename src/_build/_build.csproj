@@ -23,7 +23,7 @@
 		<PackageReference Include="NuGet.Protocol" Version="7.0.1" />
 		<PackageReference Include="Octokit" Version="14.0.0" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
-		<PackageReference Include="SharpCompress" Version="0.42.1" />
+		<PackageReference Include="SharpCompress" Version="0.43.0" />
 	</ItemGroup>
 
 	<ItemGroup>

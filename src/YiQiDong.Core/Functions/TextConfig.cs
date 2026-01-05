@@ -47,42 +47,37 @@ namespace YiQiDong.Core.Functions
             return list;
         }
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
         {
             var isReadOnly = isReadonlyFunc();
-            var list = innerGet(null, isReadOnly);
-            if (!isReadOnly)
-                addSaveButton(list);
-            return list.ToArray();
-        }
-
-        public override FieldForGet[] Post(FunctionRequest request)
-        {
-            var list = innerGet(request);
-            if (request.IsFieldIdsMatch("Save"))
+            var list = innerGet(request,isReadOnly);
+            if (request != null)
             {
+                if (request.IsFieldIdsMatch("Save"))
+                {
 
-                if (File.Exists(file))
-                {
-                    File.WriteAllText(file, request.GetFieldValue(CONTENT_KEY));
-                    list.Add(new FieldForGet()
+                    if (File.Exists(file))
                     {
-                        Name = "保存成功",
-                        Description = $"配置文件[{file}]保存成功！",
-                        Type = FieldType.MessageBox
-                    });
-                }
-                else
-                {
-                    list.Add(new FieldForGet()
+                        File.WriteAllText(file, request.GetFieldValue(CONTENT_KEY));
+                        list.Add(new FieldForGet()
+                        {
+                            Name = "保存成功",
+                            Description = $"配置文件[{file}]保存成功！",
+                            Type = FieldType.MessageBox
+                        });
+                    }
+                    else
                     {
-                        Name = "错误",
-                        Description = $"配置文件[{file}]不存在！",
-                        Type = FieldType.Alert,
-                        Input_ReadOnly = true
-                    });
+                        list.Add(new FieldForGet()
+                        {
+                            Name = "错误",
+                            Description = $"配置文件[{file}]不存在！",
+                            Type = FieldType.Alert,
+                            Input_ReadOnly = true
+                        });
+                    }
+                    addSaveButton(list);
                 }
-                addSaveButton(list);
             }
             return list.ToArray();
         }

@@ -20,8 +20,6 @@ public class AutoRefreshTimeFunction : AbstractSessionFunction
         _ = beginShowTime(cts.Token);
     }
     
-    
-
     private async Task beginShowTime(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)

@@ -18,7 +18,7 @@ public class TaskExecuteFunction : AbstractSessionFunction
 
     public override void Start()
     {
-        OnSessionChanged(Get());
+        OnSessionChanged(Execute(null));
     }
 
     public override void Stop()
@@ -26,38 +26,28 @@ public class TaskExecuteFunction : AbstractSessionFunction
         cts?.Cancel();
     }
 
-    public override FieldForGet[] Get()
+    public override FieldForGet[] Execute(FunctionRequest request)
     {
-        return [
-            new ()
-            {
-                Id="btnStart",
-                Name = "开始",
-                Type = FieldType.Button
-            }
-        ];
-    }
-
-    public override FieldForGet[] Post(FunctionRequest request)
-    {
-        if (request.IsFieldIdsMatch("btnStart"))
+        if (request != null)
         {
-            AgentContext.LogInfo("开始执行任务...");
-            cts?.Cancel();
-            cts = new();
-            var token = cts.Token;
-            Task.Run(async () =>
+            if (request.IsFieldIdsMatch("btnStart"))
             {
-                try
+                AgentContext.LogInfo("开始执行任务...");
+                cts?.Cancel();
+                cts = new();
+                var token = cts.Token;
+                Task.Run(async () =>
                 {
-                    for (var i = 0; i < 10; i++)
+                    try
                     {
-                        AgentContext.LogInfo($"任务进度：{i + 1}/10");
-                        if (token.IsCancellationRequested)
-                            return;
-                        OnSessionChanged(
-                        [
-                            new ()
+                        for (var i = 0; i < 10; i++)
+                        {
+                            AgentContext.LogInfo($"任务进度：{i + 1}/10");
+                            if (token.IsCancellationRequested)
+                                return;
+                            OnSessionChanged(
+                            [
+                                new ()
                             {
                                 Type = FieldType.Alert,
                                 Name = "正在执行任务中。。。",
@@ -69,24 +59,32 @@ public class TaskExecuteFunction : AbstractSessionFunction
                                 Name = "取消",
                                 Type = FieldType.Button
                             }
-                        ]);
-                        await Task.Delay(1000, token);
+                            ]);
+                            await Task.Delay(1000, token);
+                        }
+                        AgentContext.LogInfo("任务执行完成.");
+                        OnSessionChanged(Execute(null));
                     }
-                    AgentContext.LogInfo("任务执行完成.");
-                    OnSessionChanged(Get());
-                }
-                catch (Exception ex)
-                {
-                    AgentContext.LogError("任务执行时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
-                }
-            });
-            return [];
+                    catch (Exception ex)
+                    {
+                        AgentContext.LogError("任务执行时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
+                    }
+                });
+                return [];
+            }
+            else if (request.IsFieldIdsMatch("btnCancel"))
+            {
+                cts?.Cancel();
+                AgentContext.LogInfo("任务已取消.");
+            }
         }
-        else if (request.IsFieldIdsMatch("btnCancel"))
-        {
-            cts?.Cancel();
-            AgentContext.LogInfo("任务已取消.");
-        }
-        return Get();
+        return [
+            new ()
+            {
+                Id="btnStart",
+                Name = "开始",
+                Type = FieldType.Button
+            }
+        ];
     }
 }

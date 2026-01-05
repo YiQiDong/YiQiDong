@@ -1,18 +1,11 @@
 ﻿using Quick.Fields;
 using Quick.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core.Functions
 {
-    public class QpChannelView : AbstractFunction
+    public class QpChannelView : AbstractSessionFunction, IDisposable
     {
         private string functionName;
 
@@ -25,9 +18,22 @@ namespace YiQiDong.Core.Functions
             this.getChannelFunc = getChannelFunc;
         }
 
-        public override FieldForGet[] Get()
+        public QpChannelView(Func<QpChannel> getChannelFunc, string sessionId, QpChannel channel) : base(sessionId, channel)
         {
-            List<FieldForGet> list = [new FieldForGet() { Id = "Refresh", Type = FieldType.Button, Name = "刷新" }];
+            this.getChannelFunc = getChannelFunc;
+        }
+
+        public override AbstractSessionFunction Create(string sessionId, QpChannel channel)
+        {
+            return new QpChannelView(getChannelFunc, sessionId, channel);
+        }
+
+        private CancellationTokenSource cts;
+
+        
+        public override FieldForGet[] Execute(FunctionRequest request)
+        {
+            List<FieldForGet> list = new();
             try
             {
                 var channel = getChannelFunc();
@@ -39,90 +45,113 @@ namespace YiQiDong.Core.Functions
                     Children =
                     [
                         new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="时间"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="通道名称"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.ChannelName}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="连接时间"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.LastConnectedTime?.ToString("yyyy-MM-dd HH:mm:ss")}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="已发送"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesSent.ToString("N0")}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="已接收"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesReceived.ToString("N0")}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="每秒发送"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesSentPerSec.ToString("N0")}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="每秒接收"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesReceivedPerSec.ToString("N0")}
-                            ]
-                        },
-                        new ()
-                        {
-                            Type = FieldType.ContainerTableTr,
-                            Children =
-                            [
-                                new (){ Type =  FieldType.ContainerTableTh,Value="包发送队列数量"},
-                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.PackageSendQueueCount.ToString()}
-                            ]
-                        }
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="时间"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="通道名称"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.ChannelName}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="连接时间"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.LastConnectedTime?.ToString("yyyy-MM-dd HH:mm:ss")}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="已发送"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesSent.ToString("N0")}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="已接收"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesReceived.ToString("N0")}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="每秒发送"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesSentPerSec.ToString("N0")}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="每秒接收"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesReceivedPerSec.ToString("N0")}
+                           ]
+                       },
+                       new ()
+                       {
+                           Type = FieldType.ContainerTableTr,
+                           Children =
+                           [
+                               new (){ Type =  FieldType.ContainerTableTh,Value="包发送队列数量"},
+                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.PackageSendQueueCount.ToString()}
+                           ]
+                       }
                     ]
                 });
             }
             catch (Exception ex)
             {
                 list.Add(new FieldForGet() { Type = FieldType.HtmlPre, Value = ExceptionUtils.GetExceptionString(ex) });
-            }            
+            }
             return list.ToArray();
         }
 
-        public override FieldForGet[] Post(FunctionRequest request)
+        private async Task beginRefresh(CancellationToken cancellationToken)
         {
-            return Get();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(1000, cancellationToken);
+                var fields = Execute(null);
+                OnSessionChanged(fields);
+            }
+        }
+
+        public override void Start()
+        {
+            cts?.Cancel();
+            cts = new();
+            _ = beginRefresh(cts.Token);
+        }
+
+        public override void Stop()
+        {
+            cts?.Cancel();
+            cts = null;
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
     }
 }

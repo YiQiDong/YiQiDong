@@ -1,8 +1,4 @@
 ﻿using Quick.Fields;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
@@ -179,31 +175,27 @@ public class ConfigFunction : AbstractFunction
         return list.ToList();
     }
 
-    public override FieldForGet[] Get()
+    public override FieldForGet[] Execute(FunctionRequest request)
     {
         var isReadOnly = AgentContext.Container.AutoStart;
-        var list = innerGet(null, isReadOnly);
+        var list = innerGet(request, isReadOnly);
+        if (request != null)
+        {
+            if (request.IsFieldIdsMatch("Save"))
+            {
+                AppSettings.Fields = list.ToArray();
+                var containerConfigFile = Path.Combine(containerFolder, APPSETTINGS_FILE);
+                File.WriteAllText(containerConfigFile, handleDowngradeNewVersionJsonFile(AppSettings.ToJsonString()));
+                list.Add(new FieldForGet()
+                {
+                    Name = "保存成功！",
+                    Description = $"配置文件[{APPSETTINGS_FILE}]保存成功！",
+                    Type = FieldType.MessageBox
+                });
+            }
+        }
         if (!isReadOnly)
             addSaveButton(list);
-        return list.ToArray();
-    }
-
-    public override FieldForGet[] Post(FunctionRequest request)
-    {
-        var list = innerGet(request);
-        if (request.IsFieldIdsMatch("Save"))
-        {
-            AppSettings.Fields = list.ToArray();
-            var containerConfigFile = Path.Combine(containerFolder, APPSETTINGS_FILE);
-            File.WriteAllText(containerConfigFile, handleDowngradeNewVersionJsonFile(AppSettings.ToJsonString()));
-            list.Add(new FieldForGet()
-            {
-                Name = "保存成功！",
-                Description = $"配置文件[{APPSETTINGS_FILE}]保存成功！",
-                Type = FieldType.MessageBox
-            });
-        }
-        addSaveButton(list);
         return list.ToArray();
     }
 

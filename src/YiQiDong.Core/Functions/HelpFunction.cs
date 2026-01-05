@@ -1,5 +1,5 @@
-using System;
 using Quick.Fields;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core.Functions;
 
@@ -13,7 +13,7 @@ public class HelpFunction : AbstractFunction
         this.helpDict = helpDict;
     }
 
-    public override FieldForGet[] Get()
+    public override FieldForGet[] Execute(FunctionRequest request)
     {
         return
         [

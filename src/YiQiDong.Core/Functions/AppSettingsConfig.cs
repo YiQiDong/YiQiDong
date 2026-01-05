@@ -227,34 +227,26 @@ namespace YiQiDong.Core.Functions
             return list.ToList();
         }
 
-        public override FieldForGet[] Get()
-        {
-            var isReadOnly = false;
-            if (isReadonlyFunc != null)
-                isReadOnly = isReadonlyFunc.Invoke();
-            var list = innerGet(null, isReadOnly);
-            if (!isReadOnly)
-                addSaveButton(list);
-            return list.ToArray();
-        }
-
-        public override FieldForGet[] Post(FunctionRequest request)
+        public override FieldForGet[] Execute(FunctionRequest request)
         {
             var isReadOnly = false;
             if (isReadonlyFunc != null)
                 isReadOnly = isReadonlyFunc.Invoke();
             var list = innerGet(request, isReadOnly);
-            if (request.IsFieldIdsMatch("Save"))
+            if (request != null)
             {
-                AppSettings.Fields = list.ToArray();
-                var containerConfigFile = Path.Combine(containerFolder, Quick.Fields.AppSettings.Model.APPSETTINGS_JSON_FILENAME);
-                File.WriteAllText(containerConfigFile, AppSettings.ToJsonString());
-                list.Add(new FieldForGet()
+                if (request.IsFieldIdsMatch("Save"))
                 {
-                    Name = "保存成功！",
-                    Description = $"配置文件[{Quick.Fields.AppSettings.Model.APPSETTINGS_JSON_FILENAME}]保存成功！",
-                    Type = FieldType.MessageBox
-                });
+                    AppSettings.Fields = list.ToArray();
+                    var containerConfigFile = Path.Combine(containerFolder, Quick.Fields.AppSettings.Model.APPSETTINGS_JSON_FILENAME);
+                    File.WriteAllText(containerConfigFile, AppSettings.ToJsonString());
+                    list.Add(new FieldForGet()
+                    {
+                        Name = "保存成功！",
+                        Description = $"配置文件[{Quick.Fields.AppSettings.Model.APPSETTINGS_JSON_FILENAME}]保存成功！",
+                        Type = FieldType.MessageBox
+                    });
+                }
             }
             if (!isReadOnly)
                 addSaveButton(list);

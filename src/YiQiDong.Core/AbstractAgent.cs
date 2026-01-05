@@ -1,6 +1,7 @@
 ﻿using Quick.Fields;
 using YiQiDong.Agent;
 using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core;
@@ -119,10 +120,10 @@ public abstract class AbstractAgent : IAgent
         }
         catch (Exception ex)
         {
-            return new FieldForGet[]
-            {
-                    new FieldForGet(){ Name="未处理错误",Description=ex.ToString(), Type = FieldType.Alert }
-            };
+            return
+            [
+                    new FieldForGet(){ Name="错误",Description=ExceptionUtils.GetExceptionString(ex), Type = FieldType.Alert }
+            ];
         }
     }
 

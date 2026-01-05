@@ -346,15 +346,10 @@ internal class EnvironmentConfigFunction : AbstractFunction
         ];
     }
 
-    public override FieldForGet[] Get()
+    public override FieldForGet[] Execute(FunctionRequest request)
     {
-        configModel = agentType.configModel.Clone();
-        var isReadOnly = AgentContext.Container.AutoStart;
-        return innerGet(null, isReadOnly);
-    }
-
-    public override FieldForGet[] Post(FunctionRequest request)
-    {
+        if(request==null)
+            configModel = agentType.configModel.Clone();
         var isReadOnly = AgentContext.Container.AutoStart;
         return innerGet(request, isReadOnly);
     }

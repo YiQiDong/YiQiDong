@@ -86,29 +86,24 @@ namespace YiQiDong.Core.Functions
 
         protected abstract List<FieldForGet> innerGet(FunctionRequest request, T requestModel, bool isReadOnly = false);
 
-        public override FieldForGet[] Get()
+        public override FieldForGet[] Execute(FunctionRequest request)
         {
-            Model = ReadConfig();
+            if (request == null)
+                Model = ReadConfig();
             var isReadOnly = isReadOnlyFunc();
-            var list = innerGet(null, null, isReadOnly);
-            if (!isReadOnly)
-                addSaveButton(list);
-            return list.ToArray();
-        }
-
-        public override FieldForGet[] Post(FunctionRequest request)
-        {
-            var isReadOnly = isReadOnlyFunc();
-            var requestModel = request.Convert<T>(jsonTypeInfo);
+            var requestModel = request?.Convert<T>(jsonTypeInfo);
             var list = innerGet(request, requestModel, isReadOnly);
-            foreach (var item in requestHandlerDict)
+            if (request != null)
             {
-                var condition = item.Key;
-                var handler = item.Value;
-                if (!condition(request))
-                    continue;
-                handler(request, requestModel, list);
-                break;
+                foreach (var item in requestHandlerDict)
+                {
+                    var condition = item.Key;
+                    var handler = item.Value;
+                    if (!condition(request))
+                        continue;
+                    handler(request, requestModel, list);
+                    break;
+                }
             }
             if (!isReadOnly)
                 addSaveButton(list);

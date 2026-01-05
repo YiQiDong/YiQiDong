@@ -7,6 +7,9 @@
 		<Description>易启动核心库</Description>
 		<Product>易启动</Product>
 		<Version>2026.1.105</Version>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://cnb.cool/scbeta/YiQiDong/YiQiDong</RepositoryUrl>
+		<PackageProjectUrl>https://cnb.cool/scbeta/YiQiDong/YiQiDong</PackageProjectUrl>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsAotCompatible>true</IsAotCompatible>
 		<IncludeSymbols>true</IncludeSymbols>
@@ -14,6 +17,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	    <None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 		<None Include="..\..\resource\Icons\logo.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>

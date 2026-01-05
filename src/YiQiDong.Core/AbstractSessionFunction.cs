@@ -31,3 +31,38 @@ public abstract class AbstractSessionFunction : AbstractFunction
         });
     }
 }
+
+public abstract class AbstractAutoRefreshFunction : AbstractSessionFunction
+{
+    /// <summary>
+    /// 刷新间隔(单位:毫秒)
+    /// </summary>
+    protected virtual int RefreshInterval { get; } = 1000;
+
+    private CancellationTokenSource cts;
+
+    protected AbstractAutoRefreshFunction(string sessionId, QpChannel channel) : base(sessionId, channel) { }
+
+
+    public override void Start()
+    {
+        cts?.Cancel();
+        cts = new();
+        _ = beginRefresh(cts.Token);
+    }
+
+    private async Task beginRefresh(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(RefreshInterval, cancellationToken);
+            OnSessionChanged(Execute(null));
+        }
+    }
+
+    public override void Stop()
+    {
+        cts.Cancel();
+        cts = null;
+    }
+}

@@ -62,6 +62,10 @@ public class TaskExecuteFunction : AbstractSessionFunction
                         AgentContext.LogInfo("任务执行完成.");
                         OnSessionChanged(Execute(null));
                     }
+                    catch(OperationCanceledException)
+                    {
+                        AgentContext.LogInfo("任务执行已取消");
+                    }
                     catch (Exception ex)
                     {
                         AgentContext.LogError("任务执行时出错，原因：" + ExceptionUtils.GetExceptionString(ex));

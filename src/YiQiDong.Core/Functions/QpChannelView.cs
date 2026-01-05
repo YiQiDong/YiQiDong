@@ -12,13 +12,13 @@ namespace YiQiDong.Core.Functions
         public override string Name => functionName;
         private Func<QpChannel> getChannelFunc;
 
-        public QpChannelView(Func<QpChannel> getChannelFunc, string functionName = "通道情况")
+        public QpChannelView(Func<QpChannel> getChannelFunc, string functionName = "通道情况") : base(null, null)
         {
             this.functionName = functionName;
             this.getChannelFunc = getChannelFunc;
         }
 
-        public QpChannelView(Func<QpChannel> getChannelFunc, string sessionId, QpChannel channel) : base(sessionId, channel)
+        private QpChannelView(Func<QpChannel> getChannelFunc, string sessionId, QpChannel channel) : base(sessionId, channel)
         {
             this.getChannelFunc = getChannelFunc;
         }

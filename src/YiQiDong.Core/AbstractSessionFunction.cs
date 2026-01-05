@@ -9,10 +9,9 @@ public abstract class AbstractSessionFunction : AbstractFunction
     protected QpChannel Channel { get; private set; }
     public override bool HasSession => true;
     public abstract AbstractSessionFunction Create(string sessionId, QpChannel channel);
-    public abstract void Start();
-    public abstract void Stop();
+    public virtual void Start() { }
+    public virtual void Stop() { }
 
-    public AbstractSessionFunction() { }
     public AbstractSessionFunction(string sessionId, QpChannel channel)
     {
         SessionId = sessionId;
@@ -21,6 +20,10 @@ public abstract class AbstractSessionFunction : AbstractFunction
 
     protected void OnSessionChanged(FieldForGet[] fields)
     {
+        if (string.IsNullOrEmpty(SessionId))
+            throw new ArgumentNullException(nameof(SessionId));
+        if (Channel == null)
+            throw new ArgumentNullException(nameof(Channel));
         Channel.SendNoticePackage(new YiQiDong.Protocol.V1.QpNotices.FunctionSessionChangedNotice()
         {
             SessionId = SessionId,

@@ -10,16 +10,13 @@ namespace YiQiDong.TestImage.Functions;
 public class TaskExecuteFunction : AbstractSessionFunction
 {
     public override string Name => "任务执行功能";
-    public TaskExecuteFunction() { }
-    public TaskExecuteFunction(string sessionId, QpChannel channel) : base(sessionId, channel) { }
+    public TaskExecuteFunction() : base(null, null) { }
+    private TaskExecuteFunction(string sessionId, QpChannel channel) : base(sessionId, channel) { }
     public override AbstractSessionFunction Create(string sessionId, QpChannel channel) => new TaskExecuteFunction(sessionId, channel);
 
     private CancellationTokenSource cts;
 
-    public override void Start()
-    {
-        OnSessionChanged(Execute(null));
-    }
+    public override void Start() { }
 
     public override void Stop()
     {

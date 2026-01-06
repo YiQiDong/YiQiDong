@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
-"POT-Creation-Date: 2026-01-06 11:13:57+0800\n"
-"PO-Revision-Date: 2026-01-06 11:15+0800\n"
+"POT-Creation-Date: 2026-01-06 11:26:31+0800\n"
+"PO-Revision-Date: 2026-01-06 11:28+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh\n"
@@ -15,9 +15,10 @@ msgstr ""
 msgid "Exit"
 msgstr "退出"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:294
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:298
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:303
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:195
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:317
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:321
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:326
 msgid "No"
 msgstr "否"
 
@@ -25,24 +26,50 @@ msgstr "否"
 msgid "[Desktop shortcut created successfully]"
 msgstr "[创建桌面快捷方式成功]"
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:191
+msgid "Do you want to start the service?"
+msgstr "是否启动服务?"
+
 #: ..\..\ArgsHandlers\Args_Empty.cs:36
 #, csharp-format
 msgid "Version: {0}"
 msgstr "架构: {0}"
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:284
+msgid "Reloading service list..."
+msgstr "正在重新加载服务列表..."
+
 #: ..\..\ArgsHandlers\Args_Empty.cs:143
 msgid "[Configuration not modified]"
 msgstr "[配置未修改]"
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:264
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:270
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:282
+msgid "Deleting service"
+msgstr "正在删除服务"
+
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:158
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:181
 msgid "Enabling service"
 msgstr "正在启用服务"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:251
+msgid "Uninstallation detected, cannot uninstall again!"
+msgstr "检测到已经卸载，无法重复卸载！"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:210
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:215
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:220
+msgid "Starting the service"
+msgstr "正在启动服务"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:48
 msgid "Shotcut"
 msgstr "快捷方式"
 
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:149
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:170
 msgid "Modifying the installation directory in the service file..."
 msgstr "正在修改服务文件中的安装目录..."
 
@@ -54,17 +81,45 @@ msgstr "正在安装服务"
 msgid "Edit Config"
 msgstr "编辑配置"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:290
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:177
+msgid "Reloading service list"
+msgstr "正在重新加载服务列表"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:287
+msgid "Checking whether the 'YiQiDong' service has been completely removed"
+msgstr "正在检查《易启动》服务是否删除完成"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:230
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:235
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:241
+msgid "Stopping service"
+msgstr "正在停止服务"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:167
+#, csharp-format
+msgid "Allowing user [{0}] to linger"
+msgstr "正在允许用户[{0}]逗留"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:313
 msgid "Started"
 msgstr "已启动"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:283
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:288
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:292
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:280
+msgid "Disabling service"
+msgstr "正在禁用服务"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:194
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:306
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:311
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:315
 msgid "Yes"
 msgstr "是"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:328
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:185
+msgid "Installation Complete"
+msgstr "安装完成"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:351
 msgid "Install Service"
 msgstr "安装服务"
 
@@ -72,7 +127,7 @@ msgstr "安装服务"
 msgid "Service Manage"
 msgstr "服务管理"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:317
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:340
 msgid "Start Service"
 msgstr "启动服务"
 
@@ -97,6 +152,10 @@ msgstr "版本: {0}"
 msgid "Debug Run"
 msgstr "调试运行"
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:272
+msgid "Deleting service files"
+msgstr "正在删除服务文件"
+
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:50
 #, csharp-format
 msgid ""
@@ -117,33 +176,42 @@ msgid "Password"
 msgstr "密码"
 
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:156
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:175
 msgid "Installing service files to the system service directory"
 msgstr "正在将服务文件安装到系统服务目录"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:291
+msgid "Uninstallation complete"
+msgstr "卸载完成"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:308
+msgid "Enabled"
+msgstr "已启用"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:154
 msgid "Deleting old desktop shortcuts"
 msgstr "正在删除旧的桌面快捷方式"
-
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:285
-msgid "Enabled"
-msgstr "已启用"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:151
 msgid "YiQiDong"
 msgstr "易启动"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:82
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:356
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:379
 #, csharp-format
 msgid "Error when execute [{0}]"
 msgstr "执行[{0}]时出错"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:278
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:179
+msgid "Checking if the service has been loaded"
+msgstr "正在检查服务是否已经加载"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:301
 msgid "Service Status: "
 msgstr "服务状态: "
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:318
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:323
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:341
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:346
 msgid "Uninstall Service"
 msgstr "卸载服务"
 
@@ -155,7 +223,7 @@ msgstr "按回车键回到主菜单..."
 msgid "Title"
 msgstr "标题"
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:313
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:336
 msgid "Stop Service"
 msgstr "停止服务"
 

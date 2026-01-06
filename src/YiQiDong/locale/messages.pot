@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
-"POT-Creation-Date: 2026-01-06 11:13:57+0800\n"
-"PO-Revision-Date: 2026-01-06 11:13:57+0800\n"
+"POT-Creation-Date: 2026-01-06 11:26:31+0800\n"
+"PO-Revision-Date: 2026-01-06 11:26:31+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -14,9 +14,10 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:294
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:298
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:303
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:195
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:317
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:321
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:326
 msgid "No"
 msgstr ""
 
@@ -24,17 +25,42 @@ msgstr ""
 msgid "[Desktop shortcut created successfully]"
 msgstr ""
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:191
+msgid "Do you want to start the service?"
+msgstr ""
+
 #: ..\..\ArgsHandlers\Args_Empty.cs:36
 #, csharp-format
 msgid "Version: {0}"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:284
+msgid "Reloading service list..."
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:143
 msgid "[Configuration not modified]"
 msgstr ""
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:264
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:270
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:282
+msgid "Deleting service"
+msgstr ""
+
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:158
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:181
 msgid "Enabling service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:251
+msgid "Uninstallation detected, cannot uninstall again!"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:210
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:215
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:220
+msgid "Starting the service"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:48
@@ -42,6 +68,7 @@ msgid "Shotcut"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:149
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:170
 msgid "Modifying the installation directory in the service file..."
 msgstr ""
 
@@ -53,17 +80,45 @@ msgstr ""
 msgid "Edit Config"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:290
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:177
+msgid "Reloading service list"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:287
+msgid "Checking whether the 'YiQiDong' service has been completely removed"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:230
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:235
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:241
+msgid "Stopping service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:167
+#, csharp-format
+msgid "Allowing user [{0}] to linger"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:313
 msgid "Started"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:283
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:288
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:292
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:280
+msgid "Disabling service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:194
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:306
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:311
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:315
 msgid "Yes"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:328
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:185
+msgid "Installation Complete"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:351
 msgid "Install Service"
 msgstr ""
 
@@ -71,7 +126,7 @@ msgstr ""
 msgid "Service Manage"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:317
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:340
 msgid "Start Service"
 msgstr ""
 
@@ -96,6 +151,10 @@ msgstr ""
 msgid "Debug Run"
 msgstr ""
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:272
+msgid "Deleting service files"
+msgstr ""
+
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:50
 #, csharp-format
 msgid ""
@@ -116,15 +175,20 @@ msgid "Password"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:156
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:175
 msgid "Installing service files to the system service directory"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:291
+msgid "Uninstallation complete"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:308
+msgid "Enabled"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:154
 msgid "Deleting old desktop shortcuts"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:285
-msgid "Enabled"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:151
@@ -132,17 +196,21 @@ msgid "YiQiDong"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:82
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:356
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:379
 #, csharp-format
 msgid "Error when execute [{0}]"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:278
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:179
+msgid "Checking if the service has been loaded"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:301
 msgid "Service Status: "
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:318
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:323
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:341
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:346
 msgid "Uninstall Service"
 msgstr ""
 
@@ -154,7 +222,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:313
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:336
 msgid "Stop Service"
 msgstr ""
 

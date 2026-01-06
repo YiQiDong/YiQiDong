@@ -163,28 +163,36 @@ namespace YiQiDong.ArgsHandlers
                 //如果不是root用户登录，检查当前用户有没有设置
                 if (!UnixUtils.IsRuningWithRoot())
                 {
-                    ConsoleUtils.ExecuteShell($"正在允许用户[{username}]逗留", $"loginctl enable-linger {username}");
+                    //正在允许用户[{0}]逗留
+                    ConsoleUtils.ExecuteShell(Locale.GetString("Allowing user [{0}] to linger",username), $"loginctl enable-linger {username}");
                 }
-                Console.WriteLine("正在修改服务文件中的安装目录...");
+                //正在修改服务文件中的安装目录...
+                Console.WriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
                 var serviceFile = Consts.SERVICE_NAME_UNIX +".service";
                 QbFile.WriteLine(serviceFile, 5, $"ExecStart=/bin/sh {Environment.CurrentDirectory}/YiQiDong.sh start");
                 QbFile.WriteLine(serviceFile, 6, $"ExecStop=/bin/sh {Environment.CurrentDirectory}/YiQiDong.sh stop");
-                ConsoleUtils.ExecuteShell("正在将服务文件安装到系统服务目录", $"cp {serviceFile} {GetSystemdSystemFolder()}");
-                ConsoleUtils.ExecuteShell("正在重新加载服务列表", $"systemctl {GetSystemdAddonParameter()} daemon-reload");
-                ConsoleUtils.ExecuteShell("正在检查服务是否已经加载", $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}");
-                ConsoleUtils.ExecuteShell("正在启用服务", $"systemctl {GetSystemdAddonParameter()} enable {Consts.SERVICE_NAME_UNIX}");
+                //正在将服务文件安装到系统服务目录
+                ConsoleUtils.ExecuteShell(Locale.GetString("Installing service files to the system service directory"), $"cp {serviceFile} {GetSystemdSystemFolder()}");
+                //正在重新加载服务列表
+                ConsoleUtils.ExecuteShell(Locale.GetString("Reloading service list"), $"systemctl {GetSystemdAddonParameter()} daemon-reload");
+                //正在检查服务是否已经加载
+                ConsoleUtils.ExecuteShell(Locale.GetString("Checking if the service has been loaded"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}");
+                //正在启用服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Enabling service"), $"systemctl {GetSystemdAddonParameter()} enable {Consts.SERVICE_NAME_UNIX}");
             }
             Console.WriteLine("-----------------------------");
-            Console.WriteLine("安装完成");
+            //安装完成
+            Console.WriteLine(Locale.GetString("Installation Complete"));
             Console.WriteLine("-----------------------------");
 
             if (!OperatingSystem.IsMacOS())
             {
-                Console.WriteLine("是否启动服务？");
+                //是否启动服务?
+                Console.WriteLine(Locale.GetString("Do you want to start the service?"));
                 var isStartService = QbSelect.ArrowSelect(new Dictionary<string, string>()
                 {
-                    ["True"] = "是",
-                    ["False"] = "否"
+                    ["True"] = Locale.GetString("Yes"),
+                    ["False"] = Locale.GetString("No")
                 }.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 if (isStartService == "True")
                 {
@@ -198,15 +206,18 @@ namespace YiQiDong.ArgsHandlers
             if (OperatingSystem.IsWindows())
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "start", Consts.SERVICE_NAME_WIN32);
-                ConsoleUtils.ExecuteProcessStartInfo("正在启动服务", psi, true);
+                //正在启动服务
+                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Starting the service"), psi, true);
             }
             else if(OperatingSystem.IsMacOS())
             {
-                ConsoleUtils.ExecuteShell("正在启动服务", $"launchctl start {Consts.SERVICE_NAME_UNIX}");
+                //正在启动服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Starting the service"), $"launchctl start {Consts.SERVICE_NAME_UNIX}");
             }
             else
             {
-                ConsoleUtils.ExecuteShell("正在启动服务", $"systemctl {GetSystemdAddonParameter()} start {Consts.SERVICE_NAME_UNIX}");
+                //正在启动服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Starting the service"), $"systemctl {GetSystemdAddonParameter()} start {Consts.SERVICE_NAME_UNIX}");
             }
         }
 
@@ -215,16 +226,19 @@ namespace YiQiDong.ArgsHandlers
             if (OperatingSystem.IsWindows())
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "stop", Consts.SERVICE_NAME_WIN32);
-                ConsoleUtils.ExecuteProcessStartInfo("正在停止服务", psi, true);
+                //正在停止服务
+                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Stopping service"), psi, true);
             }
             else if(OperatingSystem.IsMacOS())
             {
-                ConsoleUtils.ExecuteShell("正在启动服务", $"launchctl stop {Consts.SERVICE_NAME_UNIX}");
+                //正在停止服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Stopping service"), $"launchctl stop {Consts.SERVICE_NAME_UNIX}");
                 Thread.Sleep(1000);
             }
             else
             {
-                ConsoleUtils.ExecuteShell("正在停止服务", $"systemctl {GetSystemdAddonParameter()} stop {Consts.SERVICE_NAME_UNIX}");
+                //正在停止服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Stopping service"), $"systemctl {GetSystemdAddonParameter()} stop {Consts.SERVICE_NAME_UNIX}");
             }
         }
 
@@ -233,7 +247,8 @@ namespace YiQiDong.ArgsHandlers
             var status = GetServiceStatus();
             if (!status.Installed)
             {
-                Console.WriteLine("检测到已经卸载，无法重复卸载！");
+                //检测到已经卸载，无法重复卸载！
+                Console.WriteLine(Locale.GetString("Uninstallation detected, cannot uninstall again!"));
                 return;
             }
 
@@ -245,27 +260,35 @@ namespace YiQiDong.ArgsHandlers
             if (OperatingSystem.IsWindows())
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "delete", Consts.SERVICE_NAME_WIN32);
-                ConsoleUtils.ExecuteProcessStartInfo("正在删除服务", psi, true);
+                //正在删除服务
+                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Deleting service"), psi, true);
             }
             else if (OperatingSystem.IsMacOS())
             {
                 var serviceFile = $"{Consts.SERVICE_NAME_UNIX}.plist";
-                ConsoleUtils.ExecuteShell("正在删除服务", $"launchctl remove {Consts.SERVICE_NAME_UNIX}");
-                ConsoleUtils.ExecuteShell("正在删除服务文件", $"rm ~/Library/LaunchAgents/{serviceFile}");
+                //正在删除服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Deleting service"), $"launchctl remove {Consts.SERVICE_NAME_UNIX}");
+                //正在删除服务文件
+                ConsoleUtils.ExecuteShell(Locale.GetString("Deleting service files"), $"rm ~/Library/LaunchAgents/{serviceFile}");
             }
             else
             {
                 var serviceFile = $"{Consts.SERVICE_NAME_UNIX}.service";
                 //如果服务已启用
                 if (status.Enabled)
-                    ConsoleUtils.ExecuteShell("正在禁用服务", $"systemctl {GetSystemdAddonParameter()} disable {Consts.SERVICE_NAME_UNIX}");
-                ConsoleUtils.ExecuteShell("正在删除服务", $"rm {GetSystemdSystemFolder()}/{serviceFile}");
-                ConsoleUtils.ExecuteShell("正在重新加载服务列表...", $"systemctl {GetSystemdAddonParameter()} daemon-reload");
+                    //正在禁用服务
+                    ConsoleUtils.ExecuteShell(Locale.GetString("Disabling service"), $"systemctl {GetSystemdAddonParameter()} disable {Consts.SERVICE_NAME_UNIX}");
+                //正在删除服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Deleting service"), $"rm {GetSystemdSystemFolder()}/{serviceFile}");
+                //正在重新加载服务列表...
+                ConsoleUtils.ExecuteShell(Locale.GetString("Reloading service list..."), $"systemctl {GetSystemdAddonParameter()} daemon-reload");
                 if (UnixUtils.IsRuningWithRoot())
-                    ConsoleUtils.ExecuteShell("正在检查《易启动》服务是否删除完成", $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
+                    //正在检查《易启动》服务是否删除完成
+                    ConsoleUtils.ExecuteShell(Locale.GetString("Checking whether the 'YiQiDong' service has been completely removed"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
             }
             Console.WriteLine("-----------------------------");
-            Console.WriteLine("卸载完成");
+            //卸载完成
+            Console.WriteLine(Locale.GetString("Uninstallation complete"));
             Console.WriteLine("-----------------------------");
         }
 

@@ -18,7 +18,7 @@ namespace YiQiDong.ArgsHandlers
             switch (firstArg)
             {
                 case "":
-                    Args_Empty.Invoke(args);
+                    Args_Empty.Invoke();
                     break;
                 case "-debug":
                     Program.Start();

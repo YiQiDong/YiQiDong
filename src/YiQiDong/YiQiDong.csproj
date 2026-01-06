@@ -43,6 +43,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\YiQiDong.Core\YiQiDong.Core.csproj" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<EmbeddedResource Include="locale/zh.mo" />
+	</ItemGroup>
 
 	<Choose>
 		<When Condition="'$(RuntimeIdentifier)'=='linux-x64' OR '$(RuntimeIdentifier)'=='linux-arm64' OR '$(RuntimeIdentifier)'=='linux-arm'">

@@ -1,14 +1,10 @@
-﻿using Microsoft.Extensions.Hosting;
-using Quick.Build;
+﻿using Quick.Build;
+using Quick.Localize;
 using Quick.Shell.PowerShell;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using System.Globalization;
 using System.Runtime.Versioning;
 using System.Text;
-using System.Threading;
 using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
 
@@ -23,27 +19,36 @@ namespace YiQiDong.ArgsHandlers
             public bool Started { get; set; } = false;
         }
 
-        internal static void Invoke(string[] args)
+        internal static void Invoke()
         {
+            Console.WriteLine("-----------------------------");
+            Console.WriteLine("   语言 / Language");
+            Console.WriteLine("-----------------------------");
+            var allLanguages = new string[] { "zh-CN", "en-US" };
+            var selectLanguageDict = allLanguages.ToDictionary(t => t, t => CultureInfo.GetCultureInfo(t).NativeName);
+            var selectedLanguage = QbSelect.ArrowSelect(selectLanguageDict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
+            GettextResourceManager.ChangeCurrentCulture(CultureInfo.GetCultureInfo(selectedLanguage));
+
             while (true)
             {
-                Console.WriteLine("-------欢迎使用易启动--------");
-                Console.WriteLine($"版本：{Consts.Version}");
-                Console.WriteLine($"架构：{Consts.ARCH}");
+                Console.WriteLine("-----------------------------");
+                Console.WriteLine(Locale.GetString("Welcome to use YiQiDong"));
+                Console.WriteLine(Locale.GetString("Version: {0}", Consts.Version));
+                Console.WriteLine(Locale.GetString("Architecture: {0}", Consts.ARCH));
                 Console.WriteLine("-----------------------------");
 
                 var select1Dict = new Dictionary<string, string>()
                 {
-                    ["Debug"] = "调试运行",
-                    ["ServiceManage"] = "服务管理",
-                    ["EditConfig"] = "编辑配置"
+                    ["Debug"] = Locale.GetString("Debug Run"),
+                    ["ServiceManage"] = Locale.GetString("Service Manage"),
+                    ["EditConfig"] = Locale.GetString("Edit Config")
                 };
                 if (OperatingSystem.IsWindows())
                 {
-                    select1Dict["Shotcut"] = "快捷方式";
+                    select1Dict["Shotcut"] = Locale.GetString("Shotcut");
                     //select1Dict["Test"] = "测试";
                 }
-                select1Dict["Exit"] = "退出";
+                select1Dict["Exit"] = Locale.GetString("Exit");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
                 Console.WriteLine($"----------{selectName}-----------");
@@ -74,9 +79,9 @@ namespace YiQiDong.ArgsHandlers
                 }
                 catch (Exception ex)
                 {
-                    ConsoleUtils.ConsoleWriteLine($"执行[{selectName}]时出错", ConsoleColor.Red);
+                    ConsoleUtils.ConsoleWriteLine(Locale.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
                     ConsoleUtils.ConsoleWriteLine(ExceptionUtils.GetExceptionString(ex), ConsoleColor.Red);
-                    Console.WriteLine("按回车键回到主菜单...");
+                    Console.WriteLine(Locale.GetString("Press Enter to return to the main menu..."));
                     Console.ReadLine();
                 }
             }
@@ -84,7 +89,7 @@ namespace YiQiDong.ArgsHandlers
 
         private static void Invoke_Test()
         {
-            
+
         }
 
         private static void Invoke_Debug()
@@ -98,14 +103,14 @@ namespace YiQiDong.ArgsHandlers
         {
             var changed = false;
             string line = null;
-            Console.Write($"标题[{Program.Config.Title}]：", ConsoleColor.Green);
+            Console.Write($"{Locale.GetString("Title")}[{Program.Config.Title}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
                 Program.Config.Title = line;
                 changed = true;
             }
-            Console.Write($"URL[{Program.Config.Urls}]：", ConsoleColor.Green);
+            Console.Write($"URL[{Program.Config.Urls}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
@@ -114,14 +119,14 @@ namespace YiQiDong.ArgsHandlers
                 Program.Config.Urls = line;
                 changed = true;
             }
-            Console.Write($"密码[{Program.Config.Password}]：", ConsoleColor.Green);
+            Console.Write($"{Locale.GetString("Password")}[{Program.Config.Password}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
                 Program.Config.Password = line;
                 changed = true;
             }
-            Console.Write($"数据目录[{Program.Config.DataFolder}]：", ConsoleColor.Green);
+            Console.Write($"{Locale.GetString("Data Folder")}[{Program.Config.DataFolder}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
@@ -131,11 +136,11 @@ namespace YiQiDong.ArgsHandlers
             if (changed)
             {
                 Program.Config.Save();
-                ConsoleUtils.ConsoleWriteLine("[已保存修改后的配置]", ConsoleColor.Green);
+                ConsoleUtils.ConsoleWriteLine($"{Locale.GetString("[The modified configuration has been saved]")}", ConsoleColor.Green);
             }
             else
             {
-                Console.WriteLine("[配置未修改]");
+                Console.WriteLine(Locale.GetString("[Configuration not modified]"));
             }
         }
 
@@ -143,10 +148,10 @@ namespace YiQiDong.ArgsHandlers
         [SupportedOSPlatform("windows")]
         private static void Invoke_Shotcut()
         {
-            var lnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "易启动.lnk");
+            var lnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Locale.GetString("YiQiDong") + ".lnk");
             if (File.Exists(lnkFile))
             {
-                ConsoleUtils.ExecuteAction("正在删除旧的桌面快捷方式", () => { File.Delete(lnkFile); });
+                ConsoleUtils.ExecuteAction(Locale.GetString("Deleting old desktop shortcuts"), () => { File.Delete(lnkFile); });
             }
             var executeFileName = Process.GetCurrentProcess().MainModule.FileName;
             var psFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.ps1");
@@ -159,9 +164,9 @@ $Shortcut.Save()
 Remove-Item ""{psFileName}""
 ";
             File.WriteAllText(psFileName, psFileContent, psFileEncoding);
-            ConsoleUtils.ExecuteFunc("正在创建桌面快捷方式",
+            ConsoleUtils.ExecuteFunc(Locale.GetString("Creating desktop shortcut"),
                 () => PowerShellProcessContext.ExecutePs1File(psFileName));
-            Console.WriteLine("[创建桌面快捷方式成功]");
+            Console.WriteLine(Locale.GetString("[Desktop shortcut created successfully]"));
         }
     }
 }

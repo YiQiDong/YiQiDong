@@ -2,7 +2,7 @@
   "profiles": {
     "YiQiDong": {
       "commandName": "Project",
-      "commandLineArgs": "-debug",
+      "commandLineArgs": "",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

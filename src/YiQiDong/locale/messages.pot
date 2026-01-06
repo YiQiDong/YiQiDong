@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
-"POT-Creation-Date: 2026-01-06 10:32:15+0800\n"
-"PO-Revision-Date: 2026-01-06 10:32:16+0800\n"
+"POT-Creation-Date: 2026-01-06 11:13:57+0800\n"
+"PO-Revision-Date: 2026-01-06 11:13:57+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -10,53 +10,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: GetText.NET Extractor\n"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:35
-msgid "Welcome to use YiQiDong"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:152
-msgid "YiQiDong"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:122
-msgid "Password"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:168
-msgid "Creating desktop shortcut"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:44
-msgid "Edit Config"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:48
-msgid "Shotcut"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:155
-msgid "Deleting old desktop shortcuts"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:42
-msgid "Debug Run"
-msgstr ""
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:139
-msgid "[The modified configuration has been saved]"
-msgstr ""
-
 #: ..\..\ArgsHandlers\Args_Empty.cs:51
 msgid "Exit"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:84
-msgid "Press Enter to return to the main menu..."
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:294
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:298
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:303
+msgid "No"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:37
-#, csharp-format
-msgid "Architecture: {0}"
+#: ..\..\ArgsHandlers\Args_Empty.cs:169
+msgid "[Desktop shortcut created successfully]"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:36
@@ -64,28 +29,136 @@ msgstr ""
 msgid "Version: {0}"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:170
-msgid "[Desktop shortcut created successfully]"
+#: ..\..\ArgsHandlers\Args_Empty.cs:143
+msgid "[Configuration not modified]"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:158
+msgid "Enabling service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:48
+msgid "Shotcut"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:149
+msgid "Modifying the installation directory in the service file..."
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:144
+msgid "Installing service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:44
+msgid "Edit Config"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:290
+msgid "Started"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:283
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:288
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:292
+msgid "Yes"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:328
+msgid "Install Service"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:43
 msgid "Service Manage"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:106
-msgid "Title"
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:317
+msgid "Start Service"
 msgstr ""
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:144
-msgid "[Configuration not modified]"
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:72
+msgid "Service does not exist"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:139
+msgid "[The modified configuration has been saved]"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:35
+msgid "Welcome to use YiQiDong"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:37
+#, csharp-format
+msgid "Architecture: {0}"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:42
+msgid "Debug Run"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:50
+#, csharp-format
+msgid ""
+"System configuration directory for systemd not found. Searched directories: "
+"{0}"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:167
+msgid "Creating desktop shortcut"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:129
 msgid "Data Folder"
 msgstr ""
 
+#: ..\..\ArgsHandlers\Args_Empty.cs:122
+msgid "Password"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:156
+msgid "Installing service files to the system service directory"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:154
+msgid "Deleting old desktop shortcuts"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:285
+msgid "Enabled"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:151
+msgid "YiQiDong"
+msgstr ""
+
 #: ..\..\ArgsHandlers\Args_Empty.cs:82
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:356
 #, csharp-format
 msgid "Error when execute [{0}]"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:278
+msgid "Service Status: "
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:318
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:323
+msgid "Uninstall Service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:84
+msgid "Press Enter to return to the main menu..."
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:106
+msgid "Title"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:313
+msgid "Stop Service"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:136
+msgid "Installation detected, cannot install again."
 msgstr ""
 

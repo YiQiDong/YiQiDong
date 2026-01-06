@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
-"POT-Creation-Date: 2026-01-06 10:32:15+0800\n"
-"PO-Revision-Date: 2026-01-06 10:33+0800\n"
+"POT-Creation-Date: 2026-01-06 11:13:57+0800\n"
+"PO-Revision-Date: 2026-01-06 11:15+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh\n"
@@ -11,81 +11,154 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:35
-msgid "Welcome to use YiQiDong"
-msgstr "欢迎使用易启动"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:152
-msgid "YiQiDong"
-msgstr "易启动"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:122
-msgid "Password"
-msgstr "密码"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:168
-msgid "Creating desktop shortcut"
-msgstr "正在创建桌面快捷方式"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:44
-msgid "Edit Config"
-msgstr "编辑配置"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:48
-msgid "Shotcut"
-msgstr "快捷方式"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:155
-msgid "Deleting old desktop shortcuts"
-msgstr "正在删除旧的桌面快捷方式"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:42
-msgid "Debug Run"
-msgstr "调试运行"
-
-#: ..\..\ArgsHandlers\Args_Empty.cs:139
-msgid "[The modified configuration has been saved]"
-msgstr "[已保存修改后的配置]"
-
 #: ..\..\ArgsHandlers\Args_Empty.cs:51
 msgid "Exit"
 msgstr "退出"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:84
-msgid "Press Enter to return to the main menu..."
-msgstr "按回车键回到主菜单..."
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:294
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:298
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:303
+msgid "No"
+msgstr "否"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:37
-#, csharp-format
-msgid "Architecture: {0}"
-msgstr "版本: {0}"
+#: ..\..\ArgsHandlers\Args_Empty.cs:169
+msgid "[Desktop shortcut created successfully]"
+msgstr "[创建桌面快捷方式成功]"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:36
 #, csharp-format
 msgid "Version: {0}"
 msgstr "架构: {0}"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:170
-msgid "[Desktop shortcut created successfully]"
-msgstr "[创建桌面快捷方式成功]"
+#: ..\..\ArgsHandlers\Args_Empty.cs:143
+msgid "[Configuration not modified]"
+msgstr "[配置未修改]"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:158
+msgid "Enabling service"
+msgstr "正在启用服务"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:48
+msgid "Shotcut"
+msgstr "快捷方式"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:149
+msgid "Modifying the installation directory in the service file..."
+msgstr "正在修改服务文件中的安装目录..."
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:144
+msgid "Installing service"
+msgstr "正在安装服务"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:44
+msgid "Edit Config"
+msgstr "编辑配置"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:290
+msgid "Started"
+msgstr "已启动"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:283
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:288
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:292
+msgid "Yes"
+msgstr "是"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:328
+msgid "Install Service"
+msgstr "安装服务"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:43
 msgid "Service Manage"
 msgstr "服务管理"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:106
-msgid "Title"
-msgstr "标题"
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:317
+msgid "Start Service"
+msgstr "启动服务"
 
-#: ..\..\ArgsHandlers\Args_Empty.cs:144
-msgid "[Configuration not modified]"
-msgstr "[配置未修改]"
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:72
+msgid "Service does not exist"
+msgstr "服务不存在"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:139
+msgid "[The modified configuration has been saved]"
+msgstr "[已保存修改后的配置]"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:35
+msgid "Welcome to use YiQiDong"
+msgstr "欢迎使用易启动"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:37
+#, csharp-format
+msgid "Architecture: {0}"
+msgstr "版本: {0}"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:42
+msgid "Debug Run"
+msgstr "调试运行"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:50
+#, csharp-format
+msgid ""
+"System configuration directory for systemd not found. Searched directories: "
+"{0}"
+msgstr "未找到systemd的system配置目录.已搜索目录: {0}"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:167
+msgid "Creating desktop shortcut"
+msgstr "正在创建桌面快捷方式"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:129
 msgid "Data Folder"
 msgstr "数据目录"
 
+#: ..\..\ArgsHandlers\Args_Empty.cs:122
+msgid "Password"
+msgstr "密码"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:156
+msgid "Installing service files to the system service directory"
+msgstr "正在将服务文件安装到系统服务目录"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:154
+msgid "Deleting old desktop shortcuts"
+msgstr "正在删除旧的桌面快捷方式"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:285
+msgid "Enabled"
+msgstr "已启用"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:151
+msgid "YiQiDong"
+msgstr "易启动"
+
 #: ..\..\ArgsHandlers\Args_Empty.cs:82
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:356
 #, csharp-format
 msgid "Error when execute [{0}]"
 msgstr "执行[{0}]时出错"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:278
+msgid "Service Status: "
+msgstr "服务状态: "
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:318
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:323
+msgid "Uninstall Service"
+msgstr "卸载服务"
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:84
+msgid "Press Enter to return to the main menu..."
+msgstr "按回车键回到主菜单..."
+
+#: ..\..\ArgsHandlers\Args_Empty.cs:106
+msgid "Title"
+msgstr "标题"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:313
+msgid "Stop Service"
+msgstr "停止服务"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:136
+msgid "Installation detected, cannot install again."
+msgstr "检测到已经安装，无法重复安装。"

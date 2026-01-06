@@ -46,7 +46,7 @@ namespace YiQiDong.ArgsHandlers
                 if (OperatingSystem.IsWindows())
                 {
                     select1Dict["Shotcut"] = Locale.GetString("Shotcut");
-                    //select1Dict["Test"] = "测试";
+                    //select1Dict["Test"] = Locale.GetString("Test");
                 }
                 select1Dict["Exit"] = Locale.GetString("Exit");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);

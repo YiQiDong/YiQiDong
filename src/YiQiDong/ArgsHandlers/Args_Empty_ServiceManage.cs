@@ -6,6 +6,7 @@ using System.Diagnostics;
 using YiQiDong.Utils;
 using Quick.Shell.Utils;
 using YiQiDong.Core.Utils.Unix;
+using Quick.Localize;
 
 namespace YiQiDong.ArgsHandlers
 {
@@ -46,7 +47,7 @@ namespace YiQiDong.ArgsHandlers
                 }
             }
             if (string.IsNullOrEmpty(systemdSystemFolder))
-                throw new IOException($"未找到systemd的system配置目录！已搜索目录：{string.Join(",", UnixSystemdSystemFolders)}");
+                throw new IOException(Locale.GetString("System configuration directory for systemd not found. Searched directories: {0}",string.Join(",", UnixSystemdSystemFolders)));
             return systemdSystemFolder;
         }
 
@@ -68,7 +69,7 @@ namespace YiQiDong.ArgsHandlers
         {
             var serviceController = GetWin32Service();
             if (serviceController == null)
-                throw new FileNotFoundException("服务不存在");
+                throw new FileNotFoundException(Locale.GetString("Service does not exist"));
             action.Invoke(serviceController);
         }
 
@@ -131,7 +132,8 @@ namespace YiQiDong.ArgsHandlers
             var status = GetServiceStatus();
             if (status.Installed)
             {
-                Console.WriteLine("检测到已经安装，无法重复安装！");
+                //检测到已经安装，无法重复安装。
+                Console.WriteLine(Locale.GetString("Installation detected, cannot install again."));
                 return;
             }
 
@@ -139,18 +141,21 @@ namespace YiQiDong.ArgsHandlers
             if (OperatingSystem.IsWindows())
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "create", Consts.SERVICE_NAME_WIN32, "binPath=", $"{executeFileName} -service", "start=", "delayed-auto", "DisplayName=", "易启动");
-                ConsoleUtils.ExecuteProcessStartInfo("正在安装服务", psi, true);
+                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Installing service"), psi, true);
             }
             else if (OperatingSystem.IsMacOS())
             {
-                Console.WriteLine("正在修改服务文件中的安装目录...");
+                //正在修改服务文件中的安装目录...
+                Console.WriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
                 var serviceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "LaunchAgents");
                 var serviceFile = $"{Consts.SERVICE_NAME_UNIX}.plist";
                 QbFile.WriteLine(serviceFile, 10, $"      <string>{Environment.CurrentDirectory}/YiQiDong</string>");
                 if (!Directory.Exists(serviceDir))
                     Directory.CreateDirectory(serviceDir);
-                ConsoleUtils.ExecuteShell("正在将服务文件安装到系统服务目录", $"cp {serviceFile} {serviceDir}/{serviceFile}");
-                ConsoleUtils.ExecuteShell("正在启用服务", $"launchctl load -w {serviceDir}/{serviceFile}");
+                //正在将服务文件安装到系统服务目录
+                ConsoleUtils.ExecuteShell(Locale.GetString("Installing service files to the system service directory"), $"cp {serviceFile} {serviceDir}/{serviceFile}");
+                //正在启用服务
+                ConsoleUtils.ExecuteShell(Locale.GetString("Enabling service"), $"launchctl load -w {serviceDir}/{serviceFile}");
             }
             else
             {
@@ -269,29 +274,33 @@ namespace YiQiDong.ArgsHandlers
             while (true)
             {
                 var status = GetServiceStatus();
-                Console.Write("服务状态:");
-                Console.Write("已安装");
+                //服务状态
+                Console.Write(Locale.GetString("Service Status: "));
+                //已安装
+                Console.Write("Installed");
                 if (status.Installed)
                 {
-                    ConsoleUtils.ConsoleWrite("[是]", ConsoleColor.Green);
-                    Console.Write(" 已启用");
+                    ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
+                    Console.Write(" ");
+                    Console.Write(Locale.GetString("Enabled"));
                     if (status.Enabled)
                     {
-                        ConsoleUtils.ConsoleWrite("[是]", ConsoleColor.Green);
-                        Console.Write(" 已启动");
+                        ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
+                        Console.Write(" ");
+                        Console.Write(Locale.GetString("Started"));
                         if (status.Started)
-                            ConsoleUtils.ConsoleWrite("[是]", ConsoleColor.Green);
+                            ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
                         else
-                            ConsoleUtils.ConsoleWrite("[否]", ConsoleColor.Red);
+                            ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
                     }
                     else
                     {
-                        ConsoleUtils.ConsoleWrite("[否]", ConsoleColor.Red);
+                        ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
                     }
                 }
                 else
                 {
-                    ConsoleUtils.ConsoleWrite("[否]", ConsoleColor.Red);
+                    ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
                 }
                 Console.WriteLine();
                 var select1Dict = new Dictionary<string, string>();
@@ -301,24 +310,24 @@ namespace YiQiDong.ArgsHandlers
                     {
                         if (status.Started)
                         {
-                            select1Dict["Stop"] = "停止服务";
+                            select1Dict["Stop"] = Locale.GetString("Stop Service");
                         }
                         else
                         {
-                            select1Dict["Start"] = "启动服务";
-                            select1Dict["Uninstall"] = "卸载服务";
+                            select1Dict["Start"] = Locale.GetString("Start Service");
+                            select1Dict["Uninstall"] = Locale.GetString("Uninstall Service");
                         }
                     }
                     else
                     {
-                        select1Dict["Uninstall"] = "卸载服务";
+                        select1Dict["Uninstall"] = Locale.GetString("Uninstall Service");
                     }
                 }
                 else
                 {
-                    select1Dict["Install"] = "安装服务";
+                    select1Dict["Install"] = Locale.GetString("Install Service");
                 }
-                select1Dict["Exit"] = "返回主菜单";
+                select1Dict["Exit"] = "Return to Main Menu";
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
                 Console.WriteLine($"----------{selectName}-----------");
@@ -344,7 +353,7 @@ namespace YiQiDong.ArgsHandlers
                 }
                 catch (Exception ex)
                 {
-                    ConsoleUtils.ConsoleWriteLine($"执行[{selectName}]时出错", ConsoleColor.Red);
+                    ConsoleUtils.ConsoleWriteLine(Locale.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
                     ConsoleUtils.ConsoleWriteLine(ExceptionUtils.GetExceptionMessage(ex), ConsoleColor.Red);
                 }
             }

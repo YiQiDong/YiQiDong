@@ -116,6 +116,8 @@ public abstract class AbstractAgent : IAgent
             }
         try
         {
+            if (request.FieldIds == null || request.Fields == null)
+                request = null;
             return function.Execute(request);
         }
         catch (Exception ex)

@@ -1,15 +1,11 @@
 ﻿using Quick.Shell.Utils;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using YiQiDong.Core.Protocol.V1.Model;
 using YiQiDong.Core.Utils;
 
 namespace YiQiDong.Agent.AgentTypes.AppSettings
 {
-    internal class AgentType : IAgentType
+    public class AgentType : IAgentType
     {
         private Process Process { get; set; }
         private StreamWriter Writer;

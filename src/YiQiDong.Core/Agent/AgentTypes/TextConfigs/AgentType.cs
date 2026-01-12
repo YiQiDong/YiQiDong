@@ -17,7 +17,7 @@ using YiQiDong.Core.Utils.Unix;
 
 namespace YiQiDong.Agent.AgentTypes.TextConfigs
 {
-    internal class AgentType : IAgentType
+    public class AgentType : IAgentType
     {
         internal ContainerMetaInfo metaInfo;
         internal ContainerConfigModel configModel;

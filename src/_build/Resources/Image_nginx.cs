@@ -1,13 +1,4 @@
 ﻿using _build.Resources.Core;
-using Quick.Build;
-using SharpCompress.Archives;
-using SharpCompress.Common;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;

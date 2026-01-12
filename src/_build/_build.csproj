@@ -9,12 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\YiQiDong\Agent\AgentTypes\TextConfigs\ContainerMetaInfo.cs" Link="Models\ContainerMetaInfo.cs" />
-		<Compile Include="..\YiQiDong\Agent\AgentTypes\TextConfigs\ConfigModel.cs" Link="Models\ConfigModel.cs" />		
-		<Compile Include="..\YiQiDong\Agent\AgentTypes\TextConfigs\EnvironmentVariableInfo.cs" Link="Models\EnvironmentVariableInfo.cs" />
-		<Compile Include="..\YiQiDong.Core\Protocol\V1\Model\ImageInfo.cs" Link="Models\ImageInfo.cs" />
-		<Compile Include="..\YiQiDong.Core\Protocol\V1\Model\RuntimeInfo.cs" Link="Models\RuntimeInfo.cs" />
-		<Compile Include="..\YiQiDong\Consts.cs" Link="Models\Consts.cs" />
+		<Compile Include="..\YiQiDong\Consts.cs" Link="Consts.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -27,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Models\" />
+	  <ProjectReference Include="..\YiQiDong.Core\YiQiDong.Core.csproj" />
 	</ItemGroup>
-
 </Project>

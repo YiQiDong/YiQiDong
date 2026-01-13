@@ -9,7 +9,7 @@ namespace YiQiDong.Utils
     {
         public static string GetImageFolder()
         {
-            return Path.Combine(FolderUtils.GetDataDir(), Consts.IMAGES_FOLDER);
+            return Path.Combine(FolderUtils.GetDataDir(), Core.Consts.IMAGES_FOLDER);
         }
 
         public static string GetImageFolder(string imageId)

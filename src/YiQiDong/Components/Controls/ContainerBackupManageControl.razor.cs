@@ -1,10 +1,5 @@
-﻿using Microsoft.JSInterop;
-using Quick.Blazor.Bootstrap;
-using System;
-using System.IO;
+﻿using Quick.Blazor.Bootstrap;
 using System.IO.Compression;
-using System.Threading.Tasks;
-using YiQiDong.Controllers;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
 using YiQiDong.Model;
@@ -28,7 +23,7 @@ namespace YiQiDong.Components.Controls
             YqdContainerInfo containerInfo = null;
             using (var zipArchive = ZipFile.OpenRead(file))
             {
-                var metaFileEntry = zipArchive.GetEntry(Consts.CONTAINER_META_FILE);
+                var metaFileEntry = zipArchive.GetEntry(Core.Consts.CONTAINER_META_FILE);
                 if (metaFileEntry == null)
                 {
                     modalAlert.Show("导入容器失败", "选择的文件中未找到容器元数据文件！");
@@ -83,7 +78,7 @@ namespace YiQiDong.Components.Controls
                                 foreach (var entry in zipArchive.Entries)
                                 {
                                     currentFile++;
-                                    if (entry.Name == Consts.CONTAINER_META_FILE)
+                                    if (entry.Name == Core.Consts.CONTAINER_META_FILE)
                                         continue;
                                     modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.FullName} ({storageUSC.GetString(entry.Length, 1, true)}B)");
                                     var extractFileName = Path.Combine(baseDir, entry.FullName);

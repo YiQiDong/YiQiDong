@@ -6,7 +6,7 @@ namespace YiQiDong.Utils
     {   
         public static string GetRuntimeFolder()
         {
-            return Path.Combine(FolderUtils.GetDataDir(), Consts.RUNTIMES_FOLDER);
+            return Path.Combine(FolderUtils.GetDataDir(), Core.Consts.RUNTIMES_FOLDER);
         }
 
         public static string GetRuntimeFolder(string runtimeId)

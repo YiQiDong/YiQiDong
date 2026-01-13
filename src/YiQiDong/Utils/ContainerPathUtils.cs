@@ -9,7 +9,7 @@ namespace YiQiDong.Utils
     {
         public static string GetContainerFolder()
         {
-            return Path.Combine(FolderUtils.GetDataDir(), Consts.CONTAINERS_FOLDER);
+            return Path.Combine(FolderUtils.GetDataDir(), Core.Consts.CONTAINERS_FOLDER);
         }
 
         public static string GetContainerFolder(string containerId)

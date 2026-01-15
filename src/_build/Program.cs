@@ -1,9 +1,7 @@
-﻿using _build;
-using Quick.Build;
+﻿using Quick.Build;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -128,7 +126,7 @@ else if(selectedBuildType =="YiQiDong.TestImage")
         Runtime = new[] { $"dotnet-8.0" },
         AgentStartup = $"{selectedBuildType}.dll"
     };
-    var metaFile = Path.Combine(publishFolder, IResource.IMAGE_META_FILE);
+    var metaFile = Path.Combine(publishFolder, YiQiDong.Core.Consts.IMAGE_META_FILE);
     File.WriteAllText(metaFile, JsonSerializer.Serialize(metaObj, new JsonSerializerOptions()
     {
         WriteIndented = true,
@@ -142,37 +140,6 @@ else if(selectedBuildType =="YiQiDong.TestImage")
     }
     Console.WriteLine("完成");
 }
-else if (selectedBuildType == "Images")
-{
-    var runtimeDict = new Dictionary<string, IResource>();
-    foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-    {
-        if (type.IsClass
-            && type.Name.StartsWith("Image_")
-            && typeof(IResource).IsAssignableFrom(type))
-        {
-            var runtime = (IResource)Activator.CreateInstance(type);
-            runtimeDict[runtime.Id] = runtime;
-        }
-    }
-    var selectRuntime = QbSelect.ArrowSelect(runtimeDict.ToDictionary(t => t.Key, t => t.Value.Name).ToArray(), selectedForegroundColor: ConsoleColor.Green);
-    runtimeDict[selectRuntime].Invoke();
-}
-else if (selectedBuildType == "Runtimes")
-{
-    var runtimeDict = new Dictionary<string, IResource>();
-    foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-    {
-        if (type.IsClass
-            && type.Name.StartsWith("Runtime_")
-            && typeof(IResource).IsAssignableFrom(type))
-        {
-            var runtime = (IResource)Activator.CreateInstance(type);
-            runtimeDict[runtime.Id] = runtime;
-        }
-    }
-    var selectRuntime = QbSelect.ArrowSelect(runtimeDict.ToDictionary(t => t.Key, t => t.Value.Name).ToArray(), selectedForegroundColor: ConsoleColor.Green);
-    runtimeDict[selectRuntime].Invoke();
-}
+
 //打开窗口
 QbGui.OpenFolder("bin");

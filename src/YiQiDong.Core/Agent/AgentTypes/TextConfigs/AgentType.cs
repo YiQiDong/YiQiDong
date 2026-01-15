@@ -1,14 +1,6 @@
 ﻿using Quick.Shell.Utils;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using YiQiDong.Agent.AgentTypes.AppSettings;
 using YiQiDong.Agent.AgentTypes.TextConfigs.Functions;
 using YiQiDong.Core;
 using YiQiDong.Core.Protocol.V1.Model;
@@ -54,6 +46,8 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                 {
                     if (path.Contains(item.Key))
                     {
+                        if (item.Value.Contains(item.Key))
+                            continue;
                         path = path.Replace(item.Key, item.Value);
                         isChanged = true;
                     }

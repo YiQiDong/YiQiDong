@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
-"POT-Creation-Date: 2026-01-06 11:26:31+0800\n"
-"PO-Revision-Date: 2026-01-06 11:26:31+0800\n"
+"POT-Creation-Date: 2026-01-15 18:59:07+0800\n"
+"PO-Revision-Date: 2026-01-15 18:59:07+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -103,6 +103,10 @@ msgstr ""
 msgid "Started"
 msgstr ""
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:353
+msgid "Return to Main Menu"
+msgstr ""
+
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:280
 msgid "Disabling service"
 msgstr ""
@@ -193,6 +197,10 @@ msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:151
 msgid "YiQiDong"
+msgstr ""
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:303
+msgid "Installed"
 msgstr ""
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:82

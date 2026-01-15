@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
-"POT-Creation-Date: 2026-01-06 11:26:31+0800\n"
-"PO-Revision-Date: 2026-01-15 17:37+0800\n"
+"POT-Creation-Date: 2026-01-15 18:59:07+0800\n"
+"PO-Revision-Date: 2026-01-15 18:59+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh\n"
@@ -104,6 +104,10 @@ msgstr "正在允许用户[{0}]逗留"
 msgid "Started"
 msgstr "已启动"
 
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:353
+msgid "Return to Main Menu"
+msgstr "返回主菜单"
+
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:280
 msgid "Disabling service"
 msgstr "正在禁用服务"
@@ -195,6 +199,10 @@ msgstr "正在删除旧的桌面快捷方式"
 #: ..\..\ArgsHandlers\Args_Empty.cs:151
 msgid "YiQiDong"
 msgstr "易启动"
+
+#: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:303
+msgid "Installed"
+msgstr "已安装"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:82
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:379

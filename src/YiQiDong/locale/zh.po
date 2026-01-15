@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: YiQiDong\n"
 "POT-Creation-Date: 2026-01-06 11:26:31+0800\n"
-"PO-Revision-Date: 2026-01-06 11:28+0800\n"
+"PO-Revision-Date: 2026-01-15 17:37+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh\n"
@@ -33,7 +33,7 @@ msgstr "是否启动服务?"
 #: ..\..\ArgsHandlers\Args_Empty.cs:36
 #, csharp-format
 msgid "Version: {0}"
-msgstr "架构: {0}"
+msgstr "版本: {0}"
 
 #: ..\..\ArgsHandlers\Args_Empty_ServiceManage.cs:284
 msgid "Reloading service list..."
@@ -146,7 +146,7 @@ msgstr "欢迎使用易启动"
 #: ..\..\ArgsHandlers\Args_Empty.cs:37
 #, csharp-format
 msgid "Architecture: {0}"
-msgstr "版本: {0}"
+msgstr "架构: {0}"
 
 #: ..\..\ArgsHandlers\Args_Empty.cs:42
 msgid "Debug Run"

@@ -25,9 +25,7 @@ Console.WriteLine("请选择编译类型：");
 var selectedBuildType = QbSelect.ArrowSelect(new Dictionary<string, string>()
 {
     ["YiQiDong"] = "易启动",
-    ["YiQiDong.TestImage"] = "易启动测试镜像",
-    ["Images"] = "常用镜像",
-    ["Runtimes"] = "常用运行库"
+    ["YiQiDong.TestImage"] = "易启动测试镜像"
 }.ToArray()
 , selectedForegroundColor: ConsoleColor.Green);
 
@@ -42,7 +40,7 @@ QbFolder.DeleteFolders("src", "Release", SearchOption.AllDirectories);
 if (selectedBuildType == "YiQiDong")
 {
     Console.WriteLine("请选择编译架构(一个都不勾选代表全选)：");
-    var allArchs = new[] { "win-x64", "linux-x64", "linux-arm64", "linux-arm"/*, "osx-x64"*/ };
+    var allArchs = new[] { "win-x86", "win-x64", "linux-x64", "linux-arm64", "linux-arm", "osx-x64", "osx-arm64" };
     var selectArchs = QbSelect.MultiSelect(allArchs.ToDictionary(t => t, t => t).ToArray(), selectedForegroundColor: ConsoleColor.Green);
     if (selectArchs == null || selectArchs.Length == 0)
         selectArchs = allArchs;

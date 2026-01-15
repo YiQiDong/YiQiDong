@@ -300,7 +300,7 @@ namespace YiQiDong.ArgsHandlers
                 //服务状态
                 Console.Write(Locale.GetString("Service Status: "));
                 //已安装
-                Console.Write("Installed");
+                Console.Write(Locale.GetString("Installed"));
                 if (status.Installed)
                 {
                     ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
@@ -350,7 +350,7 @@ namespace YiQiDong.ArgsHandlers
                 {
                     select1Dict["Install"] = Locale.GetString("Install Service");
                 }
-                select1Dict["Exit"] = "Return to Main Menu";
+                select1Dict["Exit"] = Locale.GetString("Return to Main Menu");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
                 Console.WriteLine($"----------{selectName}-----------");

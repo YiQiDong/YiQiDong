@@ -229,7 +229,7 @@ namespace YiQiDong.Components.Pages
             modalLoading.Show("正在更新", "准备中...", true);
             try
             {
-                modalLoading.UpdateProgress(null, "正在停止容器与群集...");
+                modalLoading.UpdateProgress(null, "正在停止容器...");
                 Program.StopContainers();
 
                 var installDir = Environment.CurrentDirectory;

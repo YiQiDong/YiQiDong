@@ -1,17 +1,10 @@
 ﻿using SharpCompress.Archives;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 using YiQiDong.Core.Protocol.V1.Model;
 using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
 using YiQiDong.Core.Utils.Unix;
-using SharpCompress.Readers;
 
 namespace YiQiDong.Core
 {
@@ -164,44 +157,40 @@ namespace YiQiDong.Core
 
                         //解压运行库文件
                         var currentEntryCount = 0;
-                        using (var reader = archive.ExtractAllEntries())
+                        foreach (var entry in archive.Entries)
                         {
-                            while (reader.MoveToNextEntry())
-                            {
-                                var entry = reader.Entry;
-                                if (cancellationToken.IsCancellationRequested)
-                                    break;
-                                currentEntryCount++;
-                                progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
+                            if (cancellationToken.IsCancellationRequested)
+                                break;
+                            currentEntryCount++;
+                            progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
 
-                                if (entry.IsDirectory)
-                                {
-                                    var dir = Path.Combine(tmpRuntimeDir, entry.Key);
-                                    if (!Directory.Exists(dir))
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dir);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                        }
-                                }
-                                else
-                                {
-                                    var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
-                                    var dir = Path.GetDirectoryName(ex_file);
-                                    if (!Directory.Exists(dir))
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dir);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                        }
-                                    await reader.WriteEntryToFileAsync(ex_file);
-                                }
+                            if (entry.IsDirectory)
+                            {
+                                var dir = Path.Combine(tmpRuntimeDir, entry.Key);
+                                if (!Directory.Exists(dir))
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                    }
+                            }
+                            else
+                            {
+                                var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
+                                var dir = Path.GetDirectoryName(ex_file);
+                                if (!Directory.Exists(dir))
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                    }
+                                await entry.WriteToFileAsync(ex_file);
                             }
                         }
                     }

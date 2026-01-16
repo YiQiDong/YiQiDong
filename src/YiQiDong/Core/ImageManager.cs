@@ -1,15 +1,6 @@
-﻿using NLog.Targets;
-using SharpCompress.Archives;
+﻿using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
-using SharpCompress.Readers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using YiQiDong.Core.Utils;
 using YiQiDong.Core.Utils.Unix;
 using YiQiDong.Protocol.V1.Model;
@@ -61,7 +52,7 @@ namespace YiQiDong.Core
                 var imageInfo = ImageInfo.Parse(content);
                 if (imageInfo == null)
                     return null;
-                imageInfo.Id = Path.GetFileName(dir);               
+                imageInfo.Id = Path.GetFileName(dir);
                 //添加权限(非Windows操作系统)
                 if (!OperatingSystem.IsWindows() && imageInfo.Path != null && imageInfo.Path.Length > 0)
                 {
@@ -171,44 +162,40 @@ namespace YiQiDong.Core
 
                         //解压镜像文件
                         var currentEntryCount = 0;
-                        using (var reader = archive.ExtractAllEntries())
+                        foreach (var entry in archive.Entries)
                         {
-                            while (reader.MoveToNextEntry())
-                            {
-                                var entry = reader.Entry;
-                                if (cancellationToken.IsCancellationRequested)
-                                    break;
-                                currentEntryCount++;
-                                progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
+                            if (cancellationToken.IsCancellationRequested)
+                                break;
+                            currentEntryCount++;
+                            progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
 
-                                if (entry.IsDirectory)
-                                {
-                                    var dir = Path.Combine(newImageDir, entry.Key);
-                                    if (!Directory.Exists(dir))
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dir);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                        }
-                                }
-                                else
-                                {
-                                    var ex_file = Path.Combine(newImageDir, entry.Key);
-                                    var dir = Path.GetDirectoryName(ex_file);
-                                    if (!Directory.Exists(dir))
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dir);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                        }
-                                    await reader.WriteEntryToFileAsync(ex_file);
-                                }
+                            if (entry.IsDirectory)
+                            {
+                                var dir = Path.Combine(newImageDir, entry.Key);
+                                if (!Directory.Exists(dir))
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                    }
+                            }
+                            else
+                            {
+                                var ex_file = Path.Combine(newImageDir, entry.Key);
+                                var dir = Path.GetDirectoryName(ex_file);
+                                if (!Directory.Exists(dir))
+                                    try
+                                    {
+                                        Directory.CreateDirectory(dir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                    }
+                                await entry.WriteToFileAsync(ex_file);
                             }
                         }
                     }

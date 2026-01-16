@@ -34,6 +34,7 @@
 		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2025.7.1217" />
 		<PackageReference Include="Quick.Protocol.AllClients" Version="2.6.6" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.6" />
+		<PackageReference Include="SharpCompress" Version="0.44.0" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.1" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />

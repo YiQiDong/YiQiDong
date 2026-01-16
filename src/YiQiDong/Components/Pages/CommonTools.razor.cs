@@ -39,11 +39,11 @@ namespace YiQiDong.Components.Pages
             //-----------
             //系统管理
             //-----------
-            yield return ToolInfo.Create<DateTimeManage>("系统管理", "日期时间", "fa fa-clock-o");
+            yield return ToolInfo.Create<SysTools.DateTimeManage>("系统管理", "日期时间", "fa fa-clock-o");
             if (OperatingSystem.IsLinux())
             {
                 yield return ToolInfo.Create<LinuxTools.NetworkInterfaceManage>("系统管理", "网卡管理", "fa fa-sitemap");
-                yield return ToolInfo.Create<LinuxTools.FirewallManage_iptables>("系统管理", "防火墙管理[iptables]", "fa fa-shield");
+                yield return ToolInfo.Create<LinuxTools.FirewallManage_iptables>("系统管理", "防火墙管理", "fa fa-shield");
             }
             var hostsFile = "/etc/hosts";
             if (OperatingSystem.IsWindows())

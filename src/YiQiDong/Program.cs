@@ -92,7 +92,7 @@ namespace YiQiDong
                             Console.WriteLine("正在初始化镜像管理器...");
                             ImageManager.Instance.Init();
                             Console.WriteLine("正在启动容器管理器...");
-                            ContainerManager.Instance.Init();
+                            ContainerManager.Instance.Start();
                         }
                         catch (Exception ex)
                         {

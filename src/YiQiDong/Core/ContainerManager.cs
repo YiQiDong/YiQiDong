@@ -35,36 +35,6 @@ namespace YiQiDong.Core
             ContainerChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Init()
-        {
-            var containersFolder = ContainerPathUtils.GetContainerFolder();
-            if (!Directory.Exists(containersFolder))
-                Directory.CreateDirectory(containersFolder);
-            foreach (var containerFolder in Directory.GetDirectories(containersFolder))
-            {
-                var containerMetaFile = Path.Combine(containerFolder, Consts.CONTAINER_META_FILE);
-                if (!File.Exists(containerMetaFile))
-                    continue;
-                var content = File.ReadAllText(containerMetaFile);
-                var containerMeta = YqdContainerInfo.Parse(content);
-                if (containerMeta == null)
-                    continue;
-                containerMeta.Id = Path.GetFileName(containerFolder);
-                containerMeta.Image = ImageManager.Instance.Get(containerMeta.ImageId);
-                
-                var containerContext = new ContainerContext(containerMeta);
-                containerContext.BeginEnable();
-                ContainerList.Add(containerContext);
-
-                //每加载一个启用的容器后，等待指定的间隔时间
-                if (containerMeta.Enable)
-                    Thread.Sleep(Program.Config.AgentInitInterval);
-            }
-            refreshContainerDict();
-            IsInited = true;
-            RaiseEvent_ContainerChanged();
-        }
-
         public Tuple<string, string> GenerateNewContainerIdAndName(string imageDefaultId, string imageName)
         {
             for (var i = 1; ; i++)
@@ -78,8 +48,40 @@ namespace YiQiDong.Core
             }
         }
 
+        public void Start()
+        {
+            var containersFolder = ContainerPathUtils.GetContainerFolder();
+            if (!Directory.Exists(containersFolder))
+                Directory.CreateDirectory(containersFolder);
+            ContainerList.Clear();
+            foreach (var containerFolder in Directory.GetDirectories(containersFolder))
+            {
+                var containerMetaFile = Path.Combine(containerFolder, Consts.CONTAINER_META_FILE);
+                if (!File.Exists(containerMetaFile))
+                    continue;
+                var content = File.ReadAllText(containerMetaFile);
+                var containerMeta = YqdContainerInfo.Parse(content);
+                if (containerMeta == null)
+                    continue;
+                containerMeta.Id = Path.GetFileName(containerFolder);
+                containerMeta.Image = ImageManager.Instance.Get(containerMeta.ImageId);
+
+                var containerContext = new ContainerContext(containerMeta);
+                containerContext.BeginEnable();
+                ContainerList.Add(containerContext);
+
+                //每加载一个启用的容器后，等待指定的间隔时间
+                if (containerMeta.Enable)
+                    Thread.Sleep(Program.Config.AgentInitInterval);
+            }
+            refreshContainerDict();
+            IsInited = true;
+            RaiseEvent_ContainerChanged();
+        }
+
         public void Stop()
         {
+            IsInited = false;
             List<Task> stopTaskList = new List<Task>();
             foreach (var container in ContainerList.ToArray())
             {
@@ -91,6 +93,8 @@ namespace YiQiDong.Core
                 }));
             }
             Task.WaitAll(stopTaskList.ToArray());
+            ContainerList.Clear();
+            refreshContainerDict();
         }
 
         public ContainerContext Get(string containerId)

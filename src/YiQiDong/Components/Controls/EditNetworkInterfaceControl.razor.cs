@@ -46,6 +46,14 @@ namespace YiQiDong.Components.Controls
         public ModalLoading modalLoading { get; private set; }
         public ModalAlert modalAlert { get; private set; }
 
+        private const string NETWORK_CONFIGS_FOLDER = $"/etc/network/interfaces.d";
+        private const string NETWORK_CONFIG_ENTRY_FILE = $"/etc/network/interfaces";
+
+        private int startLine = -1;
+        private int endLine = -1;
+        private string currentConfigFile = null;
+        private string[] currentConfigFileLines = null;
+
         private NetworkInterfaceConfig GetNetworkInterfaceConfig(DisplayNetworkInterfaceInfo model)
         {
             NetworkInterfaceConfig config = null;
@@ -56,53 +64,71 @@ namespace YiQiDong.Components.Controls
             else
             {
                 config = new NetworkInterfaceConfig() { Method = NetworkInterfaceMethod.DHCP };
-                var configFile = $"/etc/network/interfaces.d/{model.Name}";
-                if (!File.Exists(configFile))
-                    throw new IOException($"未找到网卡配置文件[{configFile}]！");
-                var lines = File.ReadAllLines(configFile);
-                foreach (var t in lines)
+                var allConfigFileList = Directory.GetFiles(NETWORK_CONFIGS_FOLDER).ToList();
+                allConfigFileList.Add(NETWORK_CONFIG_ENTRY_FILE);
+                foreach (var file in allConfigFileList)
                 {
-                    var line = t.Trim();
-                    if (string.IsNullOrEmpty(line))
-                        continue;
-                    //如果是注释
-                    if (line.StartsWith("#"))
-                        continue;
-                    var segments = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    var key = segments[0];
-                    switch (key)
+                    var lines = File.ReadAllLines(file);
+                    for (var i = 0; i < lines.Length; i++)
                     {
-                        case "iface":
-                            if (segments.Length >= 4)
-                            {
-                                switch (segments[3])
+                        var line = lines[i].Trim();
+                        //如果是注释
+                        if (line.StartsWith("#"))
+                            continue;
+                        if (line.StartsWith("auto ") && line.EndsWith(" " + model.Id))
+                        {
+                            startLine = i;
+                            currentConfigFile = file;
+                            currentConfigFileLines = lines;
+                        }
+                        if (startLine < 0)
+                            continue;
+
+                        //读取到空行，说明读取此网卡配置完成
+                        if (string.IsNullOrEmpty(line))
+                        {
+                            endLine = i;
+                            break;
+                        }
+
+                        var segments = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        var key = segments[0];
+                        switch (key)
+                        {
+                            case "iface":
+                                if (segments.Length >= 4)
                                 {
-                                    case "dhcp":
-                                        config.Method = NetworkInterfaceMethod.DHCP;
-                                        break;
-                                    case "static":
-                                        config.Method = NetworkInterfaceMethod.Static;
-                                        break;
+                                    switch (segments[3])
+                                    {
+                                        case "dhcp":
+                                            config.Method = NetworkInterfaceMethod.DHCP;
+                                            break;
+                                        case "static":
+                                            config.Method = NetworkInterfaceMethod.Static;
+                                            break;
+                                    }
                                 }
-                            }
-                            break;
-                        case "address":
-                            if (segments.Length >= 2)
-                                config.IPAddress = segments[1];
-                            break;
-                        case "netmask":
-                            if (segments.Length >= 2)
-                                config.NetMask = segments[1];
-                            break;
-                        case "gateway":
-                            if (segments.Length >= 2)
-                                config.Gateway = segments[1];
-                            break;
-                        case "dns-nameserver":
-                            if (segments.Length >= 2)
-                                config.DnsServer = segments[1];
-                            break;
+                                break;
+                            case "address":
+                                if (segments.Length >= 2)
+                                    config.IPAddress = segments[1];
+                                break;
+                            case "netmask":
+                                if (segments.Length >= 2)
+                                    config.NetMask = segments[1];
+                                break;
+                            case "gateway":
+                                if (segments.Length >= 2)
+                                    config.Gateway = segments[1];
+                                break;
+                            case "dns-nameserver":
+                                if (segments.Length >= 2)
+                                    config.DnsServer = segments[1];
+                                break;
+                        }
                     }
+                    if (endLine < 0)
+                        endLine = lines.Length;
                 }
             }
             return config;
@@ -133,23 +159,34 @@ namespace YiQiDong.Components.Controls
                     }
                     else
                     {
-                        var configFile = $"/etc/network/interfaces.d/{CurrentNetworkInterface.Name}";
-                        if (File.Exists(configFile))
-                            File.Delete(configFile);
-                        using (var fs = File.OpenWrite(configFile))
+                        var bakNetworkConfigFile = NETWORK_CONFIG_ENTRY_FILE + ".bak";
+                        if (File.Exists(bakNetworkConfigFile))
+                            File.Delete(bakNetworkConfigFile);
+                        File.Move(NETWORK_CONFIG_ENTRY_FILE, bakNetworkConfigFile);
+
+                        using (var fs = File.OpenWrite(currentConfigFile))
                         using (var writer = new StreamWriter(fs))
                         {
+                            //配置前面
+                            for (var i = 0; i < startLine; i++)
+                                writer.WriteLine(currentConfigFileLines[i]);
+                            //本网卡部分
                             writer.WriteLine($"auto {CurrentNetworkInterface.Name}");
                             writer.WriteLine($"iface {CurrentNetworkInterface.Name} inet {CurrentNetworkInterfaceConfig.Method.ToString().ToLower()}");
                             if (CurrentNetworkInterfaceConfig.Method == NetworkInterfaceMethod.Static)
                             {
-                                writer.WriteLine($"address {CurrentNetworkInterfaceConfig.IPAddress}");
-                                writer.WriteLine($"netmask {CurrentNetworkInterfaceConfig.NetMask}");
+                                if (!string.IsNullOrEmpty(CurrentNetworkInterfaceConfig.IPAddress))
+                                    writer.WriteLine($"address {CurrentNetworkInterfaceConfig.IPAddress}");
+                                if (!string.IsNullOrEmpty(CurrentNetworkInterfaceConfig.NetMask))
+                                    writer.WriteLine($"netmask {CurrentNetworkInterfaceConfig.NetMask}");
                                 if (!string.IsNullOrEmpty(CurrentNetworkInterfaceConfig.Gateway))
                                     writer.WriteLine($"gateway {CurrentNetworkInterfaceConfig.Gateway}");
                                 if (!string.IsNullOrEmpty(CurrentNetworkInterfaceConfig.DnsServer))
                                     writer.WriteLine($"dns-nameserver {CurrentNetworkInterfaceConfig.DnsServer}");
                             }
+                            //配置后面
+                            for (var i = endLine; i < currentConfigFileLines.Length; i++)
+                                writer.WriteLine(currentConfigFileLines[i]);
                         }
                     }
                     modalAlert.Show("成功", "修改网卡配置成功!", null, null);

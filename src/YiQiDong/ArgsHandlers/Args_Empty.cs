@@ -94,6 +94,7 @@ namespace YiQiDong.ArgsHandlers
 
         private static void Invoke_Debug()
         {
+            Program.IsDebugRuning = true;
             Program.Start();
             new HostBuilder().RunConsoleAsync().Wait();
             Program.Stop();

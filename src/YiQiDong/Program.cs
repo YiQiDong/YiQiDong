@@ -17,6 +17,8 @@ namespace YiQiDong
         private static Task waitForExitTask;
         private static WebApplication app;
         public static SystemInfoContext SystemInfoContext { get; private set; }
+        //是否正在调试运行
+        public static bool IsDebugRuning = false;
         //是否启动完成
         public static bool IsStartSuccess = true;
         public static string StartErrorMessage;

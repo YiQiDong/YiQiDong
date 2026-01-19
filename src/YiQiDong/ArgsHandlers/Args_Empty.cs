@@ -57,6 +57,7 @@ namespace YiQiDong.ArgsHandlers
                     switch (select1)
                     {
                         case "Debug":
+                            Program.IsDebugRuning = true;
                             Invoke_Debug();
                             break;
                         case "EditConfig":
@@ -94,7 +95,6 @@ namespace YiQiDong.ArgsHandlers
 
         private static void Invoke_Debug()
         {
-            Program.IsDebugRuning = true;
             Program.Start();
             new HostBuilder().RunConsoleAsync().Wait();
             Program.Stop();

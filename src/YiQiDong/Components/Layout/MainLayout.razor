@@ -78,6 +78,12 @@
                         警告：启动时出错，请在左侧“错误信息”菜单中查看详细错误日志。
                     </div>
                 }
+                @if (!Program.IsDebugRuning)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        警告：当前为调试运行，仅用于启动测试。正式使用时请使用服务方式运行。
+                    </div>
+                }
                 @Body
             </div>
         </div>

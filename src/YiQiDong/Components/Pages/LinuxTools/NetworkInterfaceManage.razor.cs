@@ -21,6 +21,7 @@ namespace YiQiDong.Components.Pages.LinuxTools
                 try
                 {
                     refreshNetworkInterfaces();
+                    InvokeAsync(StateHasChanged);
                 }
                 catch (Exception ex)
                 {

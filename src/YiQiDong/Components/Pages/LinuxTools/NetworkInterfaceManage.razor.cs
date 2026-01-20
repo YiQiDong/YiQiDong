@@ -2,7 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using YiQiDong.Core.Utils;
-using static YiQiDong.Components.Controls.EditNetworkInterfaceControl;
+using static YiQiDong.Components.Pages.LinuxTools.EditNetworkInterfaceControl;
 
 namespace YiQiDong.Components.Pages.LinuxTools
 {
@@ -65,7 +65,7 @@ namespace YiQiDong.Components.Pages.LinuxTools
             try
             {
                 modalWindow.Show($"编辑网卡[{model.Name}]",
-                    new DialogParameters<Controls.EditNetworkInterfaceControl>()
+                    new DialogParameters<EditNetworkInterfaceControl>()
                     {
                         {x=>x.CurrentNetworkInterface,model}
                     });

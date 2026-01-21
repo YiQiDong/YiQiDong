@@ -101,8 +101,7 @@ namespace YiQiDong.Components.Pages.LinuxTools
         public ModalAlert modalAlert { get; private set; }
 
         private const string NETWORK_CONFIGS_FOLDER = "/etc/network/interfaces.d";
-        private const string NETWORK_CONFIG_ENTRY_FILE = "/etc/network/interfaces";
-        
+        private const string NETWORK_CONFIG_ENTRY_FILE = "/etc/network/interfaces";        
 
         private ConfigFileInfo ActiveMethodConfig = null;
         private ConfigFileInfo IPv4Config = null;
@@ -132,6 +131,10 @@ namespace YiQiDong.Components.Pages.LinuxTools
                     {
                         isReadingIPv4Config = false;
                         isReadingIPv6Config = false;
+                        if (IPv4Config != null && IPv4Config.EndLine < 0)
+                            IPv4Config.EndLine = i;
+                        if (IPv6Config != null && IPv6Config.EndLine < 0)
+                            IPv6Config.EndLine = i;
                         continue;
                     }
                     var segments = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
@@ -151,15 +154,15 @@ namespace YiQiDong.Components.Pages.LinuxTools
                                     StartLine = i,
                                     EndLine = i + 1
                                 };
-                            }
-                            switch (key)
-                            {
-                                case "auto":
-                                    config.ActiveMetohd = ActiveMethod.Auto;
-                                    break;
-                                case "allow-hotplug":
-                                    config.ActiveMetohd = ActiveMethod.AllowHotPlug;
-                                    break;
+                                switch (key)
+                                {
+                                    case "auto":
+                                        config.ActiveMetohd = ActiveMethod.Auto;
+                                        break;
+                                    case "allow-hotplug":
+                                        config.ActiveMetohd = ActiveMethod.AllowHotPlug;
+                                        break;
+                                }
                             }
                             break;
                         case "iface":
@@ -268,6 +271,55 @@ namespace YiQiDong.Components.Pages.LinuxTools
             }
         }
 
+        private ConfigFileInfo NewConfigFileInfo(bool start)
+        {
+            string[] fileLines = [];
+            if (File.Exists(NETWORK_CONFIG_ENTRY_FILE))
+                fileLines = File.ReadAllLines(NETWORK_CONFIG_ENTRY_FILE);
+            int line;
+            if (start)
+                line = 0;
+            else
+                line = fileLines.Length;
+
+            return new ConfigFileInfo()
+            {
+                File = NETWORK_CONFIG_ENTRY_FILE,
+                FileLines = fileLines,
+                StartLine = line,
+                EndLine = line
+            };
+        }
+
+        private void WriteToConfigFile(ConfigFileInfo configFileInfo, string content)
+        {
+            //修改配置文件前，读取一次
+            GetNetworkInterfaceConfig(CurrentNetworkInterface);
+            //备份配置文件
+            if (File.Exists(configFileInfo.File))
+                File.Delete(configFileInfo.File);
+
+            var sb = new StringBuilder();
+
+            //配置前面
+            for (var i = 0; i < configFileInfo.StartLine; i++)
+                sb.AppendLine(configFileInfo.FileLines[i]);
+
+            if (!string.IsNullOrEmpty(content))
+                sb.AppendLine(content);
+
+            //配置后面
+            for (var i = configFileInfo.EndLine; i < configFileInfo.FileLines.Length; i++)
+                sb.AppendLine(configFileInfo.FileLines[i]);
+
+            var newLine = Environment.NewLine;
+            sb.Replace($"{newLine}{newLine}{newLine}", $"{newLine}{newLine}");
+            File.WriteAllText(configFileInfo.File, sb.ToString());
+            sb.Clear();
+            //修改配置文件后，再读取一次
+            GetNetworkInterfaceConfig(CurrentNetworkInterface);
+        }
+
         private async void OkEditNetworkInterface()
         {
             try
@@ -276,62 +328,40 @@ namespace YiQiDong.Components.Pages.LinuxTools
                 await Task.Run(async () =>
                 {
                     //配置网卡激活方式
-                    if (ActiveMethodConfig != null && CurrentNetworkInterfaceConfig.ActiveMetohd != ActiveMethod.None)
+                    if (ActiveMethodConfig == null)
+                        ActiveMethodConfig = NewConfigFileInfo(true);
                     {
-                        GetNetworkInterfaceConfig(CurrentNetworkInterface);
-                        var sb = new StringBuilder();
+                        string content = null;
                         switch (CurrentNetworkInterfaceConfig.ActiveMetohd)
                         {
                             case ActiveMethod.Auto:
-                                sb.Append("auto ");
+                                content = $"auto {CurrentNetworkInterface.Id}";
                                 break;
                             case ActiveMethod.AllowHotPlug:
-                                sb.Append("allow-hotplug ");
+                                content = $"allow-hotplug {CurrentNetworkInterface.Id}";
                                 break;
                         }
-                        sb.Append(CurrentNetworkInterface.Id);
-                        ActiveMethodConfig.FileLines[ActiveMethodConfig.StartLine] = sb.ToString();
-                        File.WriteAllLines(ActiveMethodConfig.File, ActiveMethodConfig.FileLines);
+                        WriteToConfigFile(ActiveMethodConfig, content);
                     }
                     //配置IPv4
+                    if (IPv4Config == null && CurrentNetworkInterfaceConfig.IPv4Config != null)
+                        IPv4Config = NewConfigFileInfo(false);
                     if (IPv4Config != null)
                     {
-                        GetNetworkInterfaceConfig(CurrentNetworkInterface);
-                        using (var fs = File.OpenWrite(IPv4Config.File))
-                        using (var writer = new StreamWriter(fs))
-                        {
-                            //配置前面
-                            for (var i = 0; i < IPv4Config.StartLine; i++)
-                                writer.WriteLine(IPv4Config.FileLines[i]);
-
-                            //本网卡部分
-                            if (CurrentNetworkInterfaceConfig.IPv4Config != null)
-                                writer.WriteLine(CurrentNetworkInterfaceConfig.IPv4Config.ToString(CurrentNetworkInterface.Id));
-
-                            //配置后面
-                            for (var i = IPv4Config.EndLine; i < IPv4Config.FileLines.Length; i++)
-                                writer.WriteLine(IPv4Config.FileLines[i]);
-                        }
+                        string content = null;
+                        if (CurrentNetworkInterfaceConfig.IPv4Config != null)
+                            content = CurrentNetworkInterfaceConfig.IPv4Config.ToString(CurrentNetworkInterface.Id);
+                        WriteToConfigFile(IPv4Config, content);
                     }
                     //配置IPv6
+                    if (IPv6Config == null && CurrentNetworkInterfaceConfig.IPv6Config != null)
+                        IPv6Config = NewConfigFileInfo(false);
                     if (IPv6Config != null)
                     {
-                        GetNetworkInterfaceConfig(CurrentNetworkInterface);
-                        using (var fs = File.OpenWrite(IPv6Config.File))
-                        using (var writer = new StreamWriter(fs))
-                        {
-                            //配置前面
-                            for (var i = 0; i < IPv6Config.StartLine; i++)
-                                writer.WriteLine(IPv6Config.FileLines[i]);
-
-                            //本网卡部分
-                            if (CurrentNetworkInterfaceConfig.IPv6Config != null)
-                                writer.WriteLine(CurrentNetworkInterfaceConfig.IPv6Config.ToString(CurrentNetworkInterface.Id));
-
-                            //配置后面
-                            for (var i = IPv6Config.EndLine; i < IPv6Config.FileLines.Length; i++)
-                                writer.WriteLine(IPv6Config.FileLines[i]);
-                        }
+                        string content = null;
+                        if (CurrentNetworkInterfaceConfig.IPv6Config != null)
+                            content = CurrentNetworkInterfaceConfig.IPv6Config.ToString(CurrentNetworkInterface.Id);
+                        WriteToConfigFile(IPv6Config, content);
                     }
                     modalAlert.Show("成功", "修改网卡配置成功!", null, null);
                     await InvokeAsync(StateHasChanged);

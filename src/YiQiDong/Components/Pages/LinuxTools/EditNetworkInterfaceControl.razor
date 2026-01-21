@@ -29,7 +29,7 @@
                                     @if (CurrentNetworkInterfaceConfig.IPv4Config == null)
                                     {
                                         <input type="checkbox" class="custom-control-input" id="customSwitchIPv4"
-                                            @onclick="@(e => CurrentNetworkInterfaceConfig.IPv4Config = new())">
+                                            @onclick="@(e => CurrentNetworkInterfaceConfig.IPv4Config = new(){ IPVersion = "inet"})">
                                     }
                                     else
                                     {
@@ -45,7 +45,7 @@
                                     @if (CurrentNetworkInterfaceConfig.IPv6Config == null)
                                     {
                                         <input type="checkbox" class="custom-control-input" id="customSwitchIPv6"
-                                            @onclick="@(e => CurrentNetworkInterfaceConfig.IPv6Config = new())">
+                                            @onclick="@(e => CurrentNetworkInterfaceConfig.IPv6Config = new(){ IPVersion = "inet6"})">
                                     }
                                     else
                                     {

@@ -80,9 +80,9 @@ namespace YiQiDong.Components.Controls
 
         private void ContainerConfigFiles()
         {
-            modalWindow.Show($"{Container.ContainerInfo.Name} - 配置文件", new DialogParameters<ContainerConfigFilesControl>
+            modalWindow.Show($"{Container.ContainerInfo.Name} - 配置文件", new DialogParameters<ConfigFilesControl>
             {
-                {x=>x.Container, Container}
+                {x=>x.ConfigFiles, Container.ConfigFiles}
             });
         }
 

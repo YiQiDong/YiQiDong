@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System.Collections.Generic;
-using System.Linq;
-using YiQiDong.Core;
 using YiQiDong.Core.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Controls
 {
-    public partial class ContainerConfigFilesControl
+    public partial class ConfigFilesControl
     {
         [Parameter]
-        public ContainerContext Container { get; set; }
+        public ConfigFileInfo[] ConfigFiles { get; set; }
 
         private Dictionary<string, ConfigFileInfo> configFileDict;
         private ConfigFileInfo ConfigFileInfo;
@@ -29,7 +26,7 @@ namespace YiQiDong.Components.Controls
 
         protected override void OnParametersSet()
         {
-            configFileDict = Container.ConfigFiles.ToDictionary(t => t.FilePath, t => t);
+            configFileDict = ConfigFiles.ToDictionary(t => t.FilePath, t => t);
             ConfigFile = configFileDict.Keys.FirstOrDefault();
         }
     }

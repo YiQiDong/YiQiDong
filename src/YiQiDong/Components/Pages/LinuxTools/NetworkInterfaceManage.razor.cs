@@ -1,8 +1,9 @@
 ﻿using Quick.Blazor.Bootstrap;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using YiQiDong.Core.Utils;
-using static YiQiDong.Components.Pages.LinuxTools.EditNetworkInterfaceControl;
+using Quick.Blazor.Bootstrap.Utils;
+using Quick.Shell.Utils;
+using Yarp.ReverseProxy.Utilities.Tls;
+using YiQiDong.Components.Controls;
+using YiQiDong.Core.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Pages.LinuxTools
 {
@@ -12,125 +13,84 @@ namespace YiQiDong.Components.Pages.LinuxTools
         public ModalAlert modalAlert { get; private set; }
         public ModalWindow modalWindow { get; private set; }
         public ToastStack toastStack { get; private set; }
-        private DisplayNetworkInterfaceInfo[] NetworkInterfaces;
 
-        protected override void OnAfterRender(bool firstRender)
+        private void editNetworkConfigFiles()
         {
-            if (firstRender)
+            string[] configFiles =
+            [
+                "/etc/network/interfaces"
+            ];
+            string[] configFolders =
+            [
+                "/etc/network/interfaces.d",
+                "/etc/netplan",
+                "/etc/sysconfig/network-scripts",
+                "/etc/systemd/network"
+            ];
+            var ConfigFileEncoding = "UTF-8";
+            var list = new List<ConfigFileInfo>();
+
+            foreach (var file in configFiles)
             {
-                try
+                if (!File.Exists(file))
+                    continue;
+                list.Add(new ConfigFileInfo()
                 {
-                    refreshNetworkInterfaces();
-                    InvokeAsync(StateHasChanged);
-                }
-                catch (Exception ex)
+                    Name = file,
+                    FilePath = file,
+                    FileEncoding = ConfigFileEncoding
+                });
+            }
+            foreach (var folder in configFolders)
+            {
+                if (!Directory.Exists(folder))
+                    continue;
+                foreach (var file in Directory.GetFiles(folder))
                 {
-                    modalAlert.Show("错误", ExceptionUtils.GetExceptionString(ex));
+                    list.Add(new ConfigFileInfo()
+                    {
+                        Name = file,
+                        FilePath = file,
+                        FileEncoding = ConfigFileEncoding
+                    });
                 }
             }
-        }
-
-        private void refreshNetworkInterfaces()
-        {
-            NetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces()
-                    .Where(t => t.NetworkInterfaceType != NetworkInterfaceType.Loopback
-                            && t.NetworkInterfaceType != NetworkInterfaceType.Ppp
-                            && t.NetworkInterfaceType != NetworkInterfaceType.Tunnel)
-                    .Select(t => new DisplayNetworkInterfaceInfo()
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Description = t.Description,
-                        MacAddress = t.GetPhysicalAddress()?.ToString(),
-                        IpAddress = string.Join(",", t.GetIPProperties().UnicastAddresses.Select(t => t.Address).Where(t => t.AddressFamily == AddressFamily.InterNetwork)),
-                        Status = t.OperationalStatus,
-                        Type = t.NetworkInterfaceType
-                    })
-                    .ToArray();
-        }
-
-        private void btnRefresh_Click()
-        {
-            modalLoading.Show("刷新网卡列表", "刷新网卡列表中...", true, null);
-            Task.Run(() =>
+            modalWindow.Show($"网络配置文件", new DialogParameters<ConfigFilesControl>
             {
-                refreshNetworkInterfaces();
-                modalLoading.Close();
-                InvokeAsync(StateHasChanged);
+                {x=>x.ConfigFiles, list.ToArray()}
             });
         }
 
-        private void EditNI(DisplayNetworkInterfaceInfo model)
+        private void restartNetworkService()
         {
-            try
+            modalAlert.Show("确认", "是否重启网络？", () =>
             {
-                modalWindow.Show($"编辑网卡[{model.Name}]",
-                    new DialogParameters<EditNetworkInterfaceControl>()
-                    {
-                        {x=>x.CurrentNetworkInterface,model}
-                    });
-            }
-            catch (Exception ex)
-            {
-                modalAlert.Show("获取网卡配置时出错", ExceptionUtils.GetExceptionString(ex), null, null);
-                return;
-            }
-        }
-
-        private void EnableNI(DisplayNetworkInterfaceInfo model)
-        {
-            modalAlert.Show(
-                "启用确认",
-                $"确定要启用网卡[{model.Name}]?",
-                () =>
+                Task.Run(() =>
                 {
-                    modalLoading.Show("启用网卡", $"正在启用网卡[{model.Name} - {model.Description}]...", true, null);
-                    Task.Run(() =>
+                    modalLoading.Show("重启网络服务", "正在重启网络服务...", true);
+                    try
                     {
-                        try
+                        var ret = ProcessUtils.ExecuteShell("systemctl list-unit-files systemd-networkd.service");
+                        if(ret.ExitCode==0)
                         {
-                            innerEnableNI(model);
-                            refreshNetworkInterfaces();
-                            toastStack.AddToast("信息", $"启用网卡[{model.Name} - {model.Description}]成功！", BackgroundTheme.success);
+                            ret = ProcessUtils.ExecuteShell("systemctl restart systemd-networkd");
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            toastStack.AddToast("错误", $"启用网卡网卡[{model.Name} - {model.Description}]时出错！原因：{ExceptionUtils.GetExceptionMessage(ex)}", BackgroundTheme.danger);
+                            ret = ProcessUtils.ExecuteShell("systemctl restart networking");
                         }
-                        refreshNetworkInterfaces();
-                        modalLoading.Close();
-                        InvokeAsync(() => StateHasChanged());
-                    });
-                },
-                null);
-        }
+                        if (ret.ExitCode != 0)
+                            throw new ApplicationException(ret.Error);
+                        modalAlert.Show("成功", "重启网络服务成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        modalAlert.Show("错误", "重启网络服务时出错，原因：" + ExceptionUtils.GetExceptionMessage(ex));
 
-        private void DislabeNI(DisplayNetworkInterfaceInfo model)
-        {
-            modalAlert.Show(
-                "禁用确认",
-                $"确定要禁用网卡[{model.Name}]?",
-                () =>
-                {
-                    modalLoading.Show("禁用网卡", $"正在禁用网卡[{model.Name} - {model.Description}]...", true, null);
-                    Task.Run(() =>
-                    {
-                        try
-                        {
-                            innerDisableNI(model);
-                            refreshNetworkInterfaces();
-                            toastStack.AddToast("信息", $"禁用网卡[{model.Name} - {model.Description}]成功！", BackgroundTheme.success);
-                        }
-                        catch (Exception ex)
-                        {
-                            toastStack.AddToast("错误", $"禁用网卡网卡[{model.Name} - {model.Description}]时出错！原因：{ExceptionUtils.GetExceptionMessage(ex)}", BackgroundTheme.danger);
-                        }
-                        refreshNetworkInterfaces();
-                        modalLoading.Close();
-                        InvokeAsync(() => StateHasChanged());
-                    });
-                },
-                null);
+                    }
+                    modalLoading.Close();
+                });
+            });
         }
     }
 }

@@ -38,16 +38,18 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
         pushLog($"开始对[{host}]进行TCP端口扫描...");
         try
         {
-            var client = new TcpClient();
             for (var i = 1; i < 65535; i++)
             {
-                try
+                using (var client = new TcpClient())
                 {
-                    await client.ConnectAsync(host, i);
-                    pushLog($"检测到端口[{i}]开放");
-                    client.Close();
+                    try
+                    {
+                        await client.ConnectAsync(host, i, cancellationToken);
+                        pushLog($"检测到端口[{i}]开放");
+                        client.Close();
+                    }
+                    catch { }
                 }
-                catch { }
             }
         }
         catch (OperationCanceledException) { }

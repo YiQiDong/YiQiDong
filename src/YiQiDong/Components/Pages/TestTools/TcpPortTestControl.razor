@@ -1,0 +1,30 @@
+﻿<div class="modal-body">
+    <EditForm Model="@this">
+        <DataAnnotationsValidator />
+        <div class="input-group mb-1">
+            @if(isTesting)
+            {
+                <div class="input-group-prepend">
+                    <span class="input-group-text">主机</span>
+                </div>
+                <InputText class="form-control" @bind-Value="host" readonly />
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" @onclick="stop">停止</button>
+                </div>
+            }
+            else
+            {
+                <div class="input-group-prepend">
+                    <span class="input-group-text">主机</span>
+                </div>
+                <InputText class="form-control" @bind-Value="host" />
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" @onclick="start">开始</button>
+                </div>
+            }
+        </div>
+    </EditForm>
+    <LogViewControl @ref="logViewControl">
+
+    </LogViewControl>
+</div>

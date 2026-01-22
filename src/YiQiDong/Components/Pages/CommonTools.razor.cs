@@ -65,18 +65,19 @@ namespace YiQiDong.Components.Pages
             //-----------
             //代理工具
             //-----------
-            yield return ToolInfo.Create<GlashServerControl>("代理工具", "Glash服务端","fa fa-server");
-            yield return ToolInfo.Create<GlashAgentControl>("代理工具", "Glash代理端","fa fa-black-tie");
-            yield return ToolInfo.Create<Glash.Blazor.Client.Main>("代理工具", "Glash客户端","fa fa-coffee");
+            yield return ToolInfo.Create<GlashServerControl>("代理工具", "Glash服务端", "fa fa-server");
+            yield return ToolInfo.Create<GlashAgentControl>("代理工具", "Glash代理端", "fa fa-black-tie");
+            yield return ToolInfo.Create<Glash.Blazor.Client.Main>("代理工具", "Glash客户端", "fa fa-coffee");
             yield return ToolInfo.Create<Quick.Blazor.Bootstrap.ReverseProxy.ReverseProxyManageControl>("代理工具", "反向代理", "fa fa-paper-plane");
-            yield return ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理工具", "代理下载","fa fa-cloud-download");
+            yield return ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProxyDownloadControl>("代理工具", "代理下载", "fa fa-cloud-download");
             //-----------
             //其他工具
             //-----------
-            yield return ToolInfo.Create<TestTools.PingTestControl>("其他工具","Ping测试","fa fa-bolt");
-            yield return  ToolInfo.Create<TestTools.TcpTestControl>("其他工具","TCP测试","fa fa-bolt");
+            yield return ToolInfo.Create<TestTools.PingTestControl>("其他工具", "Ping测试", "fa fa-bolt");
+            yield return ToolInfo.Create<TestTools.TcpTestControl>("其他工具", "TCP测试", "fa fa-bolt");
+            yield return ToolInfo.Create<TestTools.TcpPortTestControl>("其他工具", "TCP端口扫描", "fa fa-bolt");
             yield return ToolInfo.Create<DevTools.RasKeyPairGenerator>("其他工具", "RSA密钥对生成", "fa fa-bolt");
-            yield return ToolInfo.Create<DevTools.GuidGenerator>("其他工具", "GUID生成", "fa fa-bolt");           
+            yield return ToolInfo.Create<DevTools.GuidGenerator>("其他工具", "GUID生成", "fa fa-bolt");
         }
 
         public void Show(ToolInfo toolInfo)

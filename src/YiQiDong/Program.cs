@@ -25,14 +25,8 @@ namespace YiQiDong
 
         public static Model.ConfigModel Config { get; private set; }
 
-        private static async Task TestMethod()
-        {
-            Console.WriteLine("Hello");
-        }
-
         internal static void LoadConfig()
         {
-            _ = TestMethod();
             Quick.Protocol.QpAllClients.RegisterUriSchema();
             Quick.Blazor.Bootstrap.Admin.FileManageControl.DownloadFileAction = Controllers.FileController.BlazorDownloadFile;
             Quick.Localize.GettextResourceManager.ChangeCurrentCulture(CultureInfo.GetCultureInfo("zh-CN"));

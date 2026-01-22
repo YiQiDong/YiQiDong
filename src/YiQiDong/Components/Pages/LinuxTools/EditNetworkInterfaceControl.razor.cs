@@ -10,22 +10,6 @@ namespace YiQiDong.Components.Pages.LinuxTools
 {
     public partial class EditNetworkInterfaceControl
     {
-        public enum ActiveMethod
-        {
-            /// <summary>
-            /// 无
-            /// </summary>
-            None,
-            /// <summary>
-            /// 自动激活
-            /// </summary>
-            Auto,
-            /// <summary>
-            /// 插入网线时激活
-            /// </summary>
-            AllowHotPlug
-        }
-
         public enum NetworkInterfaceMethod
         {
             DHCP,
@@ -74,8 +58,6 @@ namespace YiQiDong.Components.Pages.LinuxTools
 
         public class NetworkInterfaceConfig
         {
-            [Required(ErrorMessage = "必须选择激活方式")]
-            public ActiveMethod ActiveMetohd { get; set; }
             public NetworkInterfaceNetworkConfig IPv4Config { get; set; }
             public NetworkInterfaceNetworkConfig IPv6Config { get; set; }
         }
@@ -109,7 +91,7 @@ namespace YiQiDong.Components.Pages.LinuxTools
 
         private NetworkInterfaceConfig GetNetworkInterfaceConfig(DisplayNetworkInterfaceInfo model)
         {
-            var config = new NetworkInterfaceConfig() { ActiveMetohd = ActiveMethod.None };
+            var config = new NetworkInterfaceConfig();
             var allConfigFileList = new List<string>();
             if (Directory.Exists(NETWORK_CONFIGS_FOLDER))
                 allConfigFileList.AddRange(Directory.GetFiles(NETWORK_CONFIGS_FOLDER));
@@ -143,28 +125,6 @@ namespace YiQiDong.Components.Pages.LinuxTools
                     var key = segments[0];
                     switch (key)
                     {
-                        case "auto":
-                        case "allow-hotplug":
-                            if (segments.Length >= 2 && segments[1] == model.Id)
-                            {
-                                ActiveMethodConfig = new ConfigFileInfo()
-                                {
-                                    File = file,
-                                    FileLines = lines,
-                                    StartLine = i,
-                                    EndLine = i + 1
-                                };
-                                switch (key)
-                                {
-                                    case "auto":
-                                        config.ActiveMetohd = ActiveMethod.Auto;
-                                        break;
-                                    case "allow-hotplug":
-                                        config.ActiveMetohd = ActiveMethod.AllowHotPlug;
-                                        break;
-                                }
-                            }
-                            break;
                         case "iface":
                             if (segments.Length >= 4 && segments[1] == model.Id)
                             {
@@ -327,22 +287,6 @@ namespace YiQiDong.Components.Pages.LinuxTools
                 modalLoading.Show($"修改网卡[{CurrentNetworkInterface.Name}]配置中...", null, true, null);
                 await Task.Run(async () =>
                 {
-                    //配置网卡激活方式
-                    if (ActiveMethodConfig == null)
-                        ActiveMethodConfig = NewConfigFileInfo(true);
-                    {
-                        string content = null;
-                        switch (CurrentNetworkInterfaceConfig.ActiveMetohd)
-                        {
-                            case ActiveMethod.Auto:
-                                content = $"auto {CurrentNetworkInterface.Id}";
-                                break;
-                            case ActiveMethod.AllowHotPlug:
-                                content = $"allow-hotplug {CurrentNetworkInterface.Id}";
-                                break;
-                        }
-                        WriteToConfigFile(ActiveMethodConfig, content);
-                    }
                     //配置IPv4
                     if (IPv4Config == null && CurrentNetworkInterfaceConfig.IPv4Config != null)
                         IPv4Config = NewConfigFileInfo(false);

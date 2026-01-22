@@ -15,15 +15,6 @@
                         <Tab>基础</Tab>
                         <ChildContent>
                             <div class="form-group">
-                                <label>激活方式</label>
-                                <InputSelect @bind-Value="CurrentNetworkInterfaceConfig.ActiveMetohd" class="form-control">
-                                    <option value="None">无</option>
-                                    <option value="Auto">自动激活</option>
-                                    <option value="AllowHotPlug">插入网线时激活</option>
-                                </InputSelect>
-                                <ValidationMessage For="@(() => CurrentNetworkInterfaceConfig.ActiveMetohd)" />
-                            </div>
-                            <div class="form-group">
                                 <label>IPv4</label>
                                 <div class="custom-control custom-switch">
                                     @if (CurrentNetworkInterfaceConfig.IPv4Config == null)

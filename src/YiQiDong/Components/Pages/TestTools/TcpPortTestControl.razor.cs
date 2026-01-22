@@ -40,6 +40,8 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
         {
             for (var i = 1; i < 65535; i++)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
                 using (var client = new TcpClient())
                 {
                     try

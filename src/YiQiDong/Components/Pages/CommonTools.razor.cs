@@ -42,7 +42,7 @@ namespace YiQiDong.Components.Pages
             yield return ToolInfo.Create<SysTools.DateTimeManage>("系统管理", "日期时间", "fa fa-clock-o");
             if (OperatingSystem.IsLinux())
             {
-                yield return ToolInfo.Create<LinuxTools.NetworkInterfaceManage>("系统管理", "网卡管理", "fa fa-sitemap");
+                yield return ToolInfo.Create<LinuxTools.NetworkInterfaceManage>("系统管理", "网络配置", "fa fa-sitemap");
                 yield return ToolInfo.Create<LinuxTools.FirewallManage_iptables>("系统管理", "防火墙管理", "fa fa-shield");
             }
             var hostsFile = "/etc/hosts";

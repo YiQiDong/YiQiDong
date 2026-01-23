@@ -1,5 +1,6 @@
 ﻿using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Utils;
+using Quick.Shell;
 using Quick.Shell.Utils;
 using Yarp.ReverseProxy.Utilities.Tls;
 using YiQiDong.Components.Controls;
@@ -61,6 +62,26 @@ namespace YiQiDong.Components.Pages.LinuxTools
             });
         }
 
+        private ShellProcessResult inner_restartNetworkService()
+        {
+            string[] networkServiceNames =
+            [
+                "systemd-networkd",
+                "networking",
+                "network"
+            ];
+            foreach (var networkServiceName in networkServiceNames)
+            {
+                var ret = ProcessUtils.ExecuteShell($"systemctl list-unit-files {networkServiceName}.service");
+                if (ret.ExitCode == 0 && !ret.Output.Contains("disabled"))
+                {
+                    ret = ProcessUtils.ExecuteShell($"systemctl restart {networkServiceName}");
+                    return ret;
+                }
+            }
+            throw new NotImplementedException("未找到启用的网络服务！");
+        }
+
         private void restartNetworkService()
         {
             modalAlert.Show("确认", "是否重启网络？", () =>
@@ -70,15 +91,7 @@ namespace YiQiDong.Components.Pages.LinuxTools
                     modalLoading.Show("重启网络服务", "正在重启网络服务...", true);
                     try
                     {
-                        var ret = ProcessUtils.ExecuteShell("systemctl list-unit-files systemd-networkd.service");
-                        if(ret.ExitCode==0)
-                        {
-                            ret = ProcessUtils.ExecuteShell("systemctl restart systemd-networkd");
-                        }
-                        else
-                        {
-                            ret = ProcessUtils.ExecuteShell("systemctl restart networking");
-                        }
+                        var ret = inner_restartNetworkService();
                         if (ret.ExitCode != 0)
                             throw new ApplicationException(ret.Error);
                         modalAlert.Show("成功", "重启网络服务成功");

@@ -4,16 +4,20 @@
 {
     <TextEditControl File="@ConfigFileInfo.FilePath" EncodingDict="@FileManageControl.EncodingDict"
     FileEncoding="@(ConfigFileInfo.FileEncoding?? FileManageControl.EncodingDict.Keys.FirstOrDefault())">
-    <ToolbarAddonControls>
-        <div class="input-group input-group-sm mb-1 mr-1">
-            <div class="input-group-prepend">
-                <div class="input-group-text">文件</div>
-            </div>
-            <InputSelect @bind-Value="@ConfigFile" class="form-control">
-                @foreach (var t in configFileDict.Values)
-                    {
-                        <option value="@t.FilePath">@t.Name</option>
-                    }
+        <ToolbarAddonControls>
+            @if(ToolbarAddonButtons!=null)
+            {
+                @ToolbarAddonButtons                
+            }
+            <div class="input-group input-group-sm mb-1 mr-1">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">文件</div>
+                </div>
+                <InputSelect @bind-Value="@ConfigFile" class="form-control">
+                    @foreach (var t in configFileDict.Values)
+                        {
+                            <option value="@t.FilePath">@t.Name</option>
+                        }
                 </InputSelect>
             </div>
         </ToolbarAddonControls>

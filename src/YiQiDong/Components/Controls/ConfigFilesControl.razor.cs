@@ -7,6 +7,8 @@ namespace YiQiDong.Components.Controls
     {
         [Parameter]
         public ConfigFileInfo[] ConfigFiles { get; set; }
+        [Parameter]
+        public RenderFragment ToolbarAddonButtons { get; set; }
 
         private Dictionary<string, ConfigFileInfo> configFileDict;
         private ConfigFileInfo ConfigFileInfo;

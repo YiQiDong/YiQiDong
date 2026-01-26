@@ -1,22 +1,22 @@
 ﻿@using System.Net.Sockets
 @using System.Net.NetworkInformation
+@using YiQiDong.Components.Controls
 
 <ToastStack @ref="toastStack" />
 
-<div class="sticky-top">
-    <div class="btn-toolbar m-2">
-        <div class="btn-group mr-2">
-            <button type="button" class="btn btn-sm btn-secondary" @onclick="editNetworkConfigFiles">
-                <i class="fa fa-pencil" aria-hidden="true"></i> 网络配置文件
+<ConfigFilesControl ConfigFiles="@networkConfigFiles">
+    <ToolbarAddonButtons>
+        <div class="input-group input-group-sm mb-1">
+            <button type="button" class="btn btn-sm btn-secondary mr-1" @onclick="restartNetworkService">
+                <i class="fa fa-refresh" aria-hidden="true"></i> 重启服务
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary mr-1" @onclick="help">
+                <i class="fa fa-question-circle-o" aria-hidden="true"></i> 帮助
             </button>
         </div>
-        <div class="btn-group mr-2">
-            <button type="button" class="btn btn-sm btn-secondary" @onclick="restartNetworkService">
-                <i class="fa fa-refresh" aria-hidden="true"></i> 重启网络服务
-            </button>
-        </div>
-    </div>
-</div>
+    </ToolbarAddonButtons>
+</ConfigFilesControl>
+
 <ModalLoading @ref="modalLoading" />
 <ModalAlert @ref="modalAlert" />
 <ModalWindow @ref="modalWindow" DialogSizeExtraLarge="true" DialogCentered="false" />

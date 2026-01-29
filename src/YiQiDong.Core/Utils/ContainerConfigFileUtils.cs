@@ -10,6 +10,8 @@ public class ContainerConfigFileUtils
         if (configFolders != null)
             foreach (var folder in configFolders)
             {
+                if (!Directory.Exists(folder))
+                    continue;
                 var folderLastName = Path.GetFileName(folder);
                 foreach (var file in Directory.GetFiles(folder))
                 {
@@ -26,6 +28,8 @@ public class ContainerConfigFileUtils
             foreach (var item in configFiles)
             {
                 var file = item.Key;
+                if (!File.Exists(file))
+                    continue;
                 list.Add(new ConfigFileInfo()
                 {
                     Name = item.Value,

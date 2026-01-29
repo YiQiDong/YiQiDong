@@ -15,11 +15,6 @@ public abstract class AbstractAgent : IAgent
     public virtual string ProcessName => DEFAULT_PROCESS_NAME;
     public virtual string ConfigFilesFunctionName { get; }
     public virtual ConfigFileInfo[] GetConfigFiles() => null;
-    public event EventHandler FunctionListChanged;
-    protected void RaiseEvent_FunctionListChanged()
-    {
-        FunctionListChanged?.Invoke(this, EventArgs.Empty);
-    }
 
     public virtual void Init()
     {
@@ -33,12 +28,12 @@ public abstract class AbstractAgent : IAgent
 
     public virtual void Start()
     {
-        RaiseEvent_FunctionListChanged();
+        AgentContext.RaiseEvent_FunctionListChanged();
     }
 
     public virtual void Stop()
     {
-        RaiseEvent_FunctionListChanged();
+        AgentContext.RaiseEvent_FunctionListChanged();
         AbstractSessionFunction[] sessionFunctions = null;
         lock (sessionFunctionDict)
         {

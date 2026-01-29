@@ -228,9 +228,15 @@ public class ContainerContext : IDisposable
     {
         Task.Run(async () =>
         {
-            var ret = await ProcessChannel?.SendCommand(new YiQiDong.Protocol.V1.QpCommands.GetFunctionList.Request());
-            Functions = ret.Items;
-
+            try
+            {
+                var ret = await ProcessChannel?.SendCommand(new YiQiDong.Protocol.V1.QpCommands.GetFunctionList.Request());
+                Functions = ret.Items;
+            }
+            catch (Exception ex)
+            {
+                pushLog(LogLevel.Warn, $"[平台]刷新容器功能列表时出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
+            }
             RaiseEvent_FunctionListChanged();
         });
     }
@@ -245,8 +251,10 @@ public class ContainerContext : IDisposable
                 ConfigFileFunctionName = rep.FunctionName ?? "配置文件";
                 ConfigFiles = rep.Items;
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                pushLog(LogLevel.Warn, $"[平台]刷新配置文件列表时出错，原因：{ExceptionUtils.GetExceptionString(ex)}");
+            }
             RaiseEvent_ConfigFileListChanged();
         });
     }

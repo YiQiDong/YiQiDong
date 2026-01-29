@@ -24,10 +24,6 @@ namespace YiQiDong.Core
         /// <returns></returns>
         ConfigFileInfo[] GetConfigFiles();
         /// <summary>
-        /// 功能列表已改变事件
-        /// </summary>
-        event EventHandler FunctionListChanged;
-        /// <summary>
         /// 获取功能列表
         /// </summary>
         /// <returns></returns>

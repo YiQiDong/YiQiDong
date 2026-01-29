@@ -104,11 +104,6 @@ public class AgentContext
         if (OperatingSystem.IsLinux())
             UnixUtils.SetProcessName(Agent.ProcessName);
 
-        Agent.FunctionListChanged += (sender, e) =>
-        {
-            Client?.SendNoticePackage(new Protocol.V1.QpNotices.FunctionListChangedNotice());
-        };
-
         if (!IsContainerRuning)
         {
             Agent.Init();
@@ -217,5 +212,15 @@ public class AgentContext
             //发送容器已停止通知
             Client?.SendNoticePackage(new Protocol.V1.QpNotices.ContainerStopedNotice());
         }
+    }
+
+    public static void RaiseEvent_FunctionListChanged()
+    {
+        Client?.SendNoticePackage(new Protocol.V1.QpNotices.FunctionListChangedNotice());
+    }
+
+    public static void RaiseEvent_ConfigFileListChanged()
+    {
+        Client?.SendNoticePackage(new Protocol.V1.QpNotices.ConfigFileListChangedNotice());
     }
 }

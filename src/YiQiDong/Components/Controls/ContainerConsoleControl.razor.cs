@@ -52,7 +52,7 @@ namespace YiQiDong.Components.Controls
 
         private void ContainerConfigFiles()
         {
-            modalWindow.Show($"{Container.ContainerInfo.Name} - 配置文件", new DialogParameters<ConfigFilesControl>
+            modalWindow.Show($"{Container.ContainerInfo.Name} - {Container.ConfigFileFunctionName}", new DialogParameters<ConfigFilesControl>
             {
                 {x=>x.ConfigFiles, Container.ConfigFiles}
             });

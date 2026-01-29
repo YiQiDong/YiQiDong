@@ -83,12 +83,12 @@
             {
                 <div class="btn-group ml-2">
                     <button type="button" class="btn btn-sm btn-secondary"
-                        @onclick="@(e => ContainerConfigFiles())">配置文件</button>
+                        @onclick="@(e => ContainerConfigFiles())">@Container.ConfigFileFunctionName</button>
                 </div>
             }
-            @if (ContainerFunctions != null && ContainerFunctions.Length > 0)
+            @if (Container.Functions != null && Container.Functions.Length > 0)
             {
-                @foreach (var function in ContainerFunctions)
+                @foreach (var function in Container.Functions)
                 {
                     <div class="btn-group ml-2">
                         <button type="button" class="btn btn-sm btn-secondary"
@@ -96,9 +96,9 @@
                     </div>
                 }
             }
-            @if (ReverseProxyRules != null && ReverseProxyRules.Length > 0)
+            @if (Container.ReverseProxyRules != null && Container.ReverseProxyRules.Length > 0)
             {
-                @foreach (var rule in ReverseProxyRules)
+                @foreach (var rule in Container.ReverseProxyRules)
                 {
                     @if (rule.Links != null)
                     {

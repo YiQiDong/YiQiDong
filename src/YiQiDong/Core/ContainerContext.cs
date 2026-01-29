@@ -30,7 +30,6 @@ public class ContainerContext : IDisposable
     private string logFolder;
     private NLog.LogFactory logFactory;
     private NLog.ILogger logger;
-    private static Encoding ansiEncoding = Encoding.GetEncoding(Thread.CurrentThread.CurrentCulture.TextInfo.ANSICodePage);
 
     public YqdContainerInfo ContainerInfo { get; private set; }
     public Process Process { get; private set; }
@@ -45,6 +44,7 @@ public class ContainerContext : IDisposable
     private NoticeHandlerManager noticeHandlerManager;
 
     public event EventHandler FunctionListChanged;
+    public event EventHandler ConfigFileListChanged;
     public event EventHandler ReverseProxyRuleListChanged;
 
     private void RaiseEvent_FunctionListChanged()
@@ -52,15 +52,14 @@ public class ContainerContext : IDisposable
         FunctionListChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    private void RaiseEvent_ConfigFileListChanged()
+    {
+        ConfigFileListChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     private void RaiseEvent_ReverseProxyRuleListChanged()
     {
         ReverseProxyRuleListChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    public ReverseProxyRule[] GetReverseProxyRuleList()
-    {
-        lock (reverseProxyRuleList)
-            return reverseProxyRuleList.ToArray();
     }
 
     private YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
@@ -87,6 +86,7 @@ public class ContainerContext : IDisposable
         var path = $"/{ContainerInfo.Id}{request.Path}";
         ReverseProxyManager.Instance.AddRule(path, request.Url);
         lock (reverseProxyRuleList)
+        {
             reverseProxyRuleList.Add(new ReverseProxyRule()
             {
                 Path = path,
@@ -97,6 +97,8 @@ public class ContainerContext : IDisposable
                     Url = t.Url
                 }).ToArray()
             });
+            ReverseProxyRules = reverseProxyRuleList.ToArray();
+        }
         RaiseEvent_ReverseProxyRuleListChanged();
         return new YiQiDong.Protocol.V1.QpCommands.AddReverseProxyRule.Response();
     }
@@ -111,7 +113,10 @@ public class ContainerContext : IDisposable
     }
     public event EventHandler ConsoleHistoryChanged;
 
-    public ConfigFileInfo[] ConfigFiles { get; set; }
+    public FunctionInfo[] Functions { get; private set; }
+    public string ConfigFileFunctionName { get; private set; }
+    public ConfigFileInfo[] ConfigFiles { get; private set; }
+    public ReverseProxyRule[] ReverseProxyRules{ get; private set; }
 
     private bool _IsConnected = false;
 
@@ -152,7 +157,8 @@ public class ContainerContext : IDisposable
 
         noticeHandlerManager = new NoticeHandlerManager();
         noticeHandlerManager.Register<ContainerLogNotice>(handleContainerLogNotice);
-        noticeHandlerManager.Register<FunctionListChangedNotice>(handleFunctionListChangedNotice);
+        noticeHandlerManager.Register<FunctionListChangedNotice>((_, _) => RefreshFunctionList());
+        noticeHandlerManager.Register<ConfigFileListChangedNotice>((_, _) => RefreshConfigFileList());
         noticeHandlerManager.Register<ContainerInitedNotice>(handleContainerInitedNotice);
         noticeHandlerManager.Register<ContainerStartedNotice>(handleContainerStartedNotice);
         noticeHandlerManager.Register<ContainerStopedNotice>(handleContainerStopedNotice);
@@ -218,9 +224,31 @@ public class ContainerContext : IDisposable
     }
 
     //处理功能列表已改变通知
-    private void handleFunctionListChangedNotice(QpChannel channel, YiQiDong.Protocol.V1.QpNotices.FunctionListChangedNotice notice)
+    private void RefreshFunctionList()
     {
-        RaiseEvent_FunctionListChanged();
+        Task.Run(async () =>
+        {
+            var ret = await ProcessChannel?.SendCommand(new YiQiDong.Protocol.V1.QpCommands.GetFunctionList.Request());
+            Functions = ret.Items;
+
+            RaiseEvent_FunctionListChanged();
+        });
+    }
+
+    private void RefreshConfigFileList()
+    {
+        Task.Run(async () =>
+        {
+            try
+            {
+                var rep = await ProcessChannel.SendCommand(new YiQiDong.Protocol.V1.QpCommands.GetConfigFileList.Request());
+                ConfigFileFunctionName = rep.FunctionName ?? "配置文件";
+                ConfigFiles = rep.Items;
+            }
+            catch
+            { }
+            RaiseEvent_ConfigFileListChanged();
+        });
     }
 
     //处理容器初始化完成通知
@@ -230,15 +258,11 @@ public class ContainerContext : IDisposable
         pushLog(LogLevel.Info, $"[平台]容器启用完成.");
         Task.Run(async () =>
         {
-            //获取容器配置文件
-            try
-            {
-                var rep = await ProcessChannel.SendCommand(new YiQiDong.Protocol.V1.QpCommands.GetConfigFileList.Request());
-                ConfigFiles = rep.Items;
-            }
-            catch
-            { }
-            RaiseEvent_FunctionListChanged();
+            //刷新容器配置文件
+            RefreshConfigFileList();
+            //刷新容器功能列表
+            RefreshFunctionList();
+            
             //如果设置了自动启动
             if (ContainerInfo.AutoStart)
                 await Start();
@@ -809,13 +833,6 @@ public class ContainerContext : IDisposable
             consoleOutputCharCount = 0;
         }
         ConsoleHistoryChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    public FunctionInfo[] GetFunctionList()
-    {
-        var ret = ProcessChannel?.SendCommand(
-            new YiQiDong.Protocol.V1.QpCommands.GetFunctionList.Request()).Result;
-        return ret?.Items;
     }
 
     public string OpenFunctionSession(FunctionInfo function)

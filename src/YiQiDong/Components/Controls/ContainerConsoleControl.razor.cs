@@ -27,49 +27,21 @@ namespace YiQiDong.Components.Controls
 
         public int ConsoleRows = 20;
 
-        private FunctionInfo[] ContainerFunctions;
-        private ReverseProxyRule[] ReverseProxyRules;
-
         protected override void OnAfterRender(bool firstRender)
         {
             if (firstRender)
             {
                 Container.ConsoleHistoryChanged += OnCurrentContainerConsoleHistoryChanged;
                 Container.FunctionListChanged += Container_FunctionListChanged;
+                Container.ConfigFileListChanged += Container_ConfigFileListChanged;
                 Container.ReverseProxyRuleListChanged += Container_ReverseProxyRuleListChanged; ;
-                refreshFunctionList();
-                refreshReverseProxyRuleList();
                 scrollToBottom();
             }
         }
 
-        private void refreshFunctionList()
-        {
-            Task.Run(() =>
-            {
-                ContainerFunctions = Container.GetFunctionList();
-                InvokeAsync(StateHasChanged);
-            });
-        }
-
-        private void refreshReverseProxyRuleList()
-        {
-            Task.Run(() =>
-            {
-                ReverseProxyRules = Container.GetReverseProxyRuleList();
-                InvokeAsync(StateHasChanged);
-            });
-        }
-
-        private void Container_FunctionListChanged(object sender, EventArgs e)
-        {
-            refreshFunctionList();
-        }
-
-        private void Container_ReverseProxyRuleListChanged(object sender, EventArgs e)
-        {
-            refreshReverseProxyRuleList();
-        }
+        private void Container_FunctionListChanged(object sender, EventArgs e) => InvokeAsync(StateHasChanged);
+        private void Container_ConfigFileListChanged(object sender, EventArgs e) => InvokeAsync(StateHasChanged);
+        private void Container_ReverseProxyRuleListChanged(object sender, EventArgs e) => InvokeAsync(StateHasChanged);
 
         void IDisposable.Dispose()
         {

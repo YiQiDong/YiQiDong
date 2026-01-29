@@ -8,8 +8,8 @@ namespace YiQiDong.Protocol.V1
         {
             Id = typeof(Instruction).Namespace,
             Name = "易启动协议V1",
-            CommandInfos = new QpCommandInfo[]
-            {
+            CommandInfos =
+            [
                 QpCommandInfo.Create(new QpCommands.Register.Request()),
                 QpCommandInfo.Create(new QpCommands.Using.Request()),
                 QpCommandInfo.Create(new QpCommands.GetFunctionList.Request()),
@@ -21,16 +21,17 @@ namespace YiQiDong.Protocol.V1
                 QpCommandInfo.Create(new QpCommands.Exit.Request()),
                 QpCommandInfo.Create(new QpCommands.OpenFunctionSession.Request()),
                 QpCommandInfo.Create(new QpCommands.CloseFunctionSession.Request())
-            },
-            NoticeInfos = new QpNoticeInfo[]
-            {
+            ],
+            NoticeInfos =
+            [
                 QpNoticeInfo.Create(new QpNotices.ContainerLogNotice()),
                 QpNoticeInfo.Create(new QpNotices.FunctionListChangedNotice()),
+                QpNoticeInfo.Create(new QpNotices.ConfigFileListChangedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerInitedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerStartedNotice()),
                 QpNoticeInfo.Create(new QpNotices.ContainerStopedNotice()),
                 QpNoticeInfo.Create(new QpNotices.FunctionSessionChangedNotice())
-            }
+            ]
         };
     }
 }

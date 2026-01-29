@@ -71,7 +71,7 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             return fileList.ToArray();
         }
 
-        public void Init(Action<AbstractFunction,bool?> addFunction)
+        public void Init(Action<AbstractFunction> addFunction)
         {
             if (!string.IsNullOrEmpty(AgentContext.Container.LogIgnoreList))
                 logIgnoreList = AgentContext.Container.LogIgnoreList.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -142,10 +142,10 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
                 }
                 refreshWithDollarEnviromentsDictionary();
             };
-            addFunction(new EnvironmentConfigFunction(this, afterEnvironmentChanged), null);
+            addFunction(new EnvironmentConfigFunction(this, afterEnvironmentChanged));
             if (metaInfo.HelpDict != null)
-                addFunction(new Core.Functions.HelpFunction(metaInfo.HelpDict), null);
-            addFunction(new SendCommandFunction(this), true);
+                addFunction(new Core.Functions.HelpFunction(metaInfo.HelpDict));
+            addFunction(new SendCommandFunction(this));
             afterEnvironmentChanged();
         }
 

@@ -9,8 +9,7 @@ namespace YiQiDong.Core;
 public abstract class AbstractAgent : IAgent
 {
     public const string DEFAULT_PROCESS_NAME = "YiQiDong:Agent";
-    private Dictionary<string, AbstractFunction> agentStartFunctionDict = new Dictionary<string, AbstractFunction>();
-    private Dictionary<string, AbstractFunction> agentStopFunctionDict = new Dictionary<string, AbstractFunction>();
+    private Dictionary<string, AbstractFunction> functionDict = new Dictionary<string, AbstractFunction>();
     private Dictionary<string, AbstractSessionFunction> sessionFunctionDict = new Dictionary<string, AbstractSessionFunction>();
 
     public virtual string ProcessName => DEFAULT_PROCESS_NAME;
@@ -23,30 +22,12 @@ public abstract class AbstractAgent : IAgent
 
     public virtual void Init()
     {
-        agentStartFunctionDict.Clear();
-        agentStopFunctionDict.Clear();
+        functionDict.Clear();
     }
 
     protected void AddFunction(AbstractFunction function)
     {
-        AddFunction(function, null);
-    }
-
-    protected void AddFunction(AbstractFunction function, bool? agentStartVisiable)
-    {
-        if (agentStartVisiable == null)
-        {
-            agentStartFunctionDict[function.Id] = function;
-            agentStopFunctionDict[function.Id] = function;
-        }
-        else if (agentStartVisiable.Value)
-        {
-            agentStartFunctionDict[function.Id] = function;
-        }
-        else
-        {
-            agentStopFunctionDict[function.Id] = function;
-        }
+        functionDict[function.Id] = function;
     }
 
     public virtual void Start()
@@ -69,10 +50,7 @@ public abstract class AbstractAgent : IAgent
 
     public virtual FunctionInfo[] GetFunctionList()
     {
-        if (AgentContext.Container.AutoStart)
-            return agentStartFunctionDict.Values.Select(t => t.Info).ToArray();
-        else
-            return agentStopFunctionDict.Values.Select(t => t.Info).ToArray();
+        return functionDict.Values.Where(t => t.IsVisiable()).Select(t => t.Info).ToArray();
     }
 
     private AbstractFunction GetFunction(string functionId)
@@ -80,18 +58,9 @@ public abstract class AbstractAgent : IAgent
         if (string.IsNullOrEmpty(functionId))
             throw new ArgumentNullException(nameof(functionId));
 
-        if (AgentContext.Container.AutoStart)
-        {
-            if (!agentStartFunctionDict.TryGetValue(functionId, out var function))
-                throw new ApplicationException($"未找到编号为[{functionId}]的功能。");
-            return function;
-        }
-        else
-        {
-            if (!agentStopFunctionDict.TryGetValue(functionId, out var function))
-                throw new ApplicationException($"未找到编号为[{functionId}]的功能。");
-            return function;
-        }
+        if (!functionDict.TryGetValue(functionId, out var function))
+            throw new ApplicationException($"未找到编号为[{functionId}]的功能。");
+        return function;
     }
 
     private AbstractSessionFunction GetSessionFunction(string functionId)

@@ -7,6 +7,7 @@ public abstract class AbstractFunction
 {
     public virtual string Id => Name;
     public abstract string Name { get; }
+    public virtual bool IsVisiable() => true;
     public virtual bool HasSession { get; } = false;
     /// <summary>
     /// 执行超时时间（单位：毫秒）

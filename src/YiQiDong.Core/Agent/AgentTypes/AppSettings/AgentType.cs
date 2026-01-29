@@ -12,7 +12,7 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
         public ConfigFileInfo[] GetConfigFiles() => null;
         private string[] logIgnoreList;
 
-        public void Init(Action<Core.AbstractFunction, bool?> addFunction)
+        public void Init(Action<Core.AbstractFunction> addFunction)
         {
             if (!string.IsNullOrEmpty(AgentContext.Container.LogIgnoreList))
                 logIgnoreList = AgentContext.Container.LogIgnoreList.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
@@ -20,7 +20,7 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
             var imageFolder = AgentContext.Container.ImageFolder;
             var containerFolder = AgentContext.Container.ContainerFolder;
 
-            addFunction(new ConfigFunction(imageFolder, containerFolder), null);
+            addFunction(new ConfigFunction(imageFolder, containerFolder));
         }
 
 

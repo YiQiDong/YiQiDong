@@ -17,6 +17,7 @@ internal class SendCommandFunction : AbstractFunction
     }
 
     public override string Name => "发送命令";
+    public override bool IsVisiable() => AgentContext.Container.AutoStart;
 
     public override FieldForGet[] Execute(FunctionRequest request)
     {

@@ -314,7 +314,7 @@ public class ContainerContext : IDisposable
             {
                 ctsCron?.Cancel();
                 ctsCron = new CancellationTokenSource();
-                beginCheckCron(ctsCron.Token);
+                _ = beginCheckCron(ctsCron.Token);
             }
         });
     }
@@ -700,15 +700,26 @@ public class ContainerContext : IDisposable
         ContainerManager.Instance.RaiseEvent_ContainerChanged();
     }
 
-    private void beginCheckCron(CancellationToken cancellationToken)
+    private async Task beginCheckLog(CancellationToken cancellationToken)
     {
-        Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ContinueWith(t =>
+        try
         {
-            if (t.IsCanceled)
-                return;
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                checkDeleteLogFiles();
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private async Task beginCheckCron(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             checkCron();
-            beginCheckCron(cancellationToken);
-        });
+        }
     }
 
     private void checkCron()
@@ -737,11 +748,15 @@ public class ContainerContext : IDisposable
         }
     }
 
+    private CancellationTokenSource startCts;
 
     public Task Start()
     {
         if (ProcessChannel == null)
             return null;
+        startCts?.Cancel();
+        startCts = new CancellationTokenSource();
+
         ContainerInfo.AutoStart = true;
         lock (reverseProxyRuleList)
             reverseProxyRuleList.Clear();
@@ -756,6 +771,9 @@ public class ContainerContext : IDisposable
             pushLog(LogLevel.Info, "开始执行启动脚本...");
             executeScripts(ContainerInfo.StartScript);
         }
+        //开始检查日志文件
+        if (ContainerInfo.EnableRecordLog && ContainerInfo.LogSaveDays > 0)
+            _ = beginCheckLog(startCts.Token);
 
         return ProcessChannel.SendCommand(
             new YiQiDong.Protocol.V1.QpCommands.Start.Request()).ContinueWith(t =>
@@ -788,6 +806,9 @@ public class ContainerContext : IDisposable
 
     public async Task Stop(bool saveContainerInfoFile = true)
     {
+        startCts?.Cancel();
+        startCts = null;
+
         if (ProcessChannel == null)
             return;
 
@@ -862,7 +883,8 @@ public class ContainerContext : IDisposable
         return ret?.Items;
     }
 
-    private void checkLogFiles(object _)
+    //检查删除日志文件
+    private void checkDeleteLogFiles()
     {
         var dir = logFolder;
         var logSaveDays = ContainerInfo.LogSaveDays;

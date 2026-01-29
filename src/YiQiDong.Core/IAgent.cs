@@ -15,6 +15,10 @@ namespace YiQiDong.Core
         /// </summary>
         void Init();
         /// <summary>
+        /// 配置文件功能名称
+        /// </summary>
+        string ConfigFilesFunctionName { get; }
+        /// <summary>
         /// 获取配置文件
         /// </summary>
         /// <returns></returns>

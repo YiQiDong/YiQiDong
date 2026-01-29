@@ -13,6 +13,7 @@ public abstract class AbstractAgent : IAgent
     private Dictionary<string, AbstractSessionFunction> sessionFunctionDict = new Dictionary<string, AbstractSessionFunction>();
 
     public virtual string ProcessName => DEFAULT_PROCESS_NAME;
+    public virtual string ConfigFilesFunctionName { get; }
     public virtual ConfigFileInfo[] GetConfigFiles() => null;
     public event EventHandler FunctionListChanged;
     protected void RaiseEvent_FunctionListChanged()

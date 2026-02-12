@@ -121,7 +121,7 @@ else if(selectedBuildType =="YiQiDong.TestImage")
         BuildTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
         Description = $"{productName} 是一个测试用的镜像。",
         Platform = new[] { "any" },
-        Runtime = new[] { $"dotnet-8.0" },
+        Runtime = new[] { $"dotnet-10.0" },
         AgentStartup = $"{selectedBuildType}.dll"
     };
     var metaFile = Path.Combine(publishFolder, YiQiDong.Core.Consts.IMAGE_META_FILE);

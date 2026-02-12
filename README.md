@@ -6,6 +6,10 @@
 -----
 https://cnb.cool/scbeta/YiQiDong/YiQiDong/-/releases
 
+文档
+-----
+https://cnb.cool/scbeta/YiQiDong/YiQiDong/-/tree/main/doc
+
 常用运行库
 -----
 https://cnb.cool/scbeta/YiQiDong/CommonRuntimes

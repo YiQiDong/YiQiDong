@@ -1,6 +1,6 @@
 using Quick.Fields;
+using Quick.Utils;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Agent.AgentTypes.TextConfigs.Functions;

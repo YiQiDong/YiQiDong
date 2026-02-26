@@ -5,6 +5,7 @@ using YiQiDong.Utils;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
 using YiQiDong.Core.Utils.Unix;
+using Quick.Utils;
 
 namespace YiQiDong.Core
 {

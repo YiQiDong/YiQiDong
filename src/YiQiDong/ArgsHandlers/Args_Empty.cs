@@ -1,11 +1,11 @@
 ﻿using Quick.Build;
 using Quick.Localize;
 using Quick.Shell.PowerShell;
+using Quick.Utils;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Versioning;
 using System.Text;
-using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
 
 namespace YiQiDong.ArgsHandlers

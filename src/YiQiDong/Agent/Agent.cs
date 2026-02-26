@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Quick.Utils;
 using YiQiDong.Core;
 using YiQiDong.Core.Protocol.V1.Model;
-using YiQiDong.Core.Utils;
 
 namespace YiQiDong.Agent
 {

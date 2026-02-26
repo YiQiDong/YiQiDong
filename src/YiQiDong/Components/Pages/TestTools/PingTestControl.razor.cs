@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Utils;
+using Quick.Utils;
 
 namespace YiQiDong.Components.Pages.TestTools;
 

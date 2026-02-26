@@ -1,12 +1,12 @@
 ﻿using Quick.Build;
 using System.ServiceProcess;
-using YiQiDong.Core.Utils;
 using System.Runtime.Versioning;
 using System.Diagnostics;
 using YiQiDong.Utils;
 using Quick.Shell.Utils;
 using YiQiDong.Core.Utils.Unix;
 using Quick.Localize;
+using Quick.Utils;
 
 namespace YiQiDong.ArgsHandlers
 {

@@ -1,8 +1,8 @@
 using Quick.Fields;
 using Quick.Protocol;
+using Quick.Utils;
 using YiQiDong.Agent;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.TestImage.Functions;

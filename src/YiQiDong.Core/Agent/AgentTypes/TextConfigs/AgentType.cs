@@ -1,4 +1,5 @@
 ﻿using Quick.Shell.Utils;
+using Quick.Utils;
 using System.Diagnostics;
 using System.Text;
 using YiQiDong.Agent.AgentTypes.TextConfigs.Functions;

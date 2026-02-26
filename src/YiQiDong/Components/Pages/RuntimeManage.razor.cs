@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Admin.Utils;
+using Quick.Utils;
 using System.Text;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Core.Protocol.V1.Model;
-using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
 using static Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper;
 

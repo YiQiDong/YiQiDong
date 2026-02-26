@@ -1,7 +1,7 @@
 ﻿using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Utils;
 using Quick.Shell;
 using Quick.Shell.Utils;
+using Quick.Utils;
 using YiQiDong.Core.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Pages.LinuxTools

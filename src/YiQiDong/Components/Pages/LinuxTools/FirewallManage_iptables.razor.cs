@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Utils;
+using Quick.Utils;
 using YiQiDong.Utils;
 
 namespace YiQiDong.Components.Pages.LinuxTools;

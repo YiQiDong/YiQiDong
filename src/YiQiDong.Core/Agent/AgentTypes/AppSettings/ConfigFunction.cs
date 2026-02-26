@@ -1,7 +1,7 @@
 ﻿using Quick.Fields;
+using Quick.Utils;
 using System.Text;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Agent.AgentTypes.AppSettings;

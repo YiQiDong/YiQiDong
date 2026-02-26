@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
 using Quick.Fields;
+using Quick.Utils;
 using System.Diagnostics;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Controls;

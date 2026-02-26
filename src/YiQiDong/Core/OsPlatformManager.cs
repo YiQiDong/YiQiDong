@@ -1,4 +1,4 @@
-using YiQiDong.Core.Utils;
+using Quick.Utils;
 
 namespace YiQiDong.Core;
 

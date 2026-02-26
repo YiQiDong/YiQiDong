@@ -1,13 +1,12 @@
 ﻿using Quick.Blazor.Bootstrap;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using System.IO.Compression;
 using YiQiDong.Model;
 using YiQiDong.Utils;
 using Microsoft.AspNetCore.Components;
 using System.Text;
 using System.Diagnostics;
-using Quick.Blazor.Bootstrap.Admin.Utils;
+using Quick.Utils;
 
 namespace YiQiDong.Components.Pages
 {

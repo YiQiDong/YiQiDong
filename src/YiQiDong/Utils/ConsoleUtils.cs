@@ -1,9 +1,8 @@
 ﻿using Quick.Shell;
 using Quick.Shell.Utils;
-using System;
+using Quick.Utils;
 using System.Diagnostics;
 using System.Text;
-using YiQiDong.Core.Utils;
 
 namespace YiQiDong.Utils;
 

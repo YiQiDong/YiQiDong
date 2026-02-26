@@ -1,8 +1,7 @@
 ﻿using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Admin.Utils;
+using Quick.Utils;
 using System.IO.Compression;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Model;
 using YiQiDong.Utils;
 

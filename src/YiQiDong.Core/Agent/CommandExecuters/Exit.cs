@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using YiQiDong.Core.Utils;
+﻿using Quick.Utils;
 
 namespace YiQiDong.Agent.CommandExecuters
 {

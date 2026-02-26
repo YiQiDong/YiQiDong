@@ -1,11 +1,7 @@
 ﻿using Quick.Fields;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Quick.Utils;
 using System.Text;
 using YiQiDong.Agent;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core.Functions

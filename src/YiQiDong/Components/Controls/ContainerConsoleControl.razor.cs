@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.ReverseProxy.Model;
+using Quick.Utils;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Model;
 using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Utils;

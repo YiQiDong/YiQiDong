@@ -4,6 +4,7 @@ using Quick.Fields;
 using Quick.Protocol;
 using Quick.Protocol.Exceptions;
 using Quick.Shell.Utils;
+using Quick.Utils;
 using System.Buffers;
 using System.Diagnostics;
 using System.Text;

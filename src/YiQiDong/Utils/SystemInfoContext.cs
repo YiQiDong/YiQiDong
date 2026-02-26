@@ -1,14 +1,7 @@
 ﻿using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Admin.Utils;
 using Quick.Shell.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Quick.Utils;
 using System.Net.NetworkInformation;
-using System.Threading;
-using System.Threading.Tasks;
-using YiQiDong.Core.Utils;
 using YiQiDong.Core.Utils.Unix;
 
 namespace YiQiDong.Utils

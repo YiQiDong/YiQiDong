@@ -1,4 +1,5 @@
-﻿using SharpCompress.Archives;
+﻿using Quick.Utils;
+using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
 using YiQiDong.Core.Utils;

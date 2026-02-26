@@ -1,7 +1,7 @@
 using System.Net.Sockets;
 using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Utils;
+using Quick.Utils;
 
 namespace YiQiDong.Components.Pages.TestTools;
 

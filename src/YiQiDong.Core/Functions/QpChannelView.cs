@@ -1,6 +1,6 @@
 ﻿using Quick.Fields;
 using Quick.Protocol;
-using YiQiDong.Core.Utils;
+using Quick.Utils;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core.Functions

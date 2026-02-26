@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Admin.Utils;
 using System.Text;
 using YiQiDong.Core;
-using YiQiDong.Core.Utils;
 using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Utils;
 using Tewr.Blazor.FileReader;
 using static Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper;
+using Quick.Utils;
 
 namespace YiQiDong.Components.Pages
 {

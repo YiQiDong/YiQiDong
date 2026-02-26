@@ -1,13 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Admin.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using YiQiDong.Core.Utils;
-using YiQiDong.Utils;
+using Quick.Utils;
 
 namespace YiQiDong.Components.Controls
 {

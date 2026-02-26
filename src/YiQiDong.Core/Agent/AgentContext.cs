@@ -1,9 +1,9 @@
 ﻿using Quick.Protocol;
 using Quick.Protocol.Streams;
+using Quick.Utils;
 using System.Text;
 using YiQiDong.Core;
 using YiQiDong.Core.Agent;
-using YiQiDong.Core.Utils;
 using YiQiDong.Core.Utils.Unix;
 using YiQiDong.Protocol.V1.Model;
 

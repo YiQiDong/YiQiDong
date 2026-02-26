@@ -7,6 +7,7 @@ using YiQiDong.Utils;
 using Microsoft.AspNetCore.Components;
 using System.Text;
 using System.Diagnostics;
+using Quick.Blazor.Bootstrap.Admin.Utils;
 
 namespace YiQiDong.Components.Pages
 {
@@ -288,7 +289,7 @@ namespace YiQiDong.Components.Pages
                 {
                     fileCount++;
                     fileTotalSize += file.Length;
-                    fileTotalSizeStr = storageUSC.GetString(fileTotalSize, 0, true);
+                    fileTotalSizeStr = storageUSC.GetString(fileTotalSize, 2, true);
                     modalLoading.UpdateContent($"文件[数量：{fileCount}    大小：{fileTotalSizeStr}B]");
                 }, null, cts.Token);
 
@@ -296,7 +297,7 @@ namespace YiQiDong.Components.Pages
                 if (cts.IsCancellationRequested)
                     return;
 
-                modalAlert.Show("备份容器", $"统计容器文件完成[数量: {fileCount} ,大小: {storageUSC.GetString(fileTotalSize, 0, true)}B]。确定要备份容器[{container.ContainerInfo.Name}]？", () =>
+                modalAlert.Show("备份容器", $"统计容器文件完成[数量: {fileCount} ,大小: {storageUSC.GetString(fileTotalSize, 2, true)}B]。确定要备份容器[{container.ContainerInfo.Name}]？", () =>
                 {
                     Task.Run(() =>
                     {
@@ -315,7 +316,7 @@ namespace YiQiDong.Components.Pages
                                 {
                                     var entryName = file.FullName.Substring(containerFolder.Length + 1).Replace("\\", "/");
 
-                                    modalLoading.UpdateProgress(Convert.ToInt32(compressedSize * 100 / fileTotalSize), $"[{compressedFileCount}/{fileTotalSize}][{storageUSC.GetString(compressedSize, 0, true)}B/{fileTotalSizeStr}B] 正在压缩{entryName}...");
+                                    modalLoading.UpdateProgress(Convert.ToInt32(compressedSize * 100 / fileTotalSize), $"[{compressedFileCount}/{fileTotalSize}][{storageUSC.GetString(compressedSize, 2, true)}B/{fileTotalSizeStr}B] 正在压缩{entryName}...");
 
                                     var entry = zipArchive.CreateEntry(entryName);
                                     using (var fs = file.OpenRead())

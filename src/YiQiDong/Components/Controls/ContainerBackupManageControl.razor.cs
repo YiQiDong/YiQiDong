@@ -1,4 +1,5 @@
 ﻿using Quick.Blazor.Bootstrap;
+using Quick.Blazor.Bootstrap.Admin.Utils;
 using System.IO.Compression;
 using YiQiDong.Core;
 using YiQiDong.Core.Utils;
@@ -80,7 +81,7 @@ namespace YiQiDong.Components.Controls
                                     currentFile++;
                                     if (entry.Name == Core.Consts.CONTAINER_META_FILE)
                                         continue;
-                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.FullName} ({storageUSC.GetString(entry.Length, 1, true)}B)");
+                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.FullName} ({storageUSC.GetString(entry.Length, 2, true)}B)");
                                     var extractFileName = Path.Combine(baseDir, entry.FullName);
                                     var extractFileFolder = Path.GetDirectoryName(extractFileName);
                                     if (!Directory.Exists(extractFileFolder))

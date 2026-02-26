@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
+using Quick.Blazor.Bootstrap.Admin.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,7 +54,7 @@ namespace YiQiDong.Components.Controls
             if (string.IsNullOrEmpty(LogFile))
                 return;
             var fileInfo = new FileInfo(LogFile);
-            modalAlert.Show("确认加载日志文件", $"日志文件[{Path.GetFileName(LogFile)}]大小为[{storageUSC.GetString(fileInfo.Length, 1, true)}B]，确认将日志文件加载到内存中？", async () =>
+            modalAlert.Show("确认加载日志文件", $"日志文件[{Path.GetFileName(LogFile)}]大小为[{storageUSC.GetString(fileInfo.Length, 2, true)}B]，确认将日志文件加载到内存中？", async () =>
             {
                 var cts = new CancellationTokenSource();
                 modalLoading.Show("加载日志文件", "正在打开日志文件...", true, () => cts.Cancel());

@@ -100,15 +100,15 @@ namespace YiQiDong.Core
                         case "7z":
                         case "yi":
                             {
-                                var archive = SevenZipArchive.Open(stream);
-                                var count = archive.Entries.Count;
+                                var archive = SevenZipArchive.OpenArchive(stream);
+                                var count = archive.Entries.Count();
                                 return new Tuple<IArchive, int>(archive, count);
                             }
                         case "PK":
                         case "yz":
                             {
-                                var archive = ZipArchive.Open(stream);
-                                var count = archive.Entries.Count;
+                                var archive = ZipArchive.OpenArchive(stream);
+                                var count = archive.Entries.Count();
                                 return new Tuple<IArchive, int>(archive, count);
                             }
                         default:

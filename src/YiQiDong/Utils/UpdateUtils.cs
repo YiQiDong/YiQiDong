@@ -14,7 +14,7 @@ namespace YiQiDong.Utils
             public string Version { get; set; }
             public string Arch { get; set; }
         }
-        private static VersionAndArch GetVersionAndArchFromZipArchive(SharpCompress.Archives.Zip.ZipArchive archive)
+        private static VersionAndArch GetVersionAndArchFromZipArchive(SharpCompress.Archives.IArchive archive)
         {
             //检查压缩包中的版本
             var configJsonEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.CONFIG_JSON_FILENAME);
@@ -45,7 +45,7 @@ namespace YiQiDong.Utils
 
         public static VersionAndArch GetVersionAndArchFromUpdateFile(string updateFile)
         {
-            using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(updateFile))
+            using (var archive = SharpCompress.Archives.Zip.ZipArchive.OpenArchive(updateFile))
             {
                 return GetVersionAndArchFromZipArchive(archive);
             }
@@ -69,7 +69,7 @@ namespace YiQiDong.Utils
         public static async Task Update(string desDir, string updateFile, Action<string> pushLog = null, Action<int> progressNotifyAction = null)
         {
             await Task.Delay(100);
-            using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(updateFile))
+            using (var archive = SharpCompress.Archives.Zip.ZipArchive.OpenArchive(updateFile))
             {
                 //检查数据目录是否存在风险
                 if (IsDataFolderInDanger())
@@ -98,7 +98,7 @@ namespace YiQiDong.Utils
                     }
                 }
 
-                var totalCount = archive.Entries.Count;
+                var totalCount = archive.Entries.Count();
                 var currentCount = 0;
                 foreach (var entry in archive.Entries)
                 {

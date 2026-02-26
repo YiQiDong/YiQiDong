@@ -131,7 +131,7 @@ else if(selectedBuildType =="YiQiDong.TestImage")
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     }), Encoding.UTF8);
     Console.WriteLine("正在制作易启动镜像...");
-    using (var archive = ZipArchive.Create())
+    using (var archive = ZipArchive.CreateArchive())
     {
         archive.AddAllFromDirectory(publishFolder);
         archive.SaveTo(outFile, CompressionType.LZMA);

@@ -88,10 +88,7 @@ namespace YiQiDong.Components.Pages
             try
             {
                 var sb = new StringBuilder();
-                if (OperatingSystem.IsWindows())
-                    sb.Append(process.MainModule.ModuleName);
-                else
-                    sb.Append(process.ProcessName);
+                sb.Append(process.ProcessName);
                 sb.Append($" [{process.Id}]");
                 return sb.ToString();
             }

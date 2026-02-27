@@ -196,7 +196,18 @@ namespace YiQiDong.Core
                                     {
                                         throw new IOException($"创建目录[{dir}]时出错。", ex);
                                     }
-                                await entry.WriteToFileAsync(ex_file);
+                                try
+                                {
+                                    if (entry.Size > 0)
+                                        await entry.WriteToFileAsync(ex_file);
+                                    else
+                                        using (var fs = File.Create(ex_file))
+                                            fs.Close();
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new IOException($"解压文件[{entry.Key}]时出错",ex);
+                                }
                             }
                         }
                     }

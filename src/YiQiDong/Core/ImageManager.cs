@@ -90,120 +90,90 @@ namespace YiQiDong.Core
             }
         }
 
-        public async Task<ImageInfo> LoadImageFile(string fileHead, string file, Action<int, int, string> progressHandler, CancellationToken cancellationToken, string preImageId, Action<string> messageHandler)
+        public async Task<ImageInfo> LoadImageFile(string file, Action<int, int, string> progressHandler, CancellationToken cancellationToken, string preImageId, Action<string> messageHandler)
         {
             var newImageDir = ImagePathUtils.GetImageFolder(Guid.NewGuid().ToString("N"));
-
-            Func<string, Stream, Tuple<IArchive, int>> archiveOpenFunc = (fileHead, stream) =>
-                {
-                    switch (fileHead)
-                    {
-                        case "7z":
-                        case "yi":
-                            {
-                                var archive = SevenZipArchive.OpenArchive(stream);
-                                var count = archive.Entries.Count();
-                                return new Tuple<IArchive, int>(archive, count);
-                            }
-                        case "PK":
-                        case "yz":
-                            {
-                                var archive = ZipArchive.OpenArchive(stream);
-                                var count = archive.Entries.Count();
-                                return new Tuple<IArchive, int>(archive, count);
-                            }
-                        default:
-                            return null;
-                    }
-                };
-
             ImageInfo imageInfo = null;
             var preImageInfo = Get(preImageId);
-
             try
             {
                 using (var ymgFileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
-                using (var stream = new YmgArchiveStream(ymgFileStream))
+                using(var archive = ArchiveFactory.OpenArchive(ymgFileStream))
                 {
-                    var archiveAndEntityCount = archiveOpenFunc(fileHead, stream);
-                    var archive = archiveAndEntityCount.Item1;
-                    var entriesCount = archiveAndEntityCount.Item2;
-                    using (archive)
+                    var entriesCount = archive.Entries.Count();
+                    //读取镜像文件元信息
+                    var imageMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.IMAGE_META_FILE);
+                    if (imageMetaEntry == null)
+                        throw new FileNotFoundException("文件中未找到易启动镜像元信息");
+                    var imageMetaContent = string.Empty;
+                    using (var imageMetaEntryStream = imageMetaEntry.OpenEntryStream())
+                    using (var reader = new StreamReader(imageMetaEntryStream))
+                        imageMetaContent = reader.ReadToEnd();
+
+                    imageInfo = ImageInfo.Parse(imageMetaContent);
+                    //验证镜像架构是否匹配
+                    var isRidMatch = imageInfo.Platform.Any(t => RuntimeUtils.IsMatchRID(t));
+                    if (!isRidMatch)
+                        throw new NotSupportedException($"镜像的架构[{string.Join(",", imageInfo.Platform)}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
+
+
+                    //如果是添加镜像
+                    if (preImageInfo == null)
                     {
-                        //读取镜像文件元信息
-                        var imageMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.IMAGE_META_FILE);
-                        if (imageMetaEntry == null)
-                            throw new FileNotFoundException("文件中未找到易启动镜像元信息");
-                        var imageMetaContent = string.Empty;
-                        using (var imageMetaEntryStream = imageMetaEntry.OpenEntryStream())
-                        using (var reader = new StreamReader(imageMetaEntryStream))
-                            imageMetaContent = reader.ReadToEnd();
+                        //验证镜像是否存在
+                        if (GetItemByNameAndVersion(imageInfo.Name, imageInfo.Version) != null)
+                            throw new ApplicationException($"上传的镜像[{imageInfo.Name} {imageInfo.Version}]已经存在！");
+                    }
+                    //如果是替换镜像
+                    else
+                    {
+                        //验证镜像名称是否匹配
+                        if (preImageInfo.Name != imageInfo.Name)
+                            throw new ApplicationException($"上传的镜像[{imageInfo.Name} {imageInfo.Version}]与要替换的镜像[{preImageInfo.Name} {preImageInfo.Version}]名称不匹配，无法替换！");
+                    }
 
-                        imageInfo = ImageInfo.Parse(imageMetaContent);
-                        //验证镜像架构是否匹配
-                        var isRidMatch = imageInfo.Platform.Any(t => RuntimeUtils.IsMatchRID(t));
-                        if (!isRidMatch)
-                            throw new NotSupportedException($"镜像的架构[{string.Join(",", imageInfo.Platform)}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
+                    //解压镜像文件
+                    var currentEntryCount = 0;
+                    foreach (var entry in archive.Entries)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            break;
+                        currentEntryCount++;
+                        progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
 
-
-                        //如果是添加镜像
-                        if (preImageInfo == null)
+                        if (entry.IsDirectory)
                         {
-                            //验证镜像是否存在
-                            if (GetItemByNameAndVersion(imageInfo.Name, imageInfo.Version) != null)
-                                throw new ApplicationException($"上传的镜像[{imageInfo.Name} {imageInfo.Version}]已经存在！");
-                        }
-                        //如果是替换镜像
-                        else
-                        {
-                            //验证镜像名称是否匹配
-                            if (preImageInfo.Name != imageInfo.Name)
-                                throw new ApplicationException($"上传的镜像[{imageInfo.Name} {imageInfo.Version}]与要替换的镜像[{preImageInfo.Name} {preImageInfo.Version}]名称不匹配，无法替换！");
-                        }
-
-                        //解压镜像文件
-                        var currentEntryCount = 0;
-                        foreach (var entry in archive.Entries)
-                        {
-                            if (cancellationToken.IsCancellationRequested)
-                                break;
-                            currentEntryCount++;
-                            progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
-
-                            if (entry.IsDirectory)
-                            {
-                                var dir = Path.Combine(newImageDir, entry.Key);
-                                if (!Directory.Exists(dir))
-                                    try
-                                    {
-                                        Directory.CreateDirectory(dir);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                    }
-                            }
-                            else
-                            {
-                                var ex_file = Path.Combine(newImageDir, entry.Key);
-                                var dir = Path.GetDirectoryName(ex_file);
-                                if (!Directory.Exists(dir))
-                                    try
-                                    {
-                                        Directory.CreateDirectory(dir);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                    }
+                            var dir = Path.Combine(newImageDir, entry.Key);
+                            if (!Directory.Exists(dir))
                                 try
                                 {
-                                    await entry.WriteToFileAsync(ex_file);
+                                    Directory.CreateDirectory(dir);
                                 }
                                 catch (Exception ex)
                                 {
-                                    throw new IOException($"解压文件[{entry.Key}]时出错",ex);
+                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
                                 }
+                        }
+                        else
+                        {
+                            var ex_file = Path.Combine(newImageDir, entry.Key);
+                            var dir = Path.GetDirectoryName(ex_file);
+                            if (!Directory.Exists(dir))
+                                try
+                                {
+                                    Directory.CreateDirectory(dir);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                }
+                            try
+                            {
+                                await entry.WriteToFileAsync(ex_file);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new IOException($"解压文件[{entry.Key}]时出错",ex);
                             }
                         }
                     }

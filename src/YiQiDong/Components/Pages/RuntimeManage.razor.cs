@@ -2,7 +2,6 @@
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Admin.Utils;
 using Quick.Utils;
-using System.Text;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Core.Protocol.V1.Model;
 using YiQiDong.Utils;
@@ -79,24 +78,12 @@ namespace YiQiDong.Components.Pages
 
         private async Task<string> import(string fileInfoStr, string file, string runtimeId, CancellationTokenSource cts)
         {
-            string fileHead = null;
-
-            //读取文件头
-            using (var fs = File.OpenRead(file))
-            {
-                var buffer = new byte[2];
-                var ret = fs.Read(buffer);
-                fileHead = Encoding.ASCII.GetString(buffer);
-                if (!YmgFileUtils.IsYmgHead(fileHead))
-                    throw new ApplicationException($"文件[{fileInfoStr}]不是有效的运行库文件！");
-            }
-
             modalLoading.UpdateProgress(null, null);
             modalLoading.Show($"加载运行库", $"正在加载运行库文件[{fileInfoStr}]...", true, cts.Cancel);
             modalLoading.UpdateProgress(0, "文件读取中...");
             await Task.Delay(100);
             string loadMessage = null;
-            var runtimeInfo = await Core.RuntimeManager.Instance.LoadRuntimeFile(fileHead, file, (total, current, name) =>
+            var runtimeInfo = await Core.RuntimeManager.Instance.LoadRuntimeFile(file, (total, current, name) =>
             {
                 modalLoading.UpdateProgress(Convert.ToInt32(current * 100 / total), $"{current}/{total} {name}");
             }, cts.Token, runtimeId, t => loadMessage = t);

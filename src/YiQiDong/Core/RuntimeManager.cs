@@ -82,123 +82,96 @@ namespace YiQiDong.Core
             }
         }
 
-        public async Task<RuntimeInfo> LoadRuntimeFile(string fileHead, string file, Action<int, int, string> progressHandler, CancellationToken cancellationToken, string preRuntimeId, Action<string> messageHandler)
+        public async Task<RuntimeInfo> LoadRuntimeFile(string file, Action<int, int, string> progressHandler, CancellationToken cancellationToken, string preRuntimeId, Action<string> messageHandler)
         {
             var tmpRuntimeDir = RuntimePathUtils.GetRuntimeFolder(Guid.NewGuid().ToString("N"));
-
-            Func<string, Stream, Tuple<IArchive, int>> archiveOpenFunc = (fileHead, stream) =>
-            {
-                switch (fileHead)
-                {
-                    case "7z":
-                        {
-                            var archive = SevenZipArchive.OpenArchive(stream);
-                            var count = archive.Entries.Count();
-                            return new Tuple<IArchive, int>(archive, count);
-                        }
-                    case "PK":
-                        {
-                            var archive = ZipArchive.OpenArchive(stream);
-                            var count = archive.Entries.Count();
-                            return new Tuple<IArchive, int>(archive, count);
-                        }
-                    default:
-                        return null;
-                }
-            };
-
             RuntimeInfo runtimeInfo = null;
             var preRuntimeInfo = Get(preRuntimeId);
 
             try
             {
                 using (var ymgFileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
-                using (var stream = new YmgArchiveStream(ymgFileStream))
+                using(var archive = ArchiveFactory.OpenArchive(ymgFileStream))
                 {
-                    var archiveAndEntityCount = archiveOpenFunc(fileHead, stream);
-                    var archive = archiveAndEntityCount.Item1;
-                    var entriesCount = archiveAndEntityCount.Item2;
-                    using (archive)
+                    var entriesCount = archive.Entries.Count();
+                    //读取运行库文件元信息
+                    var runtimeMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.RUNTIME_META_FILE);
+                    if (runtimeMetaEntry == null)
+                        throw new FileNotFoundException("文件中未找到易启动运行库元信息");
+                    var runtimeMetaContent = string.Empty;
+                    using (var runtimeMetaEntryStream = runtimeMetaEntry.OpenEntryStream())
+                    using (var reader = new StreamReader(runtimeMetaEntryStream))
+                        runtimeMetaContent = reader.ReadToEnd();
+
+                    runtimeInfo = RuntimeInfo.Parse(runtimeMetaContent);
+                    //验证运行库架构是否匹配
+                    var isRidMatch = runtimeInfo.Platform.Any(t => RuntimeUtils.IsMatchRID(t));
+                    if (!isRidMatch)
+                        throw new NotSupportedException($"运行库的架构[{string.Join(",", runtimeInfo.Platform)}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
+                    //验证版本号是否合法
+                    if (!Version.TryParse(runtimeInfo.Version, out _))
+                        throw new NotSupportedException($"版本号[{runtimeInfo.Version}]不是有效的版本号");
+
+                    var checkRuntimeInfo = GetItemByNameAndVersion(runtimeInfo.Name, runtimeInfo.Version);
+                    //如果是添加运行库
+                    if (preRuntimeInfo == null)
                     {
-                        //读取运行库文件元信息
-                        var runtimeMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.RUNTIME_META_FILE);
-                        if (runtimeMetaEntry == null)
-                            throw new FileNotFoundException("文件中未找到易启动运行库元信息");
-                        var runtimeMetaContent = string.Empty;
-                        using (var runtimeMetaEntryStream = runtimeMetaEntry.OpenEntryStream())
-                        using (var reader = new StreamReader(runtimeMetaEntryStream))
-                            runtimeMetaContent = reader.ReadToEnd();
+                        //验证运行库是否存在
+                        if (preRuntimeInfo != null)
+                            throw new ApplicationException($"上传的运行库[{runtimeInfo.Name} {runtimeInfo.Version}]已经存在！");
+                    }
+                    //如果是替换运行库
+                    else
+                    {
+                        if (checkRuntimeInfo != null && checkRuntimeInfo != preRuntimeInfo)
+                            throw new ApplicationException($"上传的运行库[{runtimeInfo.Name} {runtimeInfo.Version}]已经存在！");
+                        //验证运行库名称是否匹配
+                        if (preRuntimeInfo.Name != runtimeInfo.Name)
+                            throw new ApplicationException($"上传的运行库[{runtimeInfo.Name} {runtimeInfo.Version}]与要替换的运行库[{preRuntimeInfo.Name} {preRuntimeInfo.Version}]名称不匹配，无法替换！");
+                    }
 
-                        runtimeInfo = RuntimeInfo.Parse(runtimeMetaContent);
-                        //验证运行库架构是否匹配
-                        var isRidMatch = runtimeInfo.Platform.Any(t => RuntimeUtils.IsMatchRID(t));
-                        if (!isRidMatch)
-                            throw new NotSupportedException($"运行库的架构[{string.Join(",", runtimeInfo.Platform)}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
-                        //验证版本号是否合法
-                        if (!Version.TryParse(runtimeInfo.Version, out _))
-                            throw new NotSupportedException($"版本号[{runtimeInfo.Version}]不是有效的版本号");
+                    //解压运行库文件
+                    var currentEntryCount = 0;
+                    foreach (var entry in archive.Entries)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            break;
+                        currentEntryCount++;
+                        progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
 
-                        var checkRuntimeInfo = GetItemByNameAndVersion(runtimeInfo.Name, runtimeInfo.Version);
-                        //如果是添加运行库
-                        if (preRuntimeInfo == null)
+                        if (entry.IsDirectory)
                         {
-                            //验证运行库是否存在
-                            if (preRuntimeInfo != null)
-                                throw new ApplicationException($"上传的运行库[{runtimeInfo.Name} {runtimeInfo.Version}]已经存在！");
-                        }
-                        //如果是替换运行库
-                        else
-                        {
-                            if (checkRuntimeInfo != null && checkRuntimeInfo != preRuntimeInfo)
-                                throw new ApplicationException($"上传的运行库[{runtimeInfo.Name} {runtimeInfo.Version}]已经存在！");
-                            //验证运行库名称是否匹配
-                            if (preRuntimeInfo.Name != runtimeInfo.Name)
-                                throw new ApplicationException($"上传的运行库[{runtimeInfo.Name} {runtimeInfo.Version}]与要替换的运行库[{preRuntimeInfo.Name} {preRuntimeInfo.Version}]名称不匹配，无法替换！");
-                        }
-
-                        //解压运行库文件
-                        var currentEntryCount = 0;
-                        foreach (var entry in archive.Entries)
-                        {
-                            if (cancellationToken.IsCancellationRequested)
-                                break;
-                            currentEntryCount++;
-                            progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
-
-                            if (entry.IsDirectory)
-                            {
-                                var dir = Path.Combine(tmpRuntimeDir, entry.Key);
-                                if (!Directory.Exists(dir))
-                                    try
-                                    {
-                                        Directory.CreateDirectory(dir);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                    }
-                            }
-                            else
-                            {
-                                var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
-                                var dir = Path.GetDirectoryName(ex_file);
-                                if (!Directory.Exists(dir))
-                                    try
-                                    {
-                                        Directory.CreateDirectory(dir);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                    }
+                            var dir = Path.Combine(tmpRuntimeDir, entry.Key);
+                            if (!Directory.Exists(dir))
                                 try
                                 {
-                                    await entry.WriteToFileAsync(ex_file);
+                                    Directory.CreateDirectory(dir);
                                 }
                                 catch (Exception ex)
                                 {
-                                    throw new IOException($"解压文件[{entry.Key}]时出错",ex);
+                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
                                 }
+                        }
+                        else
+                        {
+                            var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
+                            var dir = Path.GetDirectoryName(ex_file);
+                            if (!Directory.Exists(dir))
+                                try
+                                {
+                                    Directory.CreateDirectory(dir);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
+                                }
+                            try
+                            {
+                                await entry.WriteToFileAsync(ex_file);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new IOException($"解压文件[{entry.Key}]时出错",ex);
                             }
                         }
                     }

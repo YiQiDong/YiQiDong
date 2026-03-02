@@ -81,21 +81,10 @@ namespace YiQiDong.Components.Pages
 
         private async Task<string> import(string fileInfoStr, string file, string imageId, CancellationTokenSource cts)
         {
-            string fileHead = null;
-            //读取文件头
-            using (var fs = File.OpenRead(file))
-            {
-                var buffer = new byte[2];
-                var ret = fs.Read(buffer);
-                fileHead = Encoding.ASCII.GetString(buffer);
-                if (!YmgFileUtils.IsYmgHead(fileHead))
-                    throw new ApplicationException($"文件[{fileInfoStr}]不是有效的镜像文件！");
-            }
-
             modalLoading.UpdateProgress(null, null);
             modalLoading.Show($"加载镜像", $"正在加载镜像文件[{fileInfoStr}]...", true, cts.Cancel);
             string loadMessage = null;
-            var imageInfo = await Core.ImageManager.Instance.LoadImageFile(fileHead, file, (total, current, name) =>
+            var imageInfo = await Core.ImageManager.Instance.LoadImageFile(file, (total, current, name) =>
             {
                 modalLoading.UpdateProgress(Convert.ToInt32(current * 100 / total), $"{current}/{total} {name}");
             }, cts.Token, imageId, t => loadMessage = t);

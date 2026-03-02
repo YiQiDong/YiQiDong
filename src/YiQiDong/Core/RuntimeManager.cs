@@ -193,11 +193,7 @@ namespace YiQiDong.Core
                                     }
                                 try
                                 {
-                                    if (entry.Size > 0)
-                                        await entry.WriteToFileAsync(ex_file);
-                                    else
-                                        using (var fs = File.Create(ex_file))
-                                            fs.Close();
+                                    await entry.WriteToFileAsync(ex_file);
                                 }
                                 catch (Exception ex)
                                 {

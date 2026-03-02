@@ -44,10 +44,14 @@ public class RuntimeUtils
     {
         if (rid == "any")
             return true;
-        if (rid == GetCurrentRID())
-            return true;
         rid = rid.Replace("_", "-");
-        return rid == GetCurrentRID();
+        var currentRid = GetCurrentRID();
+        if (rid == currentRid)
+            return true;
+        //如果当前是Windows操作系统，且镜像也是Windows平台。则不检查x64、x86和arm架构。由Windows操作系统确保兼容
+        if (currentRid.StartsWith("win-") && rid.StartsWith("win-"))
+            return true;
+        return rid == currentRid;
     }
 
     public static string CombineEnviromentPath(string prePath, IEnumerable<string> pathList)

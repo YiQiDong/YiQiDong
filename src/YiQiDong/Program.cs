@@ -27,7 +27,6 @@ namespace YiQiDong
 
         internal static void LoadConfig()
         {
-            Quick.Protocol.QpAllClients.RegisterUriSchema();
             Quick.Blazor.Bootstrap.Admin.FileManageControl.DownloadFileAction = Controllers.FileController.BlazorDownloadFile;
             Quick.Localize.GettextResourceManager.ChangeCurrentCulture(CultureInfo.GetCultureInfo("zh-CN"));
 #if (!DEBUG)

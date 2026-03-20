@@ -84,8 +84,9 @@ namespace YiQiDong
                         var ret = ProcessUtils.ExecuteShell(Config.StartScript);
                         Console.WriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
                     }
-                    Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
+
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
+                    Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();                    
                     Glash.Blazor.Client.ProfileContextManager.Instance.Start();
                     //异步加载
                     Task.Run(() =>
@@ -120,6 +121,7 @@ namespace YiQiDong
                 var startWebServiceTask = StartWebService();
                 startWebServiceTask.Wait();
                 Glash.Blazor.Client.ProfileContextManager.Instance.Stop();
+                Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Stop();
                 if (!string.IsNullOrEmpty(Config.StopScript))
                 {
                     Console.WriteLine("正在执行停止脚本...");

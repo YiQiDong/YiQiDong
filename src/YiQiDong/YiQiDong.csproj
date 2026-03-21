@@ -27,11 +27,11 @@
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="NLog" Version="6.1.1" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.8.317" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.8.317" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.8.317" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2026.8.317" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2026.8.317" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.9.321" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.9.321" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.9.321" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2026.9.321" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2026.9.321" />
 		<PackageReference Include="Quick.Protocol.Http.Client" Version="2.6.9" />
 		<PackageReference Include="Quick.Protocol.Http.Server.AspNetCore" Version="2.6.9" />
 		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.6.9" />

@@ -47,9 +47,9 @@ public class YiQiDongUtils
                     if (!Directory.Exists(serviceDir))
                         Directory.CreateDirectory(serviceDir);
                     //正在将服务文件安装到系统服务目录
-                    ProcessUtils.ExecuteShell("cp {serviceFile} {serviceDir}/{serviceFile}");
+                    ProcessUtils.ExecuteShell($"cp {serviceFile} {serviceDir}/{serviceFile}");
                     //正在启用服务
-                    ProcessUtils.ExecuteShell("launchctl load -w {serviceDir}/{serviceFile}");
+                    ProcessUtils.ExecuteShell($"launchctl load -w {serviceDir}/{serviceFile}");
                 }
                 else
                 {

@@ -82,6 +82,7 @@ if (selectedBuildType == "YiQiDong")
             //修改Linux相关文件的行尾
             changeLinuxFileEOfAction(Path.Combine(publishFolder_YiQiDong, "YiQiDong.service"));
             changeLinuxFileEOfAction(Path.Combine(publishFolder_YiQiDong, "YiQiDong.sh"));
+            changeLinuxFileEOfAction(Path.Combine(publishFolder_YiQiDong, "YiQiDong.Updater.sh"));
 
             var outFile = Path.GetFullPath($"bin/YiQiDong-{version}-{rid}.zip");
             QbFile.Delete(outFile);

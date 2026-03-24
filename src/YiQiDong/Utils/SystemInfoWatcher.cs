@@ -92,11 +92,13 @@ namespace YiQiDong.Utils
                         if (ret.ExitCode == 0)
                             kernelName = ret.Output.Trim();
                     }
-                    //sysctl -n machdep.cpu.brand_string
+                    var hardwareInfoDict= GetSystemInfo("system_profiler SPHardwareDataType");
                     //获取CPU名称
-                    GetSystemInfo("system_profiler SPHardwareDataType | grep 'Processor Name'").TryGetValue("Processor Name", out cpuName);
-                    if(string.IsNullOrEmpty(cpuName))
-                        GetSystemInfo("system_profiler SPHardwareDataType | grep 'Chip'").TryGetValue("Chip", out cpuName);
+                    hardwareInfoDict.TryGetValue("Processor Name", out cpuName);
+                    if (string.IsNullOrEmpty(cpuName))
+                        hardwareInfoDict.TryGetValue("Chip", out cpuName);
+                    if (string.IsNullOrEmpty(cpuName))
+                        cpuName = ProcessUtils.ExecuteShell("sysctl -n machdep.cpu.brand_string").Output?.Trim();
                     //获取内存信息
                     var memDict = GetSystemInfo("sysctl -a | grep hw.memsize");
                     string memoryTotalSizeStr;

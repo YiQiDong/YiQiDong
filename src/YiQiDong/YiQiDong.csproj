@@ -19,19 +19,19 @@
 	<ItemGroup>
 		<PackageReference Include="Blazor.ECharts" Version="1.0.6" />
 		<PackageReference Include="Epoch.net" Version="4.1.0" />
-		<PackageReference Include="Glash.Blazor.Agent" Version="2026.4.321" />
-		<PackageReference Include="Glash.Blazor.Server" Version="2026.4.321" />
-		<PackageReference Include="Glash.Blazor.Client" Version="2026.4.321" />
+		<PackageReference Include="Glash.Blazor.Agent" Version="2026.5.327" />
+		<PackageReference Include="Glash.Blazor.Server" Version="2026.5.327" />
+		<PackageReference Include="Glash.Blazor.Client" Version="2026.5.327" />
 		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="NLog" Version="6.1.1" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.11.324" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.11.324" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.11.324" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2026.11.324" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2026.11.324" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.12.327" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.12.327" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.12.327" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2026.12.327" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2026.12.327" />
 		<PackageReference Include="Quick.Protocol.Http.Client" Version="2.6.9" />
 		<PackageReference Include="Quick.Protocol.Http.Server.AspNetCore" Version="2.6.9" />
 		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.6.9" />

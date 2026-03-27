@@ -52,7 +52,7 @@ namespace YiQiDong
         {
             try
             {
-                Console.WriteLine($@"---------------------
+                ConsoleUtils.ConsoleWriteLine($@"---------------------
   易启动 [{Consts.Version}]
 ---------------------");
                 //设置数据目录
@@ -65,9 +65,9 @@ namespace YiQiDong
                     //确保数据目录创建
                     if (!Directory.Exists(dataDir))
                         Directory.CreateDirectory(dataDir);
-                    Console.WriteLine("正在收集系统信息...");
+                    ConsoleUtils.ConsoleWriteLine("正在收集系统信息...");
                     SystemInfoContext = new SystemInfoContext();
-                    Console.WriteLine("正在初始化数据库...");
+                    ConsoleUtils.ConsoleWriteLine("正在初始化数据库...");
                     var dbFile = Path.Combine(dataDir, "Config.litedb");
                     ConfigDbContext.Init(dbFile, modelBuilder =>
                     {
@@ -80,9 +80,9 @@ namespace YiQiDong
                     ConfigDbContext.CacheContext.LoadCache();
                     if (!string.IsNullOrEmpty(Config.StartScript))
                     {
-                        Console.WriteLine("正在执行启动脚本...");
+                        ConsoleUtils.ConsoleWriteLine("正在执行启动脚本...");
                         var ret = ProcessUtils.ExecuteShell(Config.StartScript);
-                        Console.WriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+                        ConsoleUtils.ConsoleWriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
                     }
 
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
@@ -94,18 +94,18 @@ namespace YiQiDong
                         try
                         {
                             OsPlatformManager.Instance.Init();
-                            Console.WriteLine("正在初始化运行库管理器...");
+                            ConsoleUtils.ConsoleWriteLine("正在初始化运行库管理器...");
                             RuntimeManager.Instance.Init();
-                            Console.WriteLine("正在初始化镜像管理器...");
+                            ConsoleUtils.ConsoleWriteLine("正在初始化镜像管理器...");
                             ImageManager.Instance.Init();
-                            Console.WriteLine("正在启动容器管理器...");
+                            ConsoleUtils.ConsoleWriteLine("正在启动容器管理器...");
                             ContainerManager.Instance.Start();
                         }
                         catch (Exception ex)
                         {
                             IsStartSuccess = false;
                             StartErrorMessage = ExceptionUtils.GetExceptionString(ex);
-                            Console.WriteLine(StartErrorMessage);
+                            ConsoleUtils.ConsoleWriteLine(StartErrorMessage);
                         }
                     });
                     //检查备份目录是否存在，如果不存在，则创建
@@ -124,16 +124,16 @@ namespace YiQiDong
                 Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Stop();
                 if (!string.IsNullOrEmpty(Config.StopScript))
                 {
-                    Console.WriteLine("正在执行停止脚本...");
+                    ConsoleUtils.ConsoleWriteLine("正在执行停止脚本...");
                     var ret = ProcessUtils.ExecuteShell(Config.StopScript);
-                    Console.WriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+                    ConsoleUtils.ConsoleWriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
                 }
-                waitForExitTask = new Task(() => Console.WriteLine("[停止完成]"));
+                waitForExitTask = new Task(() => ConsoleUtils.ConsoleWriteLine("[停止完成]"));
                 return waitForExitTask;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("启动时出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
+                ConsoleUtils.ConsoleWriteLine("启动时出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
                 throw;
             }
         }
@@ -144,7 +144,7 @@ namespace YiQiDong
             try
             {
                 await Task.Delay(100);
-                Console.WriteLine($"正在准备Web服务相关资源...");
+                ConsoleUtils.ConsoleWriteLine($"正在准备Web服务相关资源...");
                 var webUrls = Config.Urls;
 #if DEBUG
                 webUrls = "http://localhost:5001";
@@ -189,9 +189,9 @@ namespace YiQiDong
                     app.MapReverseProxy();
                 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
                 app.UseYiQiDongControllers();
-                Console.WriteLine($"正在启动Web服务:{webUrls}...");
+                ConsoleUtils.ConsoleWriteLine($"正在启动Web服务:{webUrls}...");
                 await app.StartAsync();
-                Console.WriteLine("[Web服务启动完成]");
+                ConsoleUtils.ConsoleWriteLine("[Web服务启动完成]");
             }
             catch (Exception ex)
             {
@@ -201,14 +201,15 @@ namespace YiQiDong
 
         public static async Task StopWebService()
         {
-            Console.WriteLine("正在停止Web服务...");
+            ConsoleUtils.ConsoleWriteLine("正在停止Web服务...");
             await app.StopAsync();
         }
 
         public static void StopContainers()
         {
             SystemInfoContext.Dispose();
-            Console.WriteLine("正在停止容器管理器...");
+            if (!Console.IsOutputRedirected)
+                ConsoleUtils.ConsoleWriteLine("正在停止容器管理器...");
             ContainerManager.Instance.Stop();
         }
 

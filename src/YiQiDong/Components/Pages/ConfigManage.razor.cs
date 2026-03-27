@@ -235,7 +235,7 @@ namespace YiQiDong.Components.Pages
                 if (isRuningOnWindows)
                     tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
                 //解压文件
-                await UpdateUtils.Update(tmpDir, updateFile, Console.WriteLine, t => modalLoading.UpdateProgress(t, $"{t}%"));
+                await UpdateUtils.Update(tmpDir, updateFile, ConsoleUtils.ConsoleWriteLine, t => modalLoading.UpdateProgress(t, $"{t}%"));
                 await Task.Delay(1000);
                 if (deleteUpdateFile)
                     File.Delete(updateFile);

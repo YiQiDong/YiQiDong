@@ -26,6 +26,8 @@ public class ConsoleUtils
 
     public static void ConsoleWrite(string message, ConsoleColor foregroundColor)
     {
+        if (Console.IsOutputRedirected)
+            return;
         var preForegroundColor = Console.ForegroundColor;
         Console.ForegroundColor = foregroundColor;
         Console.Write(message);
@@ -34,10 +36,26 @@ public class ConsoleUtils
 
     public static void ConsoleWriteLine(string message, ConsoleColor foregroundColor)
     {
+        if (Console.IsOutputRedirected)
+            return;
         var preForegroundColor = Console.ForegroundColor;
         Console.ForegroundColor = foregroundColor;
         Console.WriteLine(message);
         Console.ForegroundColor = preForegroundColor;
+    }
+
+    public static void ConsoleWriteLine(string message)
+    {
+        if (Console.IsOutputRedirected)
+            return;
+        Console.WriteLine(message);
+    }
+
+    public static void ConsoleWriteLine()
+    {
+        if (Console.IsOutputRedirected)
+            return;
+        Console.WriteLine();
     }
 
     public static void ExecuteAction(string name, Action action)

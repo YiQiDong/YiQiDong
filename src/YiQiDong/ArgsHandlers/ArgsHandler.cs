@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
+using YiQiDong.Utils;
 
 namespace YiQiDong.ArgsHandlers
 {
@@ -32,7 +33,7 @@ namespace YiQiDong.ArgsHandlers
                     Args_Service.Invoke(args);
                     break;
                 default:
-                    Console.WriteLine("Unknown argument: " + firstArg);
+                    ConsoleUtils.ConsoleWriteLine("Unknown argument: " + firstArg);
                     break;
             }
         }

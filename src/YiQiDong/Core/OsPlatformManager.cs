@@ -1,4 +1,5 @@
 using Quick.Utils;
+using YiQiDong.Utils;
 
 namespace YiQiDong.Core;
 
@@ -15,7 +16,7 @@ public class OsPlatformManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"警告：应用iptables规则时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
+                ConsoleUtils.ConsoleWriteLine($"警告：应用iptables规则时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
             }
         }
     }

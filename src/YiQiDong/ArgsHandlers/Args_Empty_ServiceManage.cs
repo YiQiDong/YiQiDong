@@ -133,7 +133,7 @@ namespace YiQiDong.ArgsHandlers
             if (status.Installed)
             {
                 //检测到已经安装，无法重复安装。
-                Console.WriteLine(Locale.GetString("Installation detected, cannot install again."));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Installation detected, cannot install again."));
                 return;
             }
 
@@ -146,7 +146,7 @@ namespace YiQiDong.ArgsHandlers
             else if (OperatingSystem.IsMacOS())
             {
                 //正在修改服务文件中的安装目录...
-                Console.WriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
                 var serviceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "LaunchAgents");
                 var serviceFile = $"{Consts.SERVICE_NAME_UNIX}.plist";
                 QbFile.WriteLine(serviceFile, 10, $"      <string>{Environment.CurrentDirectory}/YiQiDong</string>");
@@ -167,7 +167,7 @@ namespace YiQiDong.ArgsHandlers
                     ConsoleUtils.ExecuteShell(Locale.GetString("Allowing user [{0}] to linger",username), $"loginctl enable-linger {username}");
                 }
                 //正在修改服务文件中的安装目录...
-                Console.WriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
                 var serviceFile = Consts.SERVICE_NAME_UNIX +".service";
                 QbFile.WriteLine(serviceFile, 5, $"ExecStart=/bin/sh {Environment.CurrentDirectory}/YiQiDong.sh start");
                 QbFile.WriteLine(serviceFile, 6, $"ExecStop=/bin/sh {Environment.CurrentDirectory}/YiQiDong.sh stop");
@@ -180,15 +180,15 @@ namespace YiQiDong.ArgsHandlers
                 //正在启用服务
                 ConsoleUtils.ExecuteShell(Locale.GetString("Enabling service"), $"systemctl {GetSystemdAddonParameter()} enable {Consts.SERVICE_NAME_UNIX}");
             }
-            Console.WriteLine("-----------------------------");
+            ConsoleUtils.ConsoleWriteLine("-----------------------------");
             //安装完成
-            Console.WriteLine(Locale.GetString("Installation Complete"));
-            Console.WriteLine("-----------------------------");
+            ConsoleUtils.ConsoleWriteLine(Locale.GetString("Installation Complete"));
+            ConsoleUtils.ConsoleWriteLine("-----------------------------");
 
             if (!OperatingSystem.IsMacOS())
             {
                 //是否启动服务?
-                Console.WriteLine(Locale.GetString("Do you want to start the service?"));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Do you want to start the service?"));
                 var isStartService = QbSelect.ArrowSelect(new Dictionary<string, string>()
                 {
                     ["True"] = Locale.GetString("Yes"),
@@ -248,7 +248,7 @@ namespace YiQiDong.ArgsHandlers
             if (!status.Installed)
             {
                 //检测到已经卸载，无法重复卸载！
-                Console.WriteLine(Locale.GetString("Uninstallation detected, cannot uninstall again!"));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Uninstallation detected, cannot uninstall again!"));
                 return;
             }
 
@@ -286,10 +286,10 @@ namespace YiQiDong.ArgsHandlers
                     //正在检查《易启动》服务是否删除完成
                     ConsoleUtils.ExecuteShell(Locale.GetString("Checking whether the 'YiQiDong' service has been completely removed"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
             }
-            Console.WriteLine("-----------------------------");
+            ConsoleUtils.ConsoleWriteLine("-----------------------------");
             //卸载完成
-            Console.WriteLine(Locale.GetString("Uninstallation complete"));
-            Console.WriteLine("-----------------------------");
+            ConsoleUtils.ConsoleWriteLine(Locale.GetString("Uninstallation complete"));
+            ConsoleUtils.ConsoleWriteLine("-----------------------------");
         }
 
         private static void Invoke_ServiceManage()
@@ -325,7 +325,7 @@ namespace YiQiDong.ArgsHandlers
                 {
                     ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
                 }
-                Console.WriteLine();
+                ConsoleUtils.ConsoleWriteLine();
                 var select1Dict = new Dictionary<string, string>();
                 if (status.Installed)
                 {
@@ -353,7 +353,7 @@ namespace YiQiDong.ArgsHandlers
                 select1Dict["Exit"] = Locale.GetString("Return to Main Menu");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
-                Console.WriteLine($"----------{selectName}-----------");
+                ConsoleUtils.ConsoleWriteLine($"----------{selectName}-----------");
                 try
                 {
                     switch (select1)

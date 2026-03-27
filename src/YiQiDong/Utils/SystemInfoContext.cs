@@ -229,7 +229,7 @@ namespace YiQiDong.Utils
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("获取CPU信息时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
+                        ConsoleUtils.ConsoleWriteLine("获取CPU信息时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
                         CpuInfo.Used = 0;
                     }
                     try
@@ -247,7 +247,7 @@ namespace YiQiDong.Utils
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("获取内存信息时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
+                        ConsoleUtils.ConsoleWriteLine("获取内存信息时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
                         MemoryInfo.Total = 0;
                         MemoryInfo.Used = 0;
                     }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YiQiDong.Utils;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -27,12 +28,12 @@ namespace Microsoft.AspNetCore.Builder
 
         private static void Server_ChannelConnected(object sender, QpServerChannel e)
         {
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: 通道[{e.ChannelName}]已连接!");
+            ConsoleUtils.ConsoleWriteLine($"{DateTime.Now.ToLongTimeString()}: 通道[{e.ChannelName}]已连接!");
         }
 
         private static void Server_ChannelDisconnected(object sender, QpServerChannel e)
         {
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: 通道[{e.ChannelName}]已断开!");
+            ConsoleUtils.ConsoleWriteLine($"{DateTime.Now.ToLongTimeString()}: 通道[{e.ChannelName}]已断开!");
         }
     }
 }

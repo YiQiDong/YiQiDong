@@ -8,14 +8,14 @@ namespace YiQiDong.ArgsHandlers
         internal static void Invoke(string[] args)
         {
             if (!string.IsNullOrEmpty(Program.Config.LinuxOSLang))
-                Console.WriteLine($"export LANG=\"{Program.Config.LinuxOSLang}\"");
+                ConsoleUtils.ConsoleWriteLine($"export LANG=\"{Program.Config.LinuxOSLang}\"");
             if (!string.IsNullOrEmpty(Program.Config.LinuxOSTimeZone))
-                Console.WriteLine($"export TZ=\"{Program.Config.LinuxOSTimeZone}\"");
+                ConsoleUtils.ConsoleWriteLine($"export TZ=\"{Program.Config.LinuxOSTimeZone}\"");
             if (!string.IsNullOrEmpty(Program.Config.EnvironmentVariables))
             {
                 var dict = ConsoleUtils.ConsoleOutputParse(Program.Config.EnvironmentVariables, "=");
                 foreach (var item in dict)
-                    Console.WriteLine($"export {item.Key}=\"{item.Value}\"");
+                    ConsoleUtils.ConsoleWriteLine($"export {item.Key}=\"{item.Value}\"");
             }
         }
     }

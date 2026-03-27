@@ -21,9 +21,9 @@ namespace YiQiDong.ArgsHandlers
 
         internal static void Invoke()
         {
-            Console.WriteLine("-----------------------------");
-            Console.WriteLine("   语言 / Language");
-            Console.WriteLine("-----------------------------");
+            ConsoleUtils.ConsoleWriteLine("-----------------------------");
+            ConsoleUtils.ConsoleWriteLine("   语言 / Language");
+            ConsoleUtils.ConsoleWriteLine("-----------------------------");
             var allLanguages = new string[] { "zh-CN", "en-US" };
             var selectLanguageDict = allLanguages.ToDictionary(t => t, t => CultureInfo.GetCultureInfo(t).NativeName);
             var selectedLanguage = QbSelect.ArrowSelect(selectLanguageDict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
@@ -31,11 +31,11 @@ namespace YiQiDong.ArgsHandlers
 
             while (true)
             {
-                Console.WriteLine("-----------------------------");
-                Console.WriteLine(Locale.GetString("Welcome to use YiQiDong"));
-                Console.WriteLine(Locale.GetString("Version: {0}", Consts.Version));
-                Console.WriteLine(Locale.GetString("Architecture: {0}", Consts.ARCH));
-                Console.WriteLine("-----------------------------");
+                ConsoleUtils.ConsoleWriteLine("-----------------------------");
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Welcome to use YiQiDong"));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Version: {0}", Consts.Version));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Architecture: {0}", Consts.ARCH));
+                ConsoleUtils.ConsoleWriteLine("-----------------------------");
 
                 var select1Dict = new Dictionary<string, string>()
                 {
@@ -51,7 +51,7 @@ namespace YiQiDong.ArgsHandlers
                 select1Dict["Exit"] = Locale.GetString("Exit");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
-                Console.WriteLine($"----------{selectName}-----------");
+                ConsoleUtils.ConsoleWriteLine($"----------{selectName}-----------");
                 try
                 {
                     switch (select1)
@@ -76,13 +76,13 @@ namespace YiQiDong.ArgsHandlers
                         case "Exit":
                             return;
                     }
-                    Console.WriteLine();
+                    ConsoleUtils.ConsoleWriteLine();
                 }
                 catch (Exception ex)
                 {
                     ConsoleUtils.ConsoleWriteLine(Locale.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
                     ConsoleUtils.ConsoleWriteLine(ExceptionUtils.GetExceptionString(ex), ConsoleColor.Red);
-                    Console.WriteLine(Locale.GetString("Press Enter to return to the main menu..."));
+                    ConsoleUtils.ConsoleWriteLine(Locale.GetString("Press Enter to return to the main menu..."));
                     Console.ReadLine();
                 }
             }
@@ -141,7 +141,7 @@ namespace YiQiDong.ArgsHandlers
             }
             else
             {
-                Console.WriteLine(Locale.GetString("[Configuration not modified]"));
+                ConsoleUtils.ConsoleWriteLine(Locale.GetString("[Configuration not modified]"));
             }
         }
 
@@ -167,7 +167,7 @@ Remove-Item ""{psFileName}""
             File.WriteAllText(psFileName, psFileContent, psFileEncoding);
             ConsoleUtils.ExecuteFunc(Locale.GetString("Creating desktop shortcut"),
                 () => PowerShellProcessContext.ExecutePs1File(psFileName));
-            Console.WriteLine(Locale.GetString("[Desktop shortcut created successfully]"));
+            ConsoleUtils.ConsoleWriteLine(Locale.GetString("[Desktop shortcut created successfully]"));
         }
     }
 }

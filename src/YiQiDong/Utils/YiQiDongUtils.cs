@@ -23,7 +23,7 @@ public class YiQiDongUtils
             //如果是在chroot环境中运行
             if (UnixUtils.IsRuningInChroot())
             {
-                Console.WriteLine($"检测到chroot环境");
+                ConsoleUtils.ConsoleWriteLine($"检测到chroot环境");
                 Process.Start(new ProcessStartInfo(shFile, "run chroot")
                 {
                     WorkingDirectory = Environment.CurrentDirectory
@@ -33,7 +33,7 @@ public class YiQiDongUtils
             //如果是在docker环境中运行
             else if (UnixUtils.IsRuningInDocker())
             {
-                Console.WriteLine("检测到docker环境");
+                ConsoleUtils.ConsoleWriteLine("检测到docker环境");
                 Environment.Exit(0);
             }
             //否则重启服务

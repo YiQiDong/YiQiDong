@@ -62,7 +62,7 @@ namespace YiQiDong.Core
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"[运行库管理器]加载[{dir}]时出错：{ExceptionUtils.GetExceptionString(ex)}");
+                ConsoleUtils.ConsoleWriteLine($"[运行库管理器]加载[{dir}]时出错：{ExceptionUtils.GetExceptionString(ex)}");
                 return null;
             }
         }

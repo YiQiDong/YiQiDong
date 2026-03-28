@@ -114,25 +114,27 @@ namespace YiQiDong.Components.Pages
             modalAlert.Show(
                 "删除确认",
                 $"确定要删除容器[{container.ContainerInfo.Name}]?",
-                () =>
+                new ()
                 {
-                    modalLoading.Show("删除容器", $"正在删除容器[{container.ContainerInfo.Name}]...", true, null);
-                    Task.Run(() =>
+                    OkCallback = () =>
                     {
-                        try
+                        modalLoading.Show("删除容器", $"正在删除容器[{container.ContainerInfo.Name}]...", true, null);
+                        Task.Run(() =>
                         {
-                            ContainerManager.Instance.Delete(container);
-                            refreshContainers();
-                            modalAlert.Show("信息", $"删除容器[{container.ContainerInfo.Name}]成功!");
-                        }
-                        catch (Exception ex)
-                        {
-                            modalAlert.Show("错误", $"删除容器[{container.ContainerInfo.Name}]时出错！原因：{ExceptionUtils.GetExceptionString(ex)}");
-                        }
-                        modalLoading.Close();
-                    });
-                },
-                null);
+                            try
+                            {
+                                ContainerManager.Instance.Delete(container);
+                                refreshContainers();
+                                modalAlert.Show("信息", $"删除容器[{container.ContainerInfo.Name}]成功!");
+                            }
+                            catch (Exception ex)
+                            {
+                                modalAlert.Show("错误", $"删除容器[{container.ContainerInfo.Name}]时出错！原因：{ExceptionUtils.GetExceptionString(ex)}");
+                            }
+                            modalLoading.Close();
+                        });
+                    }
+                });
         }
 
         private void EnableContainer(ContainerContext container)
@@ -166,7 +168,8 @@ namespace YiQiDong.Components.Pages
                 modalAlert.Show(
                     $"容器[{container.ContainerInfo.Name}]启动警告",
                     warning,
-                    () => doStartContainer());
+                    new() { OkCallback = doStartContainer }
+                    );
             }
         }
 
@@ -204,7 +207,7 @@ namespace YiQiDong.Components.Pages
                 modalAlert.Show(
                     $"容器[{container.ContainerInfo.Name}]停止警告",
                     warning,
-                    () => doStopContainer());
+                    new() { OkCallback = doStopContainer });
             }
         }
 
@@ -293,53 +296,56 @@ namespace YiQiDong.Components.Pages
                 if (cts.IsCancellationRequested)
                     return;
 
-                modalAlert.Show("备份容器", $"统计容器文件完成[数量: {fileCount} ,大小: {storageUSC.GetString(fileTotalSize, 2, true)}B]。确定要备份容器[{container.ContainerInfo.Name}]？", () =>
+                modalAlert.Show("备份容器", $"统计容器文件完成[数量: {fileCount} ,大小: {storageUSC.GetString(fileTotalSize, 2, true)}B]。确定要备份容器[{container.ContainerInfo.Name}]？",new ()
                 {
-                    Task.Run(() =>
+                    OkCallback =  () =>
                     {
-                        try
+                        Task.Run(() =>
                         {
-                            modalLoading.Show("备份容器 - 压缩文件", null, true, () => cts.Cancel());
-                            var backupFolder = FolderUtils.GetBackupDir();
-                            if (!Directory.Exists(backupFolder))
-                                Directory.CreateDirectory(backupFolder);
-                            var backupFile = Path.Combine(backupFolder, $"{container.ContainerInfo.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ycr");
-                            using (var zipArchive = ZipFile.Open(backupFile, ZipArchiveMode.Create))
+                            try
                             {
-                                int compressedFileCount = 0;
-                                long compressedSize = 0;
-                                travelFolder(new DirectoryInfo(containerFolder), file =>
+                                modalLoading.Show("备份容器 - 压缩文件", null, true, () => cts.Cancel());
+                                var backupFolder = FolderUtils.GetBackupDir();
+                                if (!Directory.Exists(backupFolder))
+                                    Directory.CreateDirectory(backupFolder);
+                                var backupFile = Path.Combine(backupFolder, $"{container.ContainerInfo.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.ycr");
+                                using (var zipArchive = ZipFile.Open(backupFile, ZipArchiveMode.Create))
                                 {
-                                    var entryName = file.FullName.Substring(containerFolder.Length + 1).Replace("\\", "/");
+                                    int compressedFileCount = 0;
+                                    long compressedSize = 0;
+                                    travelFolder(new DirectoryInfo(containerFolder), file =>
+                                    {
+                                        var entryName = file.FullName.Substring(containerFolder.Length + 1).Replace("\\", "/");
 
-                                    modalLoading.UpdateProgress(Convert.ToInt32(compressedSize * 100 / fileTotalSize), $"[{compressedFileCount}/{fileTotalSize}][{storageUSC.GetString(compressedSize, 2, true)}B/{fileTotalSizeStr}B] 正在压缩{entryName}...");
+                                        modalLoading.UpdateProgress(Convert.ToInt32(compressedSize * 100 / fileTotalSize), $"[{compressedFileCount}/{fileTotalSize}][{storageUSC.GetString(compressedSize, 2, true)}B/{fileTotalSizeStr}B] 正在压缩{entryName}...");
 
-                                    var entry = zipArchive.CreateEntry(entryName);
-                                    using (var fs = file.OpenRead())
-                                    using (var entryStream = entry.Open())
-                                        fs.CopyToAsync(entryStream, cts.Token).Wait();
-                                    compressedFileCount++;
-                                    compressedSize += file.Length;
-                                }, null, cts.Token);
+                                        var entry = zipArchive.CreateEntry(entryName);
+                                        using (var fs = file.OpenRead())
+                                        using (var entryStream = entry.Open())
+                                            fs.CopyToAsync(entryStream, cts.Token).Wait();
+                                        compressedFileCount++;
+                                        compressedSize += file.Length;
+                                    }, null, cts.Token);
+                                }
+                                if (cts.IsCancellationRequested)
+                                {
+                                    File.Delete(backupFile);
+                                    return;
+                                }
+
+                                modalAlert.Show("备份容器", $"容器[{container.ContainerInfo.Name}]已经备份成功！");
                             }
-                            if (cts.IsCancellationRequested)
+                            catch (Exception ex)
                             {
-                                File.Delete(backupFile);
-                                return;
+                                modalAlert.Show("备份容器", $"备份容器[{container.ContainerInfo.Name}]时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
                             }
-
-                            modalAlert.Show("备份容器", $"容器[{container.ContainerInfo.Name}]已经备份成功！", null, null);
-                        }
-                        catch (Exception ex)
-                        {
-                            modalAlert.Show("备份容器", $"备份容器[{container.ContainerInfo.Name}]时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}", null, null);
-                        }
-                        finally
-                        {
-                            modalLoading.Close();
-                        }
-                    });
-                }, null);
+                            finally
+                            {
+                                modalLoading.Close();
+                            }
+                        });
+                    }
+                });
             });
         }
 

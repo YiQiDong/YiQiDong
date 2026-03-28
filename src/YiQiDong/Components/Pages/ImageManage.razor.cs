@@ -50,32 +50,35 @@ namespace YiQiDong.Components.Pages
             modalAlert.Show(
                 "删除确认",
                 $"确定要删除镜像[{model.Name} {model.Version}]?",
-                () =>
+                new ()
                 {
-                    modalLoading.Show("删除镜像", $"正在删除镜像[{model.Name} {model.Version}]...", true, null);
-                    Task.Run(() =>
+                    OkCallback = () =>
                     {
-                        try
+                        modalLoading.Show("删除镜像", $"正在删除镜像[{model.Name} {model.Version}]...", true, null);
+                        Task.Run(() =>
                         {
-                            var containers = ContainerManager.Instance.UseImageContainers(model.Id);
-                            if (containers == null || containers.Length == 0)
+                            try
                             {
-                                Core.ImageManager.Instance.DeleteImage(model.Id);
-                                modalAlert.Show("信息", $"删除镜像[{model.Name} {model.Version}]成功！");
+                                var containers = ContainerManager.Instance.UseImageContainers(model.Id);
+                                if (containers == null || containers.Length == 0)
+                                {
+                                    Core.ImageManager.Instance.DeleteImage(model.Id);
+                                    modalAlert.Show("信息", $"删除镜像[{model.Name} {model.Version}]成功！");
+                                }
+                                else
+                                {
+                                    var containerNames = string.Join(",", containers.Select(t => t.ContainerInfo.Name));
+                                    modalAlert.Show("警告", $"删除镜像[{model.Name} {model.Version}]失败！原因：容器[{containerNames}]正在使用此镜像。");
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                var containerNames = string.Join(",", containers.Select(t => t.ContainerInfo.Name));
-                                modalAlert.Show("警告", $"删除镜像[{model.Name} {model.Version}]失败！原因：容器[{containerNames}]正在使用此镜像。");
+                                modalAlert.Show("错误", $"删除镜像[{model.Name} {model.Version}]时出错！原因：{ExceptionUtils.GetExceptionString(ex)}");
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            modalAlert.Show("错误", $"删除镜像[{model.Name} {model.Version}]时出错！原因：{ExceptionUtils.GetExceptionString(ex)}");
-                        }
-                        modalLoading.Close();
-                        InvokeAsync(() => StateHasChanged());
-                    });
+                            modalLoading.Close();
+                            InvokeAsync(() => StateHasChanged());
+                        });
+                    }
                 });
         }
 

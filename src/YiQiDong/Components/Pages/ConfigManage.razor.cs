@@ -86,46 +86,52 @@ namespace YiQiDong.Components.Pages
                 passwordManageModel = new PasswordManageModel();
                 if (isNeedRestartService)
                 {
-                    modalAlert.Show("提示", "修改配置成功！检测到有配置修改后需要重新启动易启动后生效，是否现在重启易启动服务？", () =>
+                    modalAlert.Show("提示", "修改配置成功！检测到有配置修改后需要重新启动易启动后生效，是否现在重启易启动服务？", new ()
                     {
-                        modalLoading.Show("正在重启易启动服务", "准备中...", true);
-                        Task.Delay(1000).ContinueWith(async t =>
+                        OkCallback = () =>
                         {
-                            try
+                            modalLoading.Show("正在重启易启动服务", "准备中...", true);
+                            Task.Delay(1000).ContinueWith(async t =>
                             {
-                                modalLoading.UpdateProgress(null, "正在重启服务...");
-                                modalLoading.UpdateContent("重启易启动服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请访问新设置的URL地址。");
-                                await Task.Delay(1000);
-                                restartService();
-                            }
-                            catch (Exception ex)
-                            {
-                                modalAlert.Show("重启易启动服务出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
-                                modalLoading.Close();
-                            }
-                        });
-                    }, null);
+                                try
+                                {
+                                    modalLoading.UpdateProgress(null, "正在重启服务...");
+                                    modalLoading.UpdateContent("重启易启动服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请访问新设置的URL地址。");
+                                    await Task.Delay(1000);
+                                    restartService();
+                                }
+                                catch (Exception ex)
+                                {
+                                    modalAlert.Show("重启易启动服务出错", ExceptionUtils.GetExceptionString(ex), new() { UsePreTag = true });
+                                    modalLoading.Close();
+                                }
+                            });
+                        }
+                    });
                 }
                 else if (isNeedRestartWebService)
                 {
-                    modalAlert.Show("提示", "修改配置成功！需要重新启动易启动Web服务后生效，是否现在重启易启动Web服务？", () =>
+                    modalAlert.Show("提示", "修改配置成功！需要重新启动易启动Web服务后生效，是否现在重启易启动Web服务？", new ()
                     {
-                        modalLoading.Show("正在重启易启动Web服务", "准备中...", true);
-                        Task.Delay(1000).ContinueWith(async t =>
+                        OkCallback = () =>
                         {
-                            try
+                            modalLoading.Show("正在重启易启动Web服务", "准备中...", true);
+                            Task.Delay(1000).ContinueWith(async t =>
                             {
-                                modalLoading.UpdateContent("重启易启动Web服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请刷新页面或者访问新设置的URL地址。");
-                                await Task.Delay(1000);
-                                await restartWebService();
-                            }
-                            catch (Exception ex)
-                            {
-                                modalAlert.Show("重启易启动Web服务出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
-                                modalLoading.Close();
-                            }
-                        });
-                    }, null);
+                                try
+                                {
+                                    modalLoading.UpdateContent("重启易启动Web服务过程中此页面会显示连接断开，并不会自动重新连接，更新成功后请刷新页面或者访问新设置的URL地址。");
+                                    await Task.Delay(1000);
+                                    await restartWebService();
+                                }
+                                catch (Exception ex)
+                                {
+                                    modalAlert.Show("重启易启动Web服务出错", ExceptionUtils.GetExceptionString(ex), new (){UsePreTag = true});
+                                    modalLoading.Close();
+                                }
+                            });
+                        }
+                    });
                 }
                 else
                 {
@@ -134,7 +140,7 @@ namespace YiQiDong.Components.Pages
             }
             catch (Exception ex)
             {
-                modalAlert.Show("错误", "修改配置时出错，原因：" + ExceptionUtils.GetExceptionString(ex), null, null, true);
+                modalAlert.Show("错误", "修改配置时出错，原因：" + ExceptionUtils.GetExceptionString(ex), new() { UsePreTag = true });
             }
         }
 
@@ -142,12 +148,12 @@ namespace YiQiDong.Components.Pages
         {
             if (passwordManageModel.OldPassword != Program.Config.Password)
             {
-                modalAlert.Show("提示", "原密码不正确！", null, null);
+                modalAlert.Show("提示", "原密码不正确！");
                 return;
             }
             if (passwordManageModel.NewPassword != passwordManageModel.NewPassword2)
             {
-                modalAlert.Show("提示", "两次输入的新密码不匹配！", null, null);
+                modalAlert.Show("提示", "两次输入的新密码不匹配！");
                 return;
             }
             try
@@ -155,11 +161,11 @@ namespace YiQiDong.Components.Pages
                 Program.Config.Password = passwordManageModel.NewPassword;
                 Program.Config.Save();
                 passwordManageModel = new PasswordManageModel();
-                modalAlert.Show("提示", "修改密码修改成功！", null, null);
+                modalAlert.Show("提示", "修改密码修改成功！");
             }
             catch (Exception ex)
             {
-                modalAlert.Show("错误", "修改密码时出错，原因：" + ExceptionUtils.GetExceptionString(ex), null, null, true);
+                modalAlert.Show("错误", "修改密码时出错，原因：" + ExceptionUtils.GetExceptionString(ex), new() { UsePreTag = true });
             }
         }
 
@@ -186,14 +192,18 @@ namespace YiQiDong.Components.Pages
             try
             {
                 var versionAndArch = UpdateUtils.GetVersionAndArchFromUpdateFile(updateFile);
-                modalAlert.Show("更新", $"确定要将易启动程序由版本[{Consts.Version}]更新到[{versionAndArch.Version}]？", () =>
+                modalAlert.Show("更新", $"确定要将易启动程序由版本[{Consts.Version}]更新到[{versionAndArch.Version}]？", new ()
                 {
-                    modalAlert.Close();
-                    Task.Run(() => beginUpdate(updateFile, deleteUpdateFile));
-                }, () =>
-                {
-                    if (deleteUpdateFile)
-                        File.Delete(updateFile);
+                    OkCallback = () =>
+                    {
+                        modalAlert.Close();
+                        Task.Run(() => beginUpdate(updateFile, deleteUpdateFile));
+                    },
+                    CancelCallback = () =>
+                    {
+                        if (deleteUpdateFile)
+                            File.Delete(updateFile);
+                    }
                 });
             }
             catch (Exception ex)
@@ -211,10 +221,13 @@ namespace YiQiDong.Components.Pages
 
         private void btnRestart_Click()
         {
-            modalAlert.Show("重启", "确定现在重启程序？", () =>
+            modalAlert.Show("重启", "确定现在重启程序？", new ()
             {
-                modalLoading.Show("重启", null, true);
-                restartService();
+                OkCallback = () =>
+                {
+                    modalLoading.Show("重启", null, true);
+                    restartService();
+                }
             });
         }
 
@@ -278,7 +291,7 @@ Remove-Item ""{psFileName}""
             }
             catch (Exception ex)
             {
-                modalAlert.Show("更新出错", ExceptionUtils.GetExceptionString(ex), null, null, true);
+                modalAlert.Show("更新出错", ExceptionUtils.GetExceptionString(ex), new (){ UsePreTag = true});
                 modalLoading.Close();
             }
         }

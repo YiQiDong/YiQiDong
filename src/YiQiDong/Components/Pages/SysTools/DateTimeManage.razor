@@ -59,9 +59,12 @@
 
     private void Ok()
     {
-        modalAlert.Show("确认", "修改时间后需要重启软件才能正常工作，确认修改？", () =>
+        modalAlert.Show("确认", "修改时间后需要重启软件才能正常工作，确认修改？", new ()
         {
-            Task.Delay(1000).ContinueWith(t => modify());
+            OkCallback = () =>
+            {
+                Task.Delay(1000).ContinueWith(t => modify());
+            }
         });
     }
 }

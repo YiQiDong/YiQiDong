@@ -47,38 +47,41 @@ namespace YiQiDong.Components.Controls
             if (string.IsNullOrEmpty(LogFile))
                 return;
             var fileInfo = new FileInfo(LogFile);
-            modalAlert.Show("确认加载日志文件", $"日志文件[{Path.GetFileName(LogFile)}]大小为[{storageUSC.GetString(fileInfo.Length, 2, true)}B]，确认将日志文件加载到内存中？", async () =>
+            modalAlert.Show("确认加载日志文件", $"日志文件[{Path.GetFileName(LogFile)}]大小为[{storageUSC.GetString(fileInfo.Length, 2, true)}B]，确认将日志文件加载到内存中？",new ()
             {
-                var cts = new CancellationTokenSource();
-                modalLoading.Show("加载日志文件", "正在打开日志文件...", true, () => cts.Cancel());
-                try
+                OkCallback = async () =>
                 {
-                    List<string> lineList = new List<string>();
-                    using (var fs = File.Open(LogFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    var cts = new CancellationTokenSource();
+                    modalLoading.Show("加载日志文件", "正在打开日志文件...", true, () => cts.Cancel());
+                    try
                     {
-                        var fileSize = fs.Length;
-                        using (var reader = new StreamReader(fs, true))
+                        List<string> lineList = new List<string>();
+                        using (var fs = File.Open(LogFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         {
-                            while (!cts.IsCancellationRequested)
+                            var fileSize = fs.Length;
+                            using (var reader = new StreamReader(fs, true))
                             {
-                                var line = await reader.ReadLineAsync();
-                                if (line == null)
-                                    break;
-                                var position = fs.Position;
-                                modalLoading.UpdateProgress(Convert.ToInt32(position * 100 / fileSize), $"读取中[{position}/{fileSize}]...");
-                                lineList.Add(line);
+                                while (!cts.IsCancellationRequested)
+                                {
+                                    var line = await reader.ReadLineAsync();
+                                    if (line == null)
+                                        break;
+                                    var position = fs.Position;
+                                    modalLoading.UpdateProgress(Convert.ToInt32(position * 100 / fileSize), $"读取中[{position}/{fileSize}]...");
+                                    lineList.Add(line);
+                                }
                             }
                         }
+                        LogFileLines = lineList.ToArray();
+                        modalLoading.Close();
+                        isLogFileLoaded = true;
+                        await search();
                     }
-                    LogFileLines = lineList.ToArray();
-                    modalLoading.Close();
-                    isLogFileLoaded = true;
-                    await search();
-                }
-                catch (Exception ex)
-                {
-                    modalAlert.Show("错误", $"加载日志文件[{Path.GetFileName(LogFile)}]时失败，原因：{ExceptionUtils.GetExceptionString(ex)}");
-                    modalLoading.Close();
+                    catch (Exception ex)
+                    {
+                        modalAlert.Show("错误", $"加载日志文件[{Path.GetFileName(LogFile)}]时失败，原因：{ExceptionUtils.GetExceptionString(ex)}");
+                        modalLoading.Close();
+                    }
                 }
             });
         }

@@ -83,25 +83,28 @@ namespace YiQiDong.Components.Pages.LinuxTools
 
         private void restartNetworkService()
         {
-            modalAlert.Show("确认", "是否重启网络网络？", () =>
+            modalAlert.Show("确认", "是否重启网络网络？", new ()
             {
-                Task.Run(() =>
+                OkCallback = () =>
                 {
-                    modalLoading.Show("重启服务", "正在重启网络服务...", true);
-                    try
+                    Task.Run(() =>
                     {
-                        var ret = inner_restartNetworkService();
-                        if (ret.ExitCode != 0)
-                            throw new ApplicationException(ret.Error);
-                        modalAlert.Show("成功", "重启网络服务成功");
-                    }
-                    catch (Exception ex)
-                    {
-                        modalAlert.Show("错误", "重启网络服务时出错，原因：" + ExceptionUtils.GetExceptionMessage(ex));
+                        modalLoading.Show("重启服务", "正在重启网络服务...", true);
+                        try
+                        {
+                            var ret = inner_restartNetworkService();
+                            if (ret.ExitCode != 0)
+                                throw new ApplicationException(ret.Error);
+                            modalAlert.Show("成功", "重启网络服务成功");
+                        }
+                        catch (Exception ex)
+                        {
+                            modalAlert.Show("错误", "重启网络服务时出错，原因：" + ExceptionUtils.GetExceptionMessage(ex));
 
-                    }
-                    modalLoading.Close();
-                });
+                        }
+                        modalLoading.Close();
+                    });
+                }
             });
         }
 
@@ -133,7 +136,7 @@ iface {网卡} inet6 static
     netmask {子网掩码：示例：64}
     gateway {网关地址：示例：2001:db8::1}
 
-", usePreTag: true);
+", new (){UsePreTag = true});
         }
     }
 }

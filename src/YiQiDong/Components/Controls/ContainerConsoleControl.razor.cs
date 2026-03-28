@@ -113,7 +113,7 @@ els[i].scrollTop = els[i].scrollHeight;
                 modalAlert.Show(
                     $"容器[{container.ContainerInfo.Name}]启动警告",
                     warning,
-                    () => doStartContainer());
+                    new() { OkCallback = doStartContainer });
             }
         }
 
@@ -142,7 +142,7 @@ els[i].scrollTop = els[i].scrollHeight;
                 modalAlert.Show(
                     $"容器[{container.ContainerInfo.Name}]停止警告",
                     warning,
-                    () => doStopContainer());
+                    new() { OkCallback = doStopContainer });
             }
         }
 

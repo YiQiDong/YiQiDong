@@ -191,6 +191,8 @@ namespace YiQiDong
                 app.UseYiQiDongControllers();
                 ConsoleUtils.ConsoleWriteLine($"正在启动Web服务:{webUrls}...");
                 await app.StartAsync();
+                //设置上传缓冲区大小
+                Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper.UploadBufferSize = Config.UploadBufferSize;
                 ConsoleUtils.ConsoleWriteLine("[Web服务启动完成]");
             }
             catch (Exception ex)

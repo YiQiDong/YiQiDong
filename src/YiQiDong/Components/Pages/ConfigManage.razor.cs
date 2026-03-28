@@ -76,6 +76,7 @@ namespace YiQiDong.Components.Pages
                 Program.Config.DefaultHtml = configModel.DefaultHtml;
                 Program.Config.AgentInitInterval = configModel.AgentInitInterval;
                 Program.Config.AgentTransportTimeout = configModel.AgentTransportTimeout;
+                Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper.UploadBufferSize = Program.Config.UploadBufferSize = configModel.UploadBufferSize;
                 Program.Config.LinuxOSLang = configModel.LinuxOSLang;
                 Program.Config.LinuxOSTimeZone = configModel.LinuxOSTimeZone;
                 Program.Config.EnvironmentVariables = configModel.EnvironmentVariables;

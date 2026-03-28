@@ -108,6 +108,12 @@
                             <ValidationMessage For="@(() => configModel.AgentTransportTimeout)" />
                         </div>
                         <div class="form-group">
+                            <label>上传缓冲区大小</label>
+                            <InputNumber class="form-control" @bind-Value="configModel.UploadBufferSize" />
+                            <small class="form-text text-muted">网络条件好时，可以适合增大此参数以提高上传性能</small>
+                            <ValidationMessage For="@(() => configModel.UploadBufferSize)" />
+                        </div>
+                        <div class="form-group">
                             <label>环境变量</label>
                             <InputTextArea class="form-control" @bind-Value="configModel.EnvironmentVariables" />
                             <small class="form-text text-muted">一行一条记录，用等号分隔</small>

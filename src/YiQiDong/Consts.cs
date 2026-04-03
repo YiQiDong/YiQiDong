@@ -2,7 +2,7 @@
 
 public class Consts
 {
-    public const string Version = "2026.23.328";
+    public const string Version = "2026.24.403";
     public const string ARCH = "any";
 
     public const string CONFIG_JSON_FILENAME = "config.json";

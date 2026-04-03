@@ -87,7 +87,7 @@ namespace YiQiDong
 
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
                     Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();                    
-                    Glash.Blazor.Client.ProfileContextManager.Instance.Start();
+                    
                     //异步加载
                     Task.Run(() =>
                     {
@@ -120,7 +120,6 @@ namespace YiQiDong
                 }
                 var startWebServiceTask = StartWebService();
                 startWebServiceTask.Wait();
-                Glash.Blazor.Client.ProfileContextManager.Instance.Stop();
                 Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Stop();
                 if (!string.IsNullOrEmpty(Config.StopScript))
                 {

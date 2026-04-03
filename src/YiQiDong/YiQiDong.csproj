@@ -19,9 +19,9 @@
 	<ItemGroup>
 		<PackageReference Include="Blazor.ECharts" Version="1.0.6" />
 		<PackageReference Include="Epoch.net" Version="4.1.0" />
-		<PackageReference Include="Glash.Blazor.Agent" Version="2026.6.328" />
-		<PackageReference Include="Glash.Blazor.Server" Version="2026.6.328" />
-		<PackageReference Include="Glash.Blazor.Client" Version="2026.6.328" />
+		<PackageReference Include="Glash.Blazor.Agent" Version="2026.7.403" />
+		<PackageReference Include="Glash.Blazor.Server" Version="2026.7.403" />
+		<PackageReference Include="Glash.Blazor.Client" Version="2026.7.403" />
 		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>

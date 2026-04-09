@@ -110,7 +110,7 @@
                         <div class="form-group">
                             <label>上传缓冲区大小</label>
                             <InputNumber class="form-control" @bind-Value="configModel.UploadBufferSize" />
-                            <small class="form-text text-muted">网络条件好时，可以适合增大此参数以提高上传性能</small>
+                            <small class="form-text text-muted">网络条件好时，可以适当增大此参数以提高上传性能。网络条件差时，需要调低此参数以避免上传失败。</small>
                             <ValidationMessage For="@(() => configModel.UploadBufferSize)" />
                         </div>
                         <div class="form-group">

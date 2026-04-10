@@ -36,13 +36,20 @@ public partial class CommandInterpreter : IDisposable
         }
         else
         {
-            commandInterpreterDict = new()
+            if (File.Exists("/etc/shells"))
             {
-                ["sh"] = "sh",
-                ["bash"] = "bash",
-                ["zsh"] = "zsh",
-                ["fish"] = "fish"
-            };
+                commandInterpreterDict = File.ReadAllLines("/etc/shells")
+                    .Where(t => !string.IsNullOrEmpty(t) && !t.StartsWith("#"))
+                    .ToDictionary(t => t, t => t);
+            }
+            else
+            {
+                commandInterpreterDict = new()
+                {
+                    ["sh"] = "sh",
+                    ["bash"] = "bash"
+                };
+            }
         }
     }
 

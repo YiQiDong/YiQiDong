@@ -54,7 +54,7 @@ namespace YiQiDong.Components.Pages
             });
             yield return ToolInfo.Create<FileManageControl>("系统管理", "文件管理", "fa fa-folder");
             yield return ToolInfo.Create<Quick.Blazor.Bootstrap.Admin.ProcessManageControl>("系统管理", "进程管理", "fa fa-cogs");
-            yield return ToolInfo.Create<SysTools.CommandExecute>("系统管理", "命令执行", "fa fa-file-text");
+            yield return ToolInfo.Create<SysTools.CommandInterpreter>("系统管理", "命令解释器", "fa fa-terminal");
             yield return ToolInfo.Create<Quick.Blazor.Bootstrap.Terminal.TerminalControl>("系统管理", "模拟终端", "fa fa-terminal", new Dictionary<string, object>()
             {
                 [nameof(Quick.Blazor.Bootstrap.Terminal.TerminalControl.WorkingDir)] = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)

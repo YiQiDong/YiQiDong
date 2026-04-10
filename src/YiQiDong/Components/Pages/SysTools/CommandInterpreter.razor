@@ -1,0 +1,49 @@
+﻿@using YiQiDong.Agent.CommandExecuters
+@using YiQiDong.Utils
+@using Quick.Blazor.Bootstrap
+
+<div class="modal-body">
+    @if (cts == null)
+    {
+        <ul class="list-group">
+            @foreach (var item in commandInterpreterDict)
+            {
+                <a href="javascript:;" class="list-group-item list-group-item-action"
+                   @onclick="@(e => Start(item.Key))">@item.Value</a>
+            }
+        </ul>
+    }
+    else
+    {
+        <nav class="navbar sticky-top bg-light p-1">
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-secondary @(ConsoleRows == 30 ? "active" : "")"
+                            @onclick="@(e => ConsoleSetRows(30))">▇</button>
+                    <button type="button" class="btn btn-sm btn-secondary @(ConsoleRows == 20 ? "active" : "")"
+                            @onclick="@(e => ConsoleSetRows(20))">▅</button>
+                    <button type="button" class="btn btn-sm btn-secondary @(ConsoleRows == 10 ? "active" : "")"
+                            @onclick="@(e => ConsoleSetRows(10))">▃</button>
+                </div>
+            </div>
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-secondary" @onclick="Clear">清空</button>
+                    <button type="button" class="btn btn-sm btn-secondary" @onclick="Stop">结束</button>
+                </div>
+            </div>
+        </nav>
+        <EditForm Model="@this" OnValidSubmit="Ok">
+            <LogViewControl @ref="logViewControl" Rows="@ConsoleRows" />
+            <div class="input-group">
+                @if (!string.IsNullOrEmpty(propmt))
+                {
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">@propmt</span>
+                    </div>
+                }
+                <InputText class="form-control" @bind-Value="command" />
+            </div>
+        </EditForm>
+    }
+</div>

@@ -50,14 +50,16 @@ public partial class CommandInterpreter : IDisposable
     {
         try
         {
-            cts?.Cancel();
-            cts = new();
-            var cancellationToken = cts.Token;
-
+            propmt = null;
             process = Process.Start(ProcessUtils.CreateProcessStartInfo(cmd));
             reader = process.StandardOutput;
             writer = process.StandardInput;
             var errReader = process.StandardError;
+
+            cts?.Cancel();
+            cts = new();
+            var cancellationToken = cts.Token;
+
             _ = Task.Run(async () =>
             {
                 await process.WaitForExitAsync(cancellationToken);
@@ -104,12 +106,12 @@ public partial class CommandInterpreter : IDisposable
                     _ = InvokeAsync(StateHasChanged);
                 }
             });
-            _ = InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             modalAlert.Show("错误", ExceptionUtils.GetExceptionString(ex));
         }
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private void Stop()
@@ -129,6 +131,8 @@ public partial class CommandInterpreter : IDisposable
         var currentCommand = command;
         command = null;
         await InvokeAsync(StateHasChanged);
+        if (!OperatingSystem.IsWindows())
+            logViewControl.AddLine($"> {currentCommand}");
         await writer.WriteLineAsync(currentCommand);
     }
 

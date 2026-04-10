@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Quick.Blazor.Bootstrap;
 using Quick.Shell.Utils;
+using Quick.Utils;
 
 namespace YiQiDong.Components.Pages.SysTools;
 
@@ -13,6 +14,7 @@ public partial class CommandInterpreter : IDisposable
     private Process process;
     private StreamReader reader;
     private StreamWriter writer;
+    private ModalAlert modalAlert;
 
     private void ConsoleSetRows(int rows)
     {
@@ -46,60 +48,68 @@ public partial class CommandInterpreter : IDisposable
 
     private async Task Start(string cmd)
     {
-        cts = new();
-        var cancellationToken = cts.Token;
-
-        process = Process.Start(ProcessUtils.CreateProcessStartInfo(cmd));
-        reader = process.StandardOutput;
-        writer = process.StandardInput;
-        var errReader = process.StandardError;
-        _ = Task.Run(async () =>
+        try
         {
-            await process.WaitForExitAsync(cancellationToken);
-            process = null;
             cts?.Cancel();
-            cts = null;
-            _ = InvokeAsync(StateHasChanged);
-        });
-        _ = Task.Run(async () =>
-        {
-            while (!cancellationToken.IsCancellationRequested)
+            cts = new();
+            var cancellationToken = cts.Token;
+
+            process = Process.Start(ProcessUtils.CreateProcessStartInfo(cmd));
+            reader = process.StandardOutput;
+            writer = process.StandardInput;
+            var errReader = process.StandardError;
+            _ = Task.Run(async () =>
             {
-                var line = await errReader.ReadLineAsync(cancellationToken);
-                logViewControl.AddLine(line);
-            }
-        });
-        _ = Task.Run(async () =>
-        {
-            var charBuffer = new char[1024];
-            while (!cancellationToken.IsCancellationRequested)
+                await process.WaitForExitAsync(cancellationToken);
+                process = null;
+                cts?.Cancel();
+                cts = null;
+                _ = InvokeAsync(StateHasChanged);
+            });
+            _ = Task.Run(async () =>
             {
-                var ret = await reader.ReadAsync(charBuffer, cancellationToken);
-                if (ret == 0)
-                    continue;
-                var charSpan = new Span<char>(charBuffer, 0, ret);
-                var str = new string(charSpan);
-                if (!string.IsNullOrEmpty(propmt))
-                    str = propmt + str;
-                var isEnd = str.EndsWith(Environment.NewLine);
-                string[] strs;
-                if (isEnd)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    propmt = string.Empty;
-                    strs = str.Substring(0, str.Length - Environment.NewLine.Length).Split(Environment.NewLine);
-                }
-                else
-                {
-                    strs = str.Split(Environment.NewLine);
-                    propmt = strs.Last();
-                    strs = strs.Take(strs.Length - 1).ToArray();
-                }
-                foreach (var line in strs)
+                    var line = await errReader.ReadLineAsync(cancellationToken);
                     logViewControl.AddLine(line);
-                _=InvokeAsync(StateHasChanged);                    
-            }
-        });
-        _ = InvokeAsync(StateHasChanged);
+                }
+            });
+            _ = Task.Run(async () =>
+            {
+                var charBuffer = new char[1024];
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    var ret = await reader.ReadAsync(charBuffer, cancellationToken);
+                    if (ret == 0)
+                        continue;
+                    var charSpan = new Span<char>(charBuffer, 0, ret);
+                    var str = new string(charSpan);
+                    if (!string.IsNullOrEmpty(propmt))
+                        str = propmt + str;
+                    var isEnd = str.EndsWith(Environment.NewLine);
+                    string[] strs;
+                    if (isEnd)
+                    {
+                        propmt = string.Empty;
+                        strs = str.Substring(0, str.Length - Environment.NewLine.Length).Split(Environment.NewLine);
+                    }
+                    else
+                    {
+                        strs = str.Split(Environment.NewLine);
+                        propmt = strs.Last();
+                        strs = strs.Take(strs.Length - 1).ToArray();
+                    }
+                    foreach (var line in strs)
+                        logViewControl.AddLine(line);
+                    _ = InvokeAsync(StateHasChanged);
+                }
+            });
+            _ = InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            modalAlert.Show("错误", ExceptionUtils.GetExceptionString(ex));
+        }
     }
 
     private void Stop()

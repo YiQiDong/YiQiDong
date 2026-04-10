@@ -9,6 +9,7 @@ using YiQiDong.Components;
 using Blazored.LocalStorage;
 using Quick.Shell.Utils;
 using Quick.Utils;
+using System.Diagnostics;
 
 namespace YiQiDong
 {
@@ -52,6 +53,20 @@ namespace YiQiDong
         {
             try
             {
+                //检查PID文件
+                if (File.Exists(Consts.PID_FILE))
+                {
+                    if (int.TryParse(File.ReadAllText(Consts.PID_FILE), out var pid))
+                    {
+                        try
+                        {
+                            var process = Process.GetProcessById(pid);
+                            if (process.ProcessName == nameof(YiQiDong))
+                                process.Kill(true);
+                        }
+                        catch { }
+                    }
+                }
                 ConsoleUtils.ConsoleWriteLine($@"---------------------
   易启动 [{Consts.Version}]
 ---------------------");
@@ -86,8 +101,8 @@ namespace YiQiDong
                     }
 
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
-                    Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();                    
-                    
+                    Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
+
                     //异步加载
                     Task.Run(() =>
                     {
@@ -120,13 +135,8 @@ namespace YiQiDong
                 }
                 var startWebServiceTask = StartWebService();
                 startWebServiceTask.Wait();
-                Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Stop();
-                if (!string.IsNullOrEmpty(Config.StopScript))
-                {
-                    ConsoleUtils.ConsoleWriteLine("正在执行停止脚本...");
-                    var ret = ProcessUtils.ExecuteShell(Config.StopScript);
-                    ConsoleUtils.ConsoleWriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
-                }
+                //写入PID文件
+                File.WriteAllText(Consts.PID_FILE, Process.GetCurrentProcess().Id.ToString());
                 waitForExitTask = new Task(() => ConsoleUtils.ConsoleWriteLine("[停止完成]"));
                 return waitForExitTask;
             }
@@ -218,6 +228,16 @@ namespace YiQiDong
         {
             StopContainers();
             StopWebService().Wait();
+            Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Stop();
+            if (!string.IsNullOrEmpty(Config.StopScript))
+            {
+                ConsoleUtils.ConsoleWriteLine("正在执行停止脚本...");
+                var ret = ProcessUtils.ExecuteShell(Config.StopScript);
+                ConsoleUtils.ConsoleWriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+            }
+            //删除PID文件
+            if (File.Exists(Consts.PID_FILE))
+                File.Delete(Consts.PID_FILE);
             waitForExitTask.Start();
         }
     }

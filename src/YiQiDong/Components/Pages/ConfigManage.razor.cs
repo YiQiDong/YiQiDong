@@ -234,10 +234,12 @@ namespace YiQiDong.Components.Pages
 
         private async Task beginUpdate(string updateFile, bool deleteUpdateFile)
         {
-            //在非Windows环境加载Quick.Build.dll文件，防止替换程序文件后，重启服务时出现BadImageFormatException
-            _ = typeof(QbFile).Assembly.GetManifestResourceNames();
-
             var isRuningOnWindows = OperatingSystem.IsWindows();
+
+            //在非Windows环境加载Quick.Build.dll文件，防止替换程序文件后，重启服务时出现BadImageFormatException
+            if (!isRuningOnWindows)
+                _ = typeof(QbFile).Assembly.GetManifestResourceNames();
+
             modalLoading.Show("正在更新", "准备中...", true);
             try
             {

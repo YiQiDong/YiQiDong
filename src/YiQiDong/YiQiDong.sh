@@ -1,6 +1,7 @@
 #!/bin/sh
 RETVAL=0
 YIQIDONG_HOME=$(cd `dirname $0`;pwd)
+YIQIDONG_PID_FILE_PATH=$YIQIDONG_HOME/YiQiDong.pid
 
 echo YIQIDONG_HOME: $YIQIDONG_HOME
 run()
@@ -15,6 +16,10 @@ run()
     then
         chmod +x $YIQIDONG_HOME/YiQiDong
         export DOTNET_EnableWriteXorExecute=0
+        rm -f $YIQIDONG_HOME/YiQiDong.env.sh
+        $YIQIDONG_HOME/YiQiDong -prepare > $YIQIDONG_HOME/YiQiDong.env.sh
+        . $YIQIDONG_HOME/YiQiDong.env.sh
+        rm -f $YIQIDONG_HOME/YiQiDong.env.sh
         sleep 1s
         $YIQIDONG_HOME/YiQiDong -service
     else
@@ -132,7 +137,18 @@ stop()
 {
     echo "Stopping YiQiDong"
     RETVAL=$?
-    ps -ef | grep 'YiQiDong -service' | grep -v PID | awk '{print $2}'|xargs kill
+    if test -s "$YIQIDONG_PID_FILE_PATH"
+    then
+      yiqidong_pid=`cat "$YIQIDONG_PID_FILE_PATH"`
+      if (kill -0 $yiqidong_pid 2>/dev/null)
+      then
+        kill $yiqidong_pid        
+      else
+        rm "$YIQIDONG_PID_FILE_PATH"
+      fi
+    else
+      ps -ef | grep 'YiQiDong -service' | grep -v PID | awk '{print $2}'|xargs kill
+    fi
     echo " OK"
     return $RETVAL
 }

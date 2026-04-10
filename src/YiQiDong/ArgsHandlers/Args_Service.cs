@@ -41,8 +41,6 @@ namespace YiQiDong.ArgsHandlers
         protected override void OnStop()
         {
             Program.Stop();
-            //停止服务时退出进程
-            Task.Delay(1000).ContinueWith(t => Environment.Exit(0));
         }
     }
 

@@ -9,4 +9,5 @@ public class Consts
 
     public const string SERVICE_NAME_WIN32 = "YiQiDong.Service";
     public const string SERVICE_NAME_UNIX = "YiQiDong";
+    public const string PID_FILE = "YiQiDong.pid";
 }

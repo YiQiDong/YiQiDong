@@ -91,27 +91,26 @@ public class ConfigModel
         return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $".var/lib/{nameof(YiQiDong)}");
     }
 
-    public static string GetConfigFile()
+    public static string GetConfigFolder()
     {
+        string folder;
         if (OperatingSystem.IsWindows())
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), nameof(YiQiDong));
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            return Path.Combine(folder, Consts.CONFIG_JSON_FILENAME);
+            folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), nameof(YiQiDong));
         }
         else
         {
-            string folder;
             if (UnixUtils.IsRuningWithRoot())
-                folder = "/etc";
+                folder = "/etc/YiQiDong";
             else
-                folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".etc");
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            return $"{folder}/{nameof(YiQiDong)}.conf";
+                folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".etc/YiQiDong");
         }
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+        return folder;
     }
+
+    public static string GetConfigFile() => Path.Combine(GetConfigFolder(), Consts.CONFIG_JSON_FILENAME);
 
     /// <summary>
     /// 加载
@@ -129,6 +128,13 @@ public class ConfigModel
             return templateModel;
         }
         var configFile = GetConfigFile();
+        //兼容非Windows系统下老配置文件路径
+        if (!OperatingSystem.IsWindows())
+        {
+            var oldConfigFile = "/etc/YiQiDong.conf";
+            if (File.Exists(oldConfigFile))
+                File.Move(oldConfigFile, configFile);
+        }
         if (!File.Exists(configFile))
             File.Copy(templateConfigFile, configFile);
         var content = File.ReadAllText(configFile);

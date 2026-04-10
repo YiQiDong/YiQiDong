@@ -25,6 +25,7 @@ namespace YiQiDong
         public static string StartErrorMessage;
 
         public static Model.ConfigModel Config { get; private set; }
+        private static string pidFile;
 
         internal static void LoadConfig()
         {
@@ -35,6 +36,7 @@ namespace YiQiDong
                 Environment.CurrentDirectory = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
 #endif
             Config = Model.ConfigModel.Load();
+            pidFile = Path.Combine(Model.ConfigModel.GetConfigFolder(), Consts.PID_FILE);
         }
 
         public static void Main(string[] args)
@@ -54,9 +56,9 @@ namespace YiQiDong
             try
             {
                 //检查PID文件
-                if (File.Exists(Consts.PID_FILE))
+                if (File.Exists(pidFile))
                 {
-                    if (int.TryParse(File.ReadAllText(Consts.PID_FILE), out var pid))
+                    if (int.TryParse(File.ReadAllText(pidFile), out var pid))
                     {
                         try
                         {
@@ -136,7 +138,7 @@ namespace YiQiDong
                 var startWebServiceTask = StartWebService();
                 startWebServiceTask.Wait();
                 //写入PID文件
-                File.WriteAllText(Consts.PID_FILE, Process.GetCurrentProcess().Id.ToString());
+                File.WriteAllText(pidFile, Process.GetCurrentProcess().Id.ToString());
                 waitForExitTask = new Task(() => ConsoleUtils.ConsoleWriteLine("[停止完成]"));
                 return waitForExitTask;
             }
@@ -236,8 +238,8 @@ namespace YiQiDong
                 ConsoleUtils.ConsoleWriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
             }
             //删除PID文件
-            if (File.Exists(Consts.PID_FILE))
-                File.Delete(Consts.PID_FILE);
+            if (File.Exists(pidFile))
+                File.Delete(pidFile);
             waitForExitTask.Start();
         }
     }

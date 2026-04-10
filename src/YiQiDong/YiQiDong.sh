@@ -1,7 +1,7 @@
 #!/bin/sh
 RETVAL=0
 YIQIDONG_HOME=$(cd `dirname $0`;pwd)
-YIQIDONG_PID_FILE_PATH=$YIQIDONG_HOME/YiQiDong.pid
+YIQIDONG_PID_FILE_PATH=/etc/YiQiDong/YiQiDong.pid
 
 echo YIQIDONG_HOME: $YIQIDONG_HOME
 run()

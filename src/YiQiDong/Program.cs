@@ -221,8 +221,7 @@ namespace YiQiDong
         public static void StopContainers()
         {
             SystemInfoContext.Dispose();
-            if (!Console.IsOutputRedirected)
-                ConsoleUtils.ConsoleWriteLine("正在停止容器管理器...");
+            ConsoleUtils.ConsoleWriteLine("正在停止容器管理器...");                
             ContainerManager.Instance.Stop();
         }
 

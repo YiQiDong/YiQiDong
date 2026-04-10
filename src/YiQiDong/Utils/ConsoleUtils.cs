@@ -48,7 +48,11 @@ public class ConsoleUtils
     {
         if (Console.IsOutputRedirected)
             return;
-        Console.WriteLine(message);
+        try
+        {
+            Console.WriteLine(message);
+        }
+        catch { }
     }
 
     public static void ConsoleWriteLine()

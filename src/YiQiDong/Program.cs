@@ -97,11 +97,13 @@ namespace YiQiDong
                     ConfigDbContext.CacheContext.LoadCache();
                     if (!string.IsNullOrEmpty(Config.StartScript))
                     {
-                        ConsoleUtils.ConsoleWriteLine("正在执行启动脚本...");
-                        var ret = ProcessUtils.ExecuteShell(Config.StartScript);
-                        ConsoleUtils.ConsoleWriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+                        Task.Run(() =>
+                        {
+                            ConsoleUtils.ConsoleWriteLine("正在执行启动脚本...");
+                            var ret = ProcessUtils.ExecuteShell(Config.StartScript);
+                            ConsoleUtils.ConsoleWriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
+                        });
                     }
-
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
                     Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
 

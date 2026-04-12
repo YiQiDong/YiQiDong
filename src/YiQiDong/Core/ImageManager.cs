@@ -2,6 +2,7 @@
 using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
+using SharpCompress.Readers;
 using YiQiDong.Core.Utils;
 using YiQiDong.Core.Utils.Unix;
 using YiQiDong.Protocol.V1.Model;
@@ -100,15 +101,24 @@ namespace YiQiDong.Core
                 using (var ymgFileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
                 using(var archive = ArchiveFactory.OpenArchive(ymgFileStream))
                 {
-                    var entriesCount = archive.Entries.Count();
-                    //读取镜像文件元信息
-                    var imageMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.IMAGE_META_FILE);
-                    if (imageMetaEntry == null)
-                        throw new FileNotFoundException("文件中未找到易启动镜像元信息");
+                    var totalEntryCount = 0;
                     var imageMetaContent = string.Empty;
-                    using (var imageMetaEntryStream = imageMetaEntry.OpenEntryStream())
-                    using (var reader = new StreamReader(imageMetaEntryStream))
-                        imageMetaContent = reader.ReadToEnd();
+
+                    //读取镜像文件元信息
+                    using (var archiveReader = archive.ExtractAllEntries())
+                        while (archiveReader.MoveToNextEntry())
+                        {
+                            var entry = archiveReader.Entry;
+                            totalEntryCount++;
+                            if (entry.Key == Consts.IMAGE_META_FILE)
+                            {
+                                using (var entryStream = archiveReader.OpenEntryStream())
+                                using (var reader = new StreamReader(entryStream))
+                                    imageMetaContent = reader.ReadToEnd();
+                            }
+                        }
+                    if (string.IsNullOrEmpty(imageMetaContent))
+                        throw new FileNotFoundException("文件中未找到易启动镜像元信息");
 
                     imageInfo = ImageInfo.Parse(imageMetaContent);
                     //验证镜像架构是否匹配
@@ -133,49 +143,17 @@ namespace YiQiDong.Core
                     }
 
                     //解压镜像文件
+                    if (!Directory.Exists(newImageDir))
+                        Directory.CreateDirectory(newImageDir);
                     var currentEntryCount = 0;
-                    foreach (var entry in archive.Entries)
-                    {
+                    using (var archiveReader = archive.ExtractAllEntries())
+                        while (archiveReader.MoveToNextEntry())
+                        {
                         if (cancellationToken.IsCancellationRequested)
                             break;
                         currentEntryCount++;
-                        progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
-
-                        if (entry.IsDirectory)
-                        {
-                            var dir = Path.Combine(newImageDir, entry.Key);
-                            if (!Directory.Exists(dir))
-                                try
-                                {
-                                    Directory.CreateDirectory(dir);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                }
-                        }
-                        else
-                        {
-                            var ex_file = Path.Combine(newImageDir, entry.Key);
-                            var dir = Path.GetDirectoryName(ex_file);
-                            if (!Directory.Exists(dir))
-                                try
-                                {
-                                    Directory.CreateDirectory(dir);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                }
-                            try
-                            {
-                                await entry.WriteToFileAsync(ex_file);
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new IOException($"解压文件[{entry.Key}]时出错",ex);
-                            }
-                        }
+                        progressHandler?.Invoke(totalEntryCount, currentEntryCount, archiveReader.Entry.Key);
+                        archiveReader.WriteEntryToDirectory(newImageDir);
                     }
                 }
 

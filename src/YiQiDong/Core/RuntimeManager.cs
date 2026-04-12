@@ -104,8 +104,8 @@ namespace YiQiDong.Core
                             totalEntryCount++;
                             if (entry.Key == Consts.RUNTIME_META_FILE)
                             {
-                                using (var runtimeMetaEntryStream = archiveReader.OpenEntryStream())
-                                using (var reader = new StreamReader(runtimeMetaEntryStream))
+                                using (var entryStream = archiveReader.OpenEntryStream())
+                                using (var reader = new StreamReader(entryStream))
                                     runtimeMetaContent = reader.ReadToEnd();
                             }
                         }

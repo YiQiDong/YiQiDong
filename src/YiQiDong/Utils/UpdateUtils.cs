@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using YiQiDong.Core.Utils;
 using System.Text.Json.Nodes;
+using SharpCompress.Readers;
 
 namespace YiQiDong.Utils
 {
@@ -14,33 +15,41 @@ namespace YiQiDong.Utils
             public string Version { get; set; }
             public string Arch { get; set; }
         }
+
         private static VersionAndArch GetVersionAndArchFromZipArchive(SharpCompress.Archives.IArchive archive)
         {
+            string content = string.Empty;
             //检查压缩包中的版本
-            var configJsonEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.CONFIG_JSON_FILENAME);
-            if (configJsonEntry == null)
+            using (var archiveReader = archive.ExtractAllEntries())
+                while (archiveReader.MoveToNextEntry())
+                {
+                    var entry = archiveReader.Entry;
+                    if (entry.Key == Consts.CONFIG_JSON_FILENAME)
+                    {
+                        using (var entryStream = archiveReader.OpenEntryStream())
+                        using (var reader = new StreamReader(entryStream))
+                            content = reader.ReadToEnd();
+                    }
+                }
+
+            if (string.IsNullOrEmpty(content))
                 throw new ApplicationException("选择的文件不是有效的易启动程序文件！");
 
-            using (var stream = configJsonEntry.OpenEntryStream())
-            using (var reader = new StreamReader(stream))
-            {
-                var content = reader.ReadToEnd();                
-                var jObj = JsonNode.Parse(content).AsObject();
-                var version = jObj[nameof(Consts.Version)].GetValue<string>();
-                var arch = jObj[nameof(Consts.ARCH)].GetValue<string>();
+            var jObj = JsonNode.Parse(content).AsObject();
+            var version = jObj[nameof(Consts.Version)].GetValue<string>();
+            var arch = jObj[nameof(Consts.ARCH)].GetValue<string>();
 
-                if (string.IsNullOrEmpty(version))
-                    throw new ApplicationException("选择的文件中未包含版本信息，不是有效的易启动程序文件！");
-                if (string.IsNullOrEmpty(arch))
-                    throw new ApplicationException("选择的文件中未包含架构信息，不是有效的易启动程序文件！");
-                if (!RuntimeUtils.IsMatchRID(arch))
-                    throw new ApplicationException($"选择的文件中的架构[{arch}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
-                return new VersionAndArch()
-                {
-                    Version = version,
-                    Arch = arch
-                };
-            }
+            if (string.IsNullOrEmpty(version))
+                throw new ApplicationException("选择的文件中未包含版本信息，不是有效的易启动程序文件！");
+            if (string.IsNullOrEmpty(arch))
+                throw new ApplicationException("选择的文件中未包含架构信息，不是有效的易启动程序文件！");
+            if (!RuntimeUtils.IsMatchRID(arch))
+                throw new ApplicationException($"选择的文件中的架构[{arch}]不匹配当前计算机架构[{RuntimeUtils.GetCurrentRID()}]");
+            return new VersionAndArch()
+            {
+                Version = version,
+                Arch = arch
+            };
         }
 
         public static VersionAndArch GetVersionAndArchFromUpdateFile(string updateFile)
@@ -69,7 +78,7 @@ namespace YiQiDong.Utils
         public static async Task Update(string desDir, string updateFile, Action<string> pushLog = null, Action<int> progressNotifyAction = null)
         {
             await Task.Delay(100);
-            using (var archive = SharpCompress.Archives.Zip.ZipArchive.OpenArchive(updateFile))
+            using (var archive = SharpCompress.Archives.ArchiveFactory.OpenArchive(updateFile))
             {
                 //检查数据目录是否存在风险
                 if (IsDataFolderInDanger())
@@ -98,23 +107,24 @@ namespace YiQiDong.Utils
                     }
                 }
 
-                var totalCount = archive.Entries.Count();
+                var totalCount = 0;
+                using (var archiveReader = archive.ExtractAllEntries())
+                    while (archiveReader.MoveToNextEntry())
+                    {
+                        totalCount++;
+                    }
+
                 var currentCount = 0;
-                foreach (var entry in archive.Entries)
-                {
-                    pushLog?.Invoke($"抽取: {entry.Key}");
-                    var desFile = Path.Combine(desDir, entry.Key);
-                    if (File.Exists(desFile))
-                        File.Delete(desFile);
-                    var folder = Path.GetDirectoryName(desFile);
-                    if (!Directory.Exists(folder))
-                        Directory.CreateDirectory(folder);
-                    using (var es = entry.OpenEntryStream())
-                    using (var os = File.OpenWrite(desFile))
-                        es.CopyTo(os);
-                    currentCount++;
-                    progressNotifyAction?.Invoke(currentCount * 100 / totalCount);
-                }
+                if (!Directory.Exists(desDir))
+                    Directory.CreateDirectory(desDir);
+                using (var archiveReader = archive.ExtractAllEntries())
+                    while (archiveReader.MoveToNextEntry())
+                    {
+                        pushLog?.Invoke($"抽取: {archiveReader.Entry.Key}");
+                        currentCount++;
+                        progressNotifyAction?.Invoke(currentCount * 100 / totalCount);
+                        archiveReader.WriteEntryToDirectory(desDir);
+                    }
             }
         }
     }

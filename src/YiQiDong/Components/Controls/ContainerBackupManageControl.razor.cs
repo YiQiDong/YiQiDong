@@ -1,5 +1,7 @@
 ﻿using Quick.Blazor.Bootstrap;
 using Quick.Utils;
+using SharpCompress.Archives;
+using SharpCompress.Readers;
 using System.IO.Compression;
 using YiQiDong.Core;
 using YiQiDong.Model;
@@ -71,21 +73,25 @@ namespace YiQiDong.Components.Controls
                         try
                         {
                             var baseDir = ContainerPathUtils.GetContainerFolder(containerInfo.Id);
-                            using (var zipArchive = ZipFile.OpenRead(file))
+                            using (var zipArchive = ArchiveFactory.OpenArchive(file))
                             {
-                                var totalFileCount = zipArchive.Entries.Count;
+                                var totalFileCount = 0;
+                                using (var archiveReader = zipArchive.ExtractAllEntries())
+                                while (archiveReader.MoveToNextEntry())
+                                    totalFileCount++;
+
                                 var currentFile = 0;
-                                foreach (var entry in zipArchive.Entries)
+                                if(!Directory.Exists(baseDir))
+                                    Directory.CreateDirectory(baseDir);
+                                using (var archiveReader = zipArchive.ExtractAllEntries())
+                                while (archiveReader.MoveToNextEntry())
                                 {
                                     currentFile++;
-                                    if (entry.Name == Core.Consts.CONTAINER_META_FILE)
+                                    var entry  =archiveReader.Entry;
+                                    if (entry.Key == Core.Consts.CONTAINER_META_FILE)
                                         continue;
-                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.FullName} ({storageUSC.GetString(entry.Length, 2, true)}B)");
-                                    var extractFileName = Path.Combine(baseDir, entry.FullName);
-                                    var extractFileFolder = Path.GetDirectoryName(extractFileName);
-                                    if (!Directory.Exists(extractFileFolder))
-                                        Directory.CreateDirectory(extractFileFolder);
-                                    entry.ExtractToFile(extractFileName);
+                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.Key} ({storageUSC.GetString(entry.Size, 2, true)}B)");
+                                    archiveReader.WriteEntryToDirectory(baseDir);
                                 }
                             }
                             modalLoading.UpdateProgress(100, "解压完成");

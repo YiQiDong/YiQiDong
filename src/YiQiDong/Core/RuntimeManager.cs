@@ -6,6 +6,7 @@ using SharpCompress.Archives.SevenZip;
 using SharpCompress.Archives.Zip;
 using YiQiDong.Core.Utils.Unix;
 using Quick.Utils;
+using SharpCompress.Readers;
 
 namespace YiQiDong.Core
 {
@@ -93,15 +94,23 @@ namespace YiQiDong.Core
                 using (var ymgFileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
                 using(var archive = ArchiveFactory.OpenArchive(ymgFileStream))
                 {
-                    var entriesCount = archive.Entries.Count();
-                    //读取运行库文件元信息
-                    var runtimeMetaEntry = archive.Entries.FirstOrDefault(t => t.Key == Consts.RUNTIME_META_FILE);
-                    if (runtimeMetaEntry == null)
-                        throw new FileNotFoundException("文件中未找到易启动运行库元信息");
+                    var totalEntryCount = 0;
                     var runtimeMetaContent = string.Empty;
-                    using (var runtimeMetaEntryStream = runtimeMetaEntry.OpenEntryStream())
-                    using (var reader = new StreamReader(runtimeMetaEntryStream))
-                        runtimeMetaContent = reader.ReadToEnd();
+                    //读取运行库文件元信息
+                    using (var archiveReader = archive.ExtractAllEntries())
+                        while (archiveReader.MoveToNextEntry())
+                        {
+                            var entry = archiveReader.Entry;
+                            totalEntryCount++;
+                            if (entry.Key == Consts.RUNTIME_META_FILE)
+                            {
+                                using (var runtimeMetaEntryStream = archiveReader.OpenEntryStream())
+                                using (var reader = new StreamReader(runtimeMetaEntryStream))
+                                    runtimeMetaContent = reader.ReadToEnd();
+                            }
+                        }
+                    if (string.IsNullOrEmpty(runtimeMetaContent))
+                        throw new FileNotFoundException("文件中未找到易启动运行库元信息");
 
                     runtimeInfo = RuntimeInfo.Parse(runtimeMetaContent);
                     //验证运行库架构是否匹配
@@ -131,50 +140,18 @@ namespace YiQiDong.Core
                     }
 
                     //解压运行库文件
+                    if (!Directory.Exists(tmpRuntimeDir))
+                        Directory.CreateDirectory(tmpRuntimeDir);
                     var currentEntryCount = 0;
-                    foreach (var entry in archive.Entries)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                            break;
-                        currentEntryCount++;
-                        progressHandler?.Invoke(entriesCount, currentEntryCount, entry.Key);
-
-                        if (entry.IsDirectory)
+                    using (var archiveReader = archive.ExtractAllEntries())
+                        while (archiveReader.MoveToNextEntry())
                         {
-                            var dir = Path.Combine(tmpRuntimeDir, entry.Key);
-                            if (!Directory.Exists(dir))
-                                try
-                                {
-                                    Directory.CreateDirectory(dir);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                }
+                            if (cancellationToken.IsCancellationRequested)
+                                break;
+                            currentEntryCount++;
+                            progressHandler?.Invoke(totalEntryCount, currentEntryCount, archiveReader.Entry.Key);
+                            archiveReader.WriteEntryToDirectory(tmpRuntimeDir);
                         }
-                        else
-                        {
-                            var ex_file = Path.Combine(tmpRuntimeDir, entry.Key);
-                            var dir = Path.GetDirectoryName(ex_file);
-                            if (!Directory.Exists(dir))
-                                try
-                                {
-                                    Directory.CreateDirectory(dir);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new IOException($"创建目录[{dir}]时出错。", ex);
-                                }
-                            try
-                            {
-                                await entry.WriteToFileAsync(ex_file);
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new IOException($"解压文件[{entry.Key}]时出错",ex);
-                            }
-                        }
-                    }
                 }
 
                 //如果没有被取消，则加载运行库

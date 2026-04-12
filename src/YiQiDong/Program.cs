@@ -55,6 +55,7 @@ namespace YiQiDong
         {
             try
             {
+#if !DEBUG
                 //检查PID文件
                 if (File.Exists(pidFile))
                 {
@@ -69,6 +70,7 @@ namespace YiQiDong
                         catch { }
                     }
                 }
+#endif
                 ConsoleUtils.ConsoleWriteLine($@"---------------------
   易启动 [{Consts.Version}]
 ---------------------");
@@ -140,7 +142,9 @@ namespace YiQiDong
                 var startWebServiceTask = StartWebService();
                 startWebServiceTask.Wait();
                 //写入PID文件
+                #if !DEBUG
                 File.WriteAllText(pidFile, Process.GetCurrentProcess().Id.ToString());
+                #endif
                 waitForExitTask = new Task(() => ConsoleUtils.ConsoleWriteLine("[停止完成]"));
                 return waitForExitTask;
             }
@@ -238,9 +242,11 @@ namespace YiQiDong
                 var ret = ProcessUtils.ExecuteShell(Config.StopScript);
                 ConsoleUtils.ConsoleWriteLine($"执行停止脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
             }
+            #if !DEBUG
             //删除PID文件
             if (File.Exists(pidFile))
                 File.Delete(pidFile);
+            #endif
             waitForExitTask.Start();
         }
     }

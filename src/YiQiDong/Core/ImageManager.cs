@@ -99,24 +99,22 @@ namespace YiQiDong.Core
             try
             {
                 using (var ymgFileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
-                using(var archive = ArchiveFactory.OpenArchive(ymgFileStream))
+                using (var archive = ArchiveFactory.OpenArchive(ymgFileStream))
                 {
                     var totalEntryCount = 0;
                     var imageMetaContent = string.Empty;
 
                     //读取镜像文件元信息
-                    using (var archiveReader = archive.ExtractAllEntries())
-                        while (archiveReader.MoveToNextEntry())
+                    archive.EntriesForEach(entry =>
+                    {
+                        totalEntryCount++;
+                        if (entry.Entry.Key == Consts.IMAGE_META_FILE)
                         {
-                            var entry = archiveReader.Entry;
-                            totalEntryCount++;
-                            if (entry.Key == Consts.IMAGE_META_FILE)
-                            {
-                                using (var entryStream = archiveReader.OpenEntryStream())
-                                using (var reader = new StreamReader(entryStream))
-                                    imageMetaContent = reader.ReadToEnd();
-                            }
+                            using (var entryStream = entry.OpenEntryStream())
+                            using (var reader = new StreamReader(entryStream))
+                                imageMetaContent = reader.ReadToEnd();
                         }
+                    }, cancellationToken);
                     if (string.IsNullOrEmpty(imageMetaContent))
                         throw new FileNotFoundException("文件中未找到易启动镜像元信息");
 
@@ -146,15 +144,13 @@ namespace YiQiDong.Core
                     if (!Directory.Exists(newImageDir))
                         Directory.CreateDirectory(newImageDir);
                     var currentEntryCount = 0;
-                    using (var archiveReader = archive.ExtractAllEntries())
-                        while (archiveReader.MoveToNextEntry())
-                        {
-                        if (cancellationToken.IsCancellationRequested)
-                            break;
+
+                    archive.EntriesForEach(entry =>
+                    {
                         currentEntryCount++;
-                        progressHandler?.Invoke(totalEntryCount, currentEntryCount, archiveReader.Entry.Key);
-                        archiveReader.WriteEntryToDirectory(newImageDir);
-                    }
+                        progressHandler?.Invoke(totalEntryCount, currentEntryCount, entry.Entry.Key);
+                        entry.WriteToDirectory(newImageDir);
+                    }, cancellationToken);
                 }
 
                 //如果被取消

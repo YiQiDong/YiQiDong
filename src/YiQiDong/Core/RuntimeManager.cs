@@ -52,7 +52,7 @@ namespace YiQiDong.Core
             var runtimeMetaFile = Path.Combine(dir, Consts.RUNTIME_META_FILE);
             if (!File.Exists(runtimeMetaFile))
                 return null;
-            var content = File.ReadAllText(runtimeMetaFile);            
+            var content = File.ReadAllText(runtimeMetaFile);
             try
             {
                 var runtimeInfo = RuntimeInfo.Parse(content);
@@ -61,7 +61,7 @@ namespace YiQiDong.Core
                 runtimeInfo.Id = Path.GetFileName(dir);
                 return runtimeInfo;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ConsoleUtils.ConsoleWriteLine($"[运行库管理器]加载[{dir}]时出错：{ExceptionUtils.GetExceptionString(ex)}");
                 return null;
@@ -92,23 +92,21 @@ namespace YiQiDong.Core
             try
             {
                 using (var ymgFileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
-                using(var archive = ArchiveFactory.OpenArchive(ymgFileStream))
+                using (var archive = ArchiveFactory.OpenArchive(ymgFileStream))
                 {
                     var totalEntryCount = 0;
                     var runtimeMetaContent = string.Empty;
                     //读取运行库文件元信息
-                    using (var archiveReader = archive.ExtractAllEntries())
-                        while (archiveReader.MoveToNextEntry())
+                    archive.EntriesForEach(entry =>
+                    {
+                        totalEntryCount++;
+                        if (entry.Entry.Key == Consts.RUNTIME_META_FILE)
                         {
-                            var entry = archiveReader.Entry;
-                            totalEntryCount++;
-                            if (entry.Key == Consts.RUNTIME_META_FILE)
-                            {
-                                using (var entryStream = archiveReader.OpenEntryStream())
-                                using (var reader = new StreamReader(entryStream))
-                                    runtimeMetaContent = reader.ReadToEnd();
-                            }
+                            using (var entryStream = entry.OpenEntryStream())
+                            using (var reader = new StreamReader(entryStream))
+                                runtimeMetaContent = reader.ReadToEnd();
                         }
+                    }, cancellationToken);
                     if (string.IsNullOrEmpty(runtimeMetaContent))
                         throw new FileNotFoundException("文件中未找到易启动运行库元信息");
 
@@ -143,15 +141,12 @@ namespace YiQiDong.Core
                     if (!Directory.Exists(tmpRuntimeDir))
                         Directory.CreateDirectory(tmpRuntimeDir);
                     var currentEntryCount = 0;
-                    using (var archiveReader = archive.ExtractAllEntries())
-                        while (archiveReader.MoveToNextEntry())
-                        {
-                            if (cancellationToken.IsCancellationRequested)
-                                break;
-                            currentEntryCount++;
-                            progressHandler?.Invoke(totalEntryCount, currentEntryCount, archiveReader.Entry.Key);
-                            archiveReader.WriteEntryToDirectory(tmpRuntimeDir);
-                        }
+                    archive.EntriesForEach(entry =>
+                    {
+                        currentEntryCount++;
+                        progressHandler?.Invoke(totalEntryCount, currentEntryCount, entry.Entry.Key);
+                        entry.WriteToDirectory(tmpRuntimeDir);
+                    }, cancellationToken);
                 }
 
                 //如果没有被取消，则加载运行库
@@ -190,7 +185,7 @@ namespace YiQiDong.Core
                     }
                     //移动运行库目录
                     var sourceFolder = tmpRuntimeDir;
-                    var desFolder = newRuntimeFolder;                    
+                    var desFolder = newRuntimeFolder;
                     for (var i = 0; i < RETRY_MAX_TIMES; i++)
                     {
                         progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在移动运行库目录...");

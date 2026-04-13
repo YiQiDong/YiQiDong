@@ -5,6 +5,7 @@ using System.Linq;
 using YiQiDong.Core.Utils;
 using System.Text.Json.Nodes;
 using SharpCompress.Readers;
+using SharpCompress.Archives;
 
 namespace YiQiDong.Utils
 {
@@ -16,21 +17,19 @@ namespace YiQiDong.Utils
             public string Arch { get; set; }
         }
 
-        private static VersionAndArch GetVersionAndArchFromZipArchive(SharpCompress.Archives.IArchive archive)
+        private static VersionAndArch GetVersionAndArchFromZipArchive(IArchive archive)
         {
             string content = string.Empty;
             //检查压缩包中的版本
-            using (var archiveReader = archive.ExtractAllEntries())
-                while (archiveReader.MoveToNextEntry())
+            archive.EntriesForEach(entry =>
+            {
+                if (entry.Entry.Key == Consts.CONFIG_JSON_FILENAME)
                 {
-                    var entry = archiveReader.Entry;
-                    if (entry.Key == Consts.CONFIG_JSON_FILENAME)
-                    {
-                        using (var entryStream = archiveReader.OpenEntryStream())
-                        using (var reader = new StreamReader(entryStream))
-                            content = reader.ReadToEnd();
-                    }
+                    using (var entryStream = entry.OpenEntryStream())
+                    using (var reader = new StreamReader(entryStream))
+                        content = reader.ReadToEnd();
                 }
+            });
 
             if (string.IsNullOrEmpty(content))
                 throw new ApplicationException("选择的文件不是有效的易启动程序文件！");
@@ -107,24 +106,17 @@ namespace YiQiDong.Utils
                     }
                 }
 
-                var totalCount = 0;
-                using (var archiveReader = archive.ExtractAllEntries())
-                    while (archiveReader.MoveToNextEntry())
-                    {
-                        totalCount++;
-                    }
-
+                var totalCount = archive.GetEntriesCount();
                 var currentCount = 0;
                 if (!Directory.Exists(desDir))
                     Directory.CreateDirectory(desDir);
-                using (var archiveReader = archive.ExtractAllEntries())
-                    while (archiveReader.MoveToNextEntry())
-                    {
-                        pushLog?.Invoke($"抽取: {archiveReader.Entry.Key}");
-                        currentCount++;
-                        progressNotifyAction?.Invoke(currentCount * 100 / totalCount);
-                        archiveReader.WriteEntryToDirectory(desDir);
-                    }
+                archive.EntriesForEach(entry =>
+                {
+                    pushLog?.Invoke($"抽取: {entry.Entry.Key}");
+                    currentCount++;
+                    progressNotifyAction?.Invoke(currentCount * 100 / totalCount);
+                    entry.WriteToDirectory(desDir);
+                });
             }
         }
     }

@@ -73,26 +73,21 @@ namespace YiQiDong.Components.Controls
                         try
                         {
                             var baseDir = ContainerPathUtils.GetContainerFolder(containerInfo.Id);
-                            using (var zipArchive = ArchiveFactory.OpenArchive(file))
+                            using (var archive = ArchiveFactory.OpenArchive(file))
                             {
-                                var totalFileCount = 0;
-                                using (var archiveReader = zipArchive.ExtractAllEntries())
-                                while (archiveReader.MoveToNextEntry())
-                                    totalFileCount++;
+                                var totalFileCount = archive.GetEntriesCount();
 
                                 var currentFile = 0;
                                 if(!Directory.Exists(baseDir))
                                     Directory.CreateDirectory(baseDir);
-                                using (var archiveReader = zipArchive.ExtractAllEntries())
-                                while (archiveReader.MoveToNextEntry())
+                                archive.EntriesForEach(entry=>
                                 {
                                     currentFile++;
-                                    var entry  =archiveReader.Entry;
-                                    if (entry.Key == Core.Consts.CONTAINER_META_FILE)
-                                        continue;
-                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.Key} ({storageUSC.GetString(entry.Size, 2, true)}B)");
-                                    archiveReader.WriteEntryToDirectory(baseDir);
-                                }
+                                    if (entry.Entry.Key == Core.Consts.CONTAINER_META_FILE)
+                                        return;
+                                    modalLoading.UpdateProgress(currentFile * 100 / totalFileCount, $"[{currentFile}/{totalFileCount}] {entry.Entry.Key} ({storageUSC.GetString(entry.Entry.Size, 2, true)}B)");
+                                    entry.WriteToDirectory(baseDir);
+                                });
                             }
                             modalLoading.UpdateProgress(100, "解压完成");
                         }

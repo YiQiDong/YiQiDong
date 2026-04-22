@@ -15,6 +15,10 @@ public class TestFunction : AbstractFunction
             {
                 Id="txtCurrentTime",
                 Name = "当前时间",
+                Description =@"1.此文本框是只读的
+2.会显示当前时间
+
+3.描述是多行的",
                 Type = FieldType.InputText,
                 Input_ReadOnly = true,
                 Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")

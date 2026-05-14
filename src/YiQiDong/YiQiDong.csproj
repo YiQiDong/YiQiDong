@@ -27,19 +27,18 @@
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="NLog" Version="6.1.3" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.18.422" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.18.422" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.18.422" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2026.18.422" />
-		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2026.18.422" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.19.514" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.19.514" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.19.514" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.ReverseProxy" Version="2026.19.514" />
+		<PackageReference Include="Quick.Blazor.Bootstrap.Terminal" Version="2026.19.514" />
 		<PackageReference Include="Quick.Protocol.Http.Client" Version="2.6.11" />
 		<PackageReference Include="Quick.Protocol.Http.Server.AspNetCore" Version="2.6.11" />
 		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.6.11" />
 		<PackageReference Include="Quick.Protocol.Tcp" Version="2.6.11" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Client" Version="2.6.11" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.6.11" />
-		<PackageReference Include="SharpCompress" Version="0.48.0" />
-		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.7" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.8" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		

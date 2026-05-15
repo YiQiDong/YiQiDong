@@ -9,6 +9,8 @@ using System.Runtime.Versioning;
 using Windows.Win32;
 using System.Runtime.InteropServices.ComTypes;
 using Quick.Shell.WinCmd;
+using Windows.Win32.System.SystemInformation;
+using System.ComponentModel;
 
 namespace YiQiDong.Utils
 {
@@ -282,10 +284,12 @@ namespace YiQiDong.Utils
             if (OperatingSystem.IsWindows())
             {
 #pragma warning disable CA1416 // 验证平台兼容性
-                PInvoke.GlobalMemoryStatus(out var memoryStatus);
+                MEMORYSTATUSEX memoryStatus = new();
+                memoryStatus.dwLength=(uint)Marshal.SizeOf(memoryStatus);
+                PInvoke.GlobalMemoryStatusEx(ref memoryStatus);
 #pragma warning restore CA1416 // 验证平台兼容性
-                var free = (long)memoryStatus.dwAvailPhys;
-                var total = (long)memoryStatus.dwTotalPhys;
+                var free = (long)memoryStatus.ullAvailPhys;
+                var total = (long)memoryStatus.ullTotalPhys;
                 var used = total - free;
                 return new MemoryInfo()
                 {
@@ -296,7 +300,6 @@ namespace YiQiDong.Utils
             }
             else if (OperatingSystem.IsMacOS())
             {
-
                 var dict = GetSystemInfo("memory_pressure");
                 var freePercentage = int.Parse(dict["System-wide memory free percentage"].Replace("%", string.Empty));
 

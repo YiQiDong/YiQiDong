@@ -22,7 +22,8 @@ namespace YiQiDong.Components.Controls
             set
             {
                 _ConfigFile = value;
-                ConfigFileInfo = configFileDict[value];
+                if (value != null)
+                    ConfigFileInfo = configFileDict[value];
             }
         }
 

@@ -71,6 +71,9 @@
                         <button type="button" title="导入运行库" class="btn btn-sm btn-secondary" @onclick="@(()=>ImportRuntime(t.Id))">
                             <i class="fa fa-reply" aria-hidden="true"></i>
                         </button>
+                        <button type="button" title="打包运行库" class="btn btn-sm btn-secondary" @onclick="@(()=>PackRuntime(t.Id))">
+                            <i class="fa fa-inbox" aria-hidden="true"></i>
+                        </button>
                         <button type="button" title="删除" class="btn btn-sm btn-secondary" @onclick="@(e => DeleteRuntime(t))">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>

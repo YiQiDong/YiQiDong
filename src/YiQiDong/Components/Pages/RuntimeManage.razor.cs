@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.IO.Compression;
+using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
+using Quick.Blazor.Bootstrap.Admin;
+using Quick.Blazor.Bootstrap.Admin.Core;
 using Quick.Blazor.Bootstrap.Admin.Utils;
 using Quick.Utils;
 using Tewr.Blazor.FileReader;
+using YiQiDong.Core;
 using YiQiDong.Core.Protocol.V1.Model;
 using YiQiDong.Utils;
 using static Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper;
@@ -142,6 +146,91 @@ namespace YiQiDong.Components.Pages
                     {x=>x.SelectAction, afterSelectFileAction},
                 });
         }
+
+        private async Task PackRuntime(string runtimeId)
+        {
+            var runtimeInfo =RuntimeManager.Instance.Get(runtimeId);
+            var cts = new CancellationTokenSource();
+            var cancellationToken = cts.Token;
+            modalLoading?.Show($"打包运行库 - {runtimeInfo.Name}-{runtimeInfo.Version}", null, false, cts.Cancel);
+            var folderList = new List<DirectoryInfo>();
+            var fileList = new List<FileInfo>();
+            long totalFileSize = 0;
+            //统计要压缩的文件列表信息
+            var runtimesFolder = RuntimePathUtils.GetRuntimeFolder();
+            string baseFolder = null;
+            var rootFolder = new DirectoryInfo(RuntimePathUtils.GetRuntimeFolder(runtimeId));            
+            baseFolder = rootFolder.FullName;
+            fileList.AddRange(rootFolder.GetFiles("*", SearchOption.AllDirectories));
+            folderList.AddRange(rootFolder.GetDirectories("*", SearchOption.AllDirectories));
+            totalFileSize = fileList.Sum(t => t.Length);
+
+            //文件名
+            string zipFileName = $"{runtimeInfo.Name}-{runtimeInfo.Version}-{string.Join("_", runtimeInfo.Platform)}.yrt";
+            zipFileName = Path.Combine(runtimesFolder, zipFileName);
+            if (File.Exists(zipFileName))
+                File.Delete(zipFileName);
+            //开始压缩
+            try
+            {
+                using (var zipFileStream = File.Create(zipFileName))
+                using (var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Create, true))
+                {
+                    //添加文件夹
+                    foreach (var folder in folderList)
+                    {
+                        var entryName = folder.FullName.Substring(baseFolder.Length + 1) + Path.DirectorySeparatorChar;
+                        entryName = PathUtils.UseUnixDirectorySeparatorChar(entryName);
+                        zipArchive.CreateEntry(entryName);
+                    }
+                    //添加文件
+                    using (var commonTransferContext = new CommonTransferContext(progressInfo =>
+                    {
+                        modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message);
+                    }, totalFileSize))
+                    {
+                        foreach (var file in fileList)
+                        {
+                            var entryName = file.FullName.Substring(baseFolder.Length + 1);
+                            entryName = PathUtils.UseUnixDirectorySeparatorChar(entryName);
+                            modalLoading.UpdateContent(entryName);
+                            var zipEntry = zipArchive.CreateEntry(entryName);
+                            using (var fs = file.OpenRead())
+                            using (var zs = zipEntry.Open())
+                                await commonTransferContext.TransferAsync(fs, zs, cancellationToken);
+                        }
+                    }
+                }
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    try { File.Delete(zipFileName); } catch { }
+                    modalAlert?.Show("打包运行库", "已取消");
+                    return;
+                }
+                modalWindow.Show("打包运行库",
+                new DialogParameters<Controls.FileManageControl>()
+                {
+                    {x=>x.Dir, runtimesFolder},
+                    {x=>x.SelectedPath, zipFileName},
+                    {x=>x.FileFilter, "*.yrt"}
+                });
+            }
+            catch (TaskCanceledException)
+            {
+                try { File.Delete(zipFileName); } catch { }
+                modalAlert?.Show("打包运行库", "已取消");
+            }
+            catch (Exception ex)
+            {
+                try { File.Delete(zipFileName); } catch { }
+                modalAlert?.Show("打包运行库", "错误" + Environment.NewLine + ExceptionUtils.GetExceptionMessage(ex));
+            }
+            finally
+            {
+                modalLoading?.Close();
+            }
+        }
+
         private CancellationTokenSource uploadCts;
         private async Task onInputRuntimeFileChanged(string runtimeId)
         {

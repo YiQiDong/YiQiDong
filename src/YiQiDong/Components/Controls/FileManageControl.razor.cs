@@ -7,6 +7,11 @@ namespace YiQiDong.Components.Controls
     {
         [Parameter]
         public string Dir { get; set; }
+        [Parameter]
+        public string SelectedPath { get; set; }
+        [Parameter]
+        public string FileFilter { get; set; }
+
         public static Dictionary<string, Encoding> EncodingDict { get; private set; }
 
         static FileManageControl()

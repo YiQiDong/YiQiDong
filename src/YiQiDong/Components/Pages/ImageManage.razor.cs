@@ -8,6 +8,9 @@ using YiQiDong.Utils;
 using Tewr.Blazor.FileReader;
 using static Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper;
 using Quick.Utils;
+using System.IO.Compression;
+using Quick.Blazor.Bootstrap.Admin;
+using Quick.Blazor.Bootstrap.Admin.Core;
 
 namespace YiQiDong.Components.Pages
 {
@@ -143,6 +146,91 @@ namespace YiQiDong.Components.Pages
                 {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
                 {x=>x.SelectAction, afterSelectFileAction},
             });
+        }
+
+        private async Task PackImage(string imageId)
+        {
+            var imageInfo =ImageManager.Instance.Get(imageId);
+            var cts = new CancellationTokenSource();
+            var cancellationToken = cts.Token;
+            modalLoading?.Show($"打包镜像 - {imageInfo.Name}-{imageInfo.Version}", null, false, cts.Cancel);
+            var folderList = new List<DirectoryInfo>();
+            var fileList = new List<FileInfo>();
+            long totalFileSize = 0;
+            //统计要压缩的文件列表信息
+            var imagesFolder = ImagePathUtils.GetImageFolder();
+            string baseFolder = null;
+            var rootFolder = new DirectoryInfo(ImagePathUtils.GetImageFolder(imageId));            
+            baseFolder = rootFolder.FullName;
+            fileList.AddRange(rootFolder.GetFiles("*", SearchOption.AllDirectories));
+            folderList.AddRange(rootFolder.GetDirectories("*", SearchOption.AllDirectories));
+            totalFileSize = fileList.Sum(t => t.Length);
+
+            //文件名
+            string zipFileName = $"{imageInfo.Name}-{imageInfo.Version}-{string.Join("_", imageInfo.Platform)}.ymg";
+            zipFileName = Path.Combine(imagesFolder, zipFileName);
+            if (File.Exists(zipFileName))
+                File.Delete(zipFileName);
+            //开始压缩
+            try
+            {
+                using (var zipFileStream = File.Create(zipFileName))
+                using (var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Create, true))
+                {
+                    //添加文件夹
+                    foreach (var folder in folderList)
+                    {
+                        var entryName = folder.FullName.Substring(baseFolder.Length + 1) + Path.DirectorySeparatorChar;
+                        entryName = PathUtils.UseUnixDirectorySeparatorChar(entryName);
+                        zipArchive.CreateEntry(entryName);
+                    }
+                    //添加文件
+                    using (var commonTransferContext = new CommonTransferContext(progressInfo =>
+                    {
+                        modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message);
+                    }, totalFileSize))
+                    {
+                        foreach (var file in fileList)
+                        {
+                            var entryName = file.FullName.Substring(baseFolder.Length + 1);
+                            entryName = PathUtils.UseUnixDirectorySeparatorChar(entryName);
+                            modalLoading.UpdateContent(entryName);
+                            var zipEntry = zipArchive.CreateEntry(entryName);
+                            using (var fs = file.OpenRead())
+                            using (var zs = zipEntry.Open())
+                                await commonTransferContext.TransferAsync(fs, zs, cancellationToken);
+                        }
+                    }
+                }
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    try { File.Delete(zipFileName); } catch { }
+                    modalAlert?.Show("打包镜像", "已取消");
+                    return;
+                }
+
+                modalWindow.Show("打包镜像",
+                new DialogParameters<Controls.FileManageControl>()
+                {
+                    {x=>x.Dir, imagesFolder},
+                    {x=>x.SelectedPath, zipFileName},
+                    {x=>x.FileFilter, "*.ymg"}
+                });
+            }
+            catch (TaskCanceledException)
+            {
+                try { File.Delete(zipFileName); } catch { }
+                modalAlert?.Show("打包镜像", "已取消");
+            }
+            catch (Exception ex)
+            {
+                try { File.Delete(zipFileName); } catch { }
+                modalAlert?.Show("打包镜像", "错误" + Environment.NewLine + ExceptionUtils.GetExceptionMessage(ex));
+            }
+            finally
+            {
+                modalLoading?.Close();
+            }
         }
         
         private CancellationTokenSource uploadCts;

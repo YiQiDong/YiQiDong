@@ -32,23 +32,23 @@ namespace YiQiDong.ArgsHandlers
             while (true)
             {
                 ConsoleUtils.ConsoleWriteLine("-----------------------------");
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Welcome to use YiQiDong"));
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Version: {0}", Consts.Version));
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Architecture: {0}", Consts.ARCH));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Welcome to use YiQiDong"));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Version: {0}", Consts.Version));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Architecture: {0}", Consts.ARCH));
                 ConsoleUtils.ConsoleWriteLine("-----------------------------");
 
                 var select1Dict = new Dictionary<string, string>()
                 {
-                    ["Debug"] = Locale.GetString("Debug Run"),
-                    ["ServiceManage"] = Locale.GetString("Service Manage"),
-                    ["EditConfig"] = Locale.GetString("Edit Config")
+                    ["Debug"] = Locale<Args_Empty>.GetString("Debug Run"),
+                    ["ServiceManage"] = Locale<Args_Empty>.GetString("Service Manage"),
+                    ["EditConfig"] = Locale<Args_Empty>.GetString("Edit Config")
                 };
                 if (OperatingSystem.IsWindows())
                 {
-                    select1Dict["Shotcut"] = Locale.GetString("Shotcut");
-                    //select1Dict["Test"] = Locale.GetString("Test");
+                    select1Dict["Shotcut"] = Locale<Args_Empty>.GetString("Shotcut");
+                    //select1Dict["Test"] = Locale<Args_Empty>.GetString("Test");
                 }
-                select1Dict["Exit"] = Locale.GetString("Exit");
+                select1Dict["Exit"] = Locale<Args_Empty>.GetString("Exit");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
                 ConsoleUtils.ConsoleWriteLine($"----------{selectName}-----------");
@@ -80,9 +80,9 @@ namespace YiQiDong.ArgsHandlers
                 }
                 catch (Exception ex)
                 {
-                    ConsoleUtils.ConsoleWriteLine(Locale.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
+                    ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
                     ConsoleUtils.ConsoleWriteLine(ExceptionUtils.GetExceptionString(ex), ConsoleColor.Red);
-                    ConsoleUtils.ConsoleWriteLine(Locale.GetString("Press Enter to return to the main menu..."));
+                    ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Press Enter to return to the main menu..."));
                     Console.ReadLine();
                 }
             }
@@ -104,7 +104,7 @@ namespace YiQiDong.ArgsHandlers
         {
             var changed = false;
             string line = null;
-            Console.Write($"{Locale.GetString("Title")}[{Program.Config.Title}]: ", ConsoleColor.Green);
+            Console.Write($"{Locale<Args_Empty>.GetString("Title")}[{Program.Config.Title}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
@@ -120,14 +120,14 @@ namespace YiQiDong.ArgsHandlers
                 Program.Config.Urls = line;
                 changed = true;
             }
-            Console.Write($"{Locale.GetString("Password")}[{Program.Config.Password}]: ", ConsoleColor.Green);
+            Console.Write($"{Locale<Args_Empty>.GetString("Password")}[{Program.Config.Password}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
                 Program.Config.Password = line;
                 changed = true;
             }
-            Console.Write($"{Locale.GetString("Data Folder")}[{Program.Config.DataFolder}]: ", ConsoleColor.Green);
+            Console.Write($"{Locale<Args_Empty>.GetString("Data Folder")}[{Program.Config.DataFolder}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
@@ -137,11 +137,11 @@ namespace YiQiDong.ArgsHandlers
             if (changed)
             {
                 Program.Config.Save();
-                ConsoleUtils.ConsoleWriteLine($"{Locale.GetString("[The modified configuration has been saved]")}", ConsoleColor.Green);
+                ConsoleUtils.ConsoleWriteLine($"{Locale<Args_Empty>.GetString("[The modified configuration has been saved]")}", ConsoleColor.Green);
             }
             else
             {
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("[Configuration not modified]"));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("[Configuration not modified]"));
             }
         }
 
@@ -149,10 +149,10 @@ namespace YiQiDong.ArgsHandlers
         [SupportedOSPlatform("windows")]
         private static void Invoke_Shotcut()
         {
-            var lnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Locale.GetString("YiQiDong") + ".lnk");
+            var lnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Locale<Args_Empty>.GetString("YiQiDong") + ".lnk");
             if (File.Exists(lnkFile))
             {
-                ConsoleUtils.ExecuteAction(Locale.GetString("Deleting old desktop shortcuts"), () => { File.Delete(lnkFile); });
+                ConsoleUtils.ExecuteAction(Locale<Args_Empty>.GetString("Deleting old desktop shortcuts"), () => { File.Delete(lnkFile); });
             }
             var executeFileName = Process.GetCurrentProcess().MainModule.FileName;
             var psFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.ps1");
@@ -165,9 +165,9 @@ $Shortcut.Save()
 Remove-Item ""{psFileName}""
 ";
             File.WriteAllText(psFileName, psFileContent, psFileEncoding);
-            ConsoleUtils.ExecuteFunc(Locale.GetString("Creating desktop shortcut"),
+            ConsoleUtils.ExecuteFunc(Locale<Args_Empty>.GetString("Creating desktop shortcut"),
                 () => PowerShellProcessContext.ExecutePs1File(psFileName));
-            ConsoleUtils.ConsoleWriteLine(Locale.GetString("[Desktop shortcut created successfully]"));
+            ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("[Desktop shortcut created successfully]"));
         }
     }
 }

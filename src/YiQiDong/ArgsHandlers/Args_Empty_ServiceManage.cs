@@ -47,7 +47,7 @@ namespace YiQiDong.ArgsHandlers
                 }
             }
             if (string.IsNullOrEmpty(systemdSystemFolder))
-                throw new IOException(Locale.GetString("System configuration directory for systemd not found. Searched directories: {0}",string.Join(",", UnixSystemdSystemFolders)));
+                throw new IOException(Locale<Args_Empty>.GetString("System configuration directory for systemd not found. Searched directories: {0}",string.Join(",", UnixSystemdSystemFolders)));
             return systemdSystemFolder;
         }
 
@@ -69,7 +69,7 @@ namespace YiQiDong.ArgsHandlers
         {
             var serviceController = GetWin32Service();
             if (serviceController == null)
-                throw new FileNotFoundException(Locale.GetString("Service does not exist"));
+                throw new FileNotFoundException(Locale<Args_Empty>.GetString("Service does not exist"));
             action.Invoke(serviceController);
         }
 
@@ -133,7 +133,7 @@ namespace YiQiDong.ArgsHandlers
             if (status.Installed)
             {
                 //检测到已经安装，无法重复安装。
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Installation detected, cannot install again."));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Installation detected, cannot install again."));
                 return;
             }
 
@@ -141,21 +141,21 @@ namespace YiQiDong.ArgsHandlers
             if (OperatingSystem.IsWindows())
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "create", Consts.SERVICE_NAME_WIN32, "binPath=", $"{executeFileName} -service", "start=", "delayed-auto", "DisplayName=", "易启动");
-                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Installing service"), psi, true);
+                ConsoleUtils.ExecuteProcessStartInfo(Locale<Args_Empty>.GetString("Installing service"), psi, true);
             }
             else if (OperatingSystem.IsMacOS())
             {
                 //正在修改服务文件中的安装目录...
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Modifying the installation directory in the service file..."));
                 var serviceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "LaunchAgents");
                 var serviceFile = $"{Consts.SERVICE_NAME_UNIX}.plist";
                 QbFile.WriteLine(serviceFile, 10, $"      <string>{Environment.CurrentDirectory}/YiQiDong</string>");
                 if (!Directory.Exists(serviceDir))
                     Directory.CreateDirectory(serviceDir);
                 //正在将服务文件安装到系统服务目录
-                ConsoleUtils.ExecuteShell(Locale.GetString("Installing service files to the system service directory"), $"cp {serviceFile} {serviceDir}/{serviceFile}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Installing service files to the system service directory"), $"cp {serviceFile} {serviceDir}/{serviceFile}");
                 //正在启用服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Enabling service"), $"launchctl load -w {serviceDir}/{serviceFile}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Enabling service"), $"launchctl load -w {serviceDir}/{serviceFile}");
             }
             else
             {
@@ -164,35 +164,35 @@ namespace YiQiDong.ArgsHandlers
                 if (!UnixUtils.IsRuningWithRoot())
                 {
                     //正在允许用户[{0}]逗留
-                    ConsoleUtils.ExecuteShell(Locale.GetString("Allowing user [{0}] to linger",username), $"loginctl enable-linger {username}");
+                    ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Allowing user [{0}] to linger",username), $"loginctl enable-linger {username}");
                 }
                 //正在修改服务文件中的安装目录...
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Modifying the installation directory in the service file..."));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Modifying the installation directory in the service file..."));
                 var serviceFile = Consts.SERVICE_NAME_UNIX +".service";
                 QbFile.WriteLine(serviceFile, 5, $"ExecStart=/bin/sh {Environment.CurrentDirectory}/YiQiDong.sh start");
                 QbFile.WriteLine(serviceFile, 6, $"ExecStop=/bin/sh {Environment.CurrentDirectory}/YiQiDong.sh stop");
                 //正在将服务文件安装到系统服务目录
-                ConsoleUtils.ExecuteShell(Locale.GetString("Installing service files to the system service directory"), $"cp {serviceFile} {GetSystemdSystemFolder()}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Installing service files to the system service directory"), $"cp {serviceFile} {GetSystemdSystemFolder()}");
                 //正在重新加载服务列表
-                ConsoleUtils.ExecuteShell(Locale.GetString("Reloading service list"), $"systemctl {GetSystemdAddonParameter()} daemon-reload");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Reloading service list"), $"systemctl {GetSystemdAddonParameter()} daemon-reload");
                 //正在检查服务是否已经加载
-                ConsoleUtils.ExecuteShell(Locale.GetString("Checking if the service has been loaded"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Checking if the service has been loaded"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}");
                 //正在启用服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Enabling service"), $"systemctl {GetSystemdAddonParameter()} enable {Consts.SERVICE_NAME_UNIX}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Enabling service"), $"systemctl {GetSystemdAddonParameter()} enable {Consts.SERVICE_NAME_UNIX}");
             }
             ConsoleUtils.ConsoleWriteLine("-----------------------------");
             //安装完成
-            ConsoleUtils.ConsoleWriteLine(Locale.GetString("Installation Complete"));
+            ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Installation Complete"));
             ConsoleUtils.ConsoleWriteLine("-----------------------------");
 
             if (!OperatingSystem.IsMacOS())
             {
                 //是否启动服务?
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Do you want to start the service?"));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Do you want to start the service?"));
                 var isStartService = QbSelect.ArrowSelect(new Dictionary<string, string>()
                 {
-                    ["True"] = Locale.GetString("Yes"),
-                    ["False"] = Locale.GetString("No")
+                    ["True"] = Locale<Args_Empty>.GetString("Yes"),
+                    ["False"] = Locale<Args_Empty>.GetString("No")
                 }.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 if (isStartService == "True")
                 {
@@ -207,17 +207,17 @@ namespace YiQiDong.ArgsHandlers
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "start", Consts.SERVICE_NAME_WIN32);
                 //正在启动服务
-                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Starting the service"), psi, true);
+                ConsoleUtils.ExecuteProcessStartInfo(Locale<Args_Empty>.GetString("Starting the service"), psi, true);
             }
             else if(OperatingSystem.IsMacOS())
             {
                 //正在启动服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Starting the service"), $"launchctl start {Consts.SERVICE_NAME_UNIX}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Starting the service"), $"launchctl start {Consts.SERVICE_NAME_UNIX}");
             }
             else
             {
                 //正在启动服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Starting the service"), $"systemctl {GetSystemdAddonParameter()} start {Consts.SERVICE_NAME_UNIX}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Starting the service"), $"systemctl {GetSystemdAddonParameter()} start {Consts.SERVICE_NAME_UNIX}");
             }
         }
 
@@ -227,18 +227,18 @@ namespace YiQiDong.ArgsHandlers
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "stop", Consts.SERVICE_NAME_WIN32);
                 //正在停止服务
-                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Stopping service"), psi, true);
+                ConsoleUtils.ExecuteProcessStartInfo(Locale<Args_Empty>.GetString("Stopping service"), psi, true);
             }
             else if(OperatingSystem.IsMacOS())
             {
                 //正在停止服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Stopping service"), $"launchctl stop {Consts.SERVICE_NAME_UNIX}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Stopping service"), $"launchctl stop {Consts.SERVICE_NAME_UNIX}");
                 Thread.Sleep(1000);
             }
             else
             {
                 //正在停止服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Stopping service"), $"systemctl {GetSystemdAddonParameter()} stop {Consts.SERVICE_NAME_UNIX}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Stopping service"), $"systemctl {GetSystemdAddonParameter()} stop {Consts.SERVICE_NAME_UNIX}");
             }
         }
 
@@ -248,7 +248,7 @@ namespace YiQiDong.ArgsHandlers
             if (!status.Installed)
             {
                 //检测到已经卸载，无法重复卸载！
-                ConsoleUtils.ConsoleWriteLine(Locale.GetString("Uninstallation detected, cannot uninstall again!"));
+                ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Uninstallation detected, cannot uninstall again!"));
                 return;
             }
 
@@ -261,15 +261,15 @@ namespace YiQiDong.ArgsHandlers
             {
                 var psi = ProcessUtils.CreateProcessStartInfo("sc.exe", "delete", Consts.SERVICE_NAME_WIN32);
                 //正在删除服务
-                ConsoleUtils.ExecuteProcessStartInfo(Locale.GetString("Deleting service"), psi, true);
+                ConsoleUtils.ExecuteProcessStartInfo(Locale<Args_Empty>.GetString("Deleting service"), psi, true);
             }
             else if (OperatingSystem.IsMacOS())
             {
                 var serviceFile = $"{Consts.SERVICE_NAME_UNIX}.plist";
                 //正在删除服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Deleting service"), $"launchctl remove {Consts.SERVICE_NAME_UNIX}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Deleting service"), $"launchctl remove {Consts.SERVICE_NAME_UNIX}");
                 //正在删除服务文件
-                ConsoleUtils.ExecuteShell(Locale.GetString("Deleting service files"), $"rm ~/Library/LaunchAgents/{serviceFile}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Deleting service files"), $"rm ~/Library/LaunchAgents/{serviceFile}");
             }
             else
             {
@@ -277,18 +277,18 @@ namespace YiQiDong.ArgsHandlers
                 //如果服务已启用
                 if (status.Enabled)
                     //正在禁用服务
-                    ConsoleUtils.ExecuteShell(Locale.GetString("Disabling service"), $"systemctl {GetSystemdAddonParameter()} disable {Consts.SERVICE_NAME_UNIX}");
+                    ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Disabling service"), $"systemctl {GetSystemdAddonParameter()} disable {Consts.SERVICE_NAME_UNIX}");
                 //正在删除服务
-                ConsoleUtils.ExecuteShell(Locale.GetString("Deleting service"), $"rm {GetSystemdSystemFolder()}/{serviceFile}");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Deleting service"), $"rm {GetSystemdSystemFolder()}/{serviceFile}");
                 //正在重新加载服务列表...
-                ConsoleUtils.ExecuteShell(Locale.GetString("Reloading service list..."), $"systemctl {GetSystemdAddonParameter()} daemon-reload");
+                ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Reloading service list..."), $"systemctl {GetSystemdAddonParameter()} daemon-reload");
                 if (UnixUtils.IsRuningWithRoot())
                     //正在检查《易启动》服务是否删除完成
-                    ConsoleUtils.ExecuteShell(Locale.GetString("Checking whether the 'YiQiDong' service has been completely removed"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
+                    ConsoleUtils.ExecuteShell(Locale<Args_Empty>.GetString("Checking whether the 'YiQiDong' service has been completely removed"), $"systemctl {GetSystemdAddonParameter()} list-unit-files {serviceFile}", isSuccessFunc: t => t.ExitCode != 0);
             }
             ConsoleUtils.ConsoleWriteLine("-----------------------------");
             //卸载完成
-            ConsoleUtils.ConsoleWriteLine(Locale.GetString("Uninstallation complete"));
+            ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Uninstallation complete"));
             ConsoleUtils.ConsoleWriteLine("-----------------------------");
         }
 
@@ -298,32 +298,32 @@ namespace YiQiDong.ArgsHandlers
             {
                 var status = GetServiceStatus();
                 //服务状态
-                Console.Write(Locale.GetString("Service Status: "));
+                Console.Write(Locale<Args_Empty>.GetString("Service Status: "));
                 //已安装
-                Console.Write(Locale.GetString("Installed"));
+                Console.Write(Locale<Args_Empty>.GetString("Installed"));
                 if (status.Installed)
                 {
-                    ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
+                    ConsoleUtils.ConsoleWrite($"[{Locale<Args_Empty>.GetString("Yes")}]", ConsoleColor.Green);
                     Console.Write(" ");
-                    Console.Write(Locale.GetString("Enabled"));
+                    Console.Write(Locale<Args_Empty>.GetString("Enabled"));
                     if (status.Enabled)
                     {
-                        ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
+                        ConsoleUtils.ConsoleWrite($"[{Locale<Args_Empty>.GetString("Yes")}]", ConsoleColor.Green);
                         Console.Write(" ");
-                        Console.Write(Locale.GetString("Started"));
+                        Console.Write(Locale<Args_Empty>.GetString("Started"));
                         if (status.Started)
-                            ConsoleUtils.ConsoleWrite($"[{Locale.GetString("Yes")}]", ConsoleColor.Green);
+                            ConsoleUtils.ConsoleWrite($"[{Locale<Args_Empty>.GetString("Yes")}]", ConsoleColor.Green);
                         else
-                            ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
+                            ConsoleUtils.ConsoleWrite($"[{Locale<Args_Empty>.GetString("No")}]", ConsoleColor.Red);
                     }
                     else
                     {
-                        ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
+                        ConsoleUtils.ConsoleWrite($"[{Locale<Args_Empty>.GetString("No")}]", ConsoleColor.Red);
                     }
                 }
                 else
                 {
-                    ConsoleUtils.ConsoleWrite($"[{Locale.GetString("No")}]", ConsoleColor.Red);
+                    ConsoleUtils.ConsoleWrite($"[{Locale<Args_Empty>.GetString("No")}]", ConsoleColor.Red);
                 }
                 ConsoleUtils.ConsoleWriteLine();
                 var select1Dict = new Dictionary<string, string>();
@@ -333,24 +333,24 @@ namespace YiQiDong.ArgsHandlers
                     {
                         if (status.Started)
                         {
-                            select1Dict["Stop"] = Locale.GetString("Stop Service");
+                            select1Dict["Stop"] = Locale<Args_Empty>.GetString("Stop Service");
                         }
                         else
                         {
-                            select1Dict["Start"] = Locale.GetString("Start Service");
-                            select1Dict["Uninstall"] = Locale.GetString("Uninstall Service");
+                            select1Dict["Start"] = Locale<Args_Empty>.GetString("Start Service");
+                            select1Dict["Uninstall"] = Locale<Args_Empty>.GetString("Uninstall Service");
                         }
                     }
                     else
                     {
-                        select1Dict["Uninstall"] = Locale.GetString("Uninstall Service");
+                        select1Dict["Uninstall"] = Locale<Args_Empty>.GetString("Uninstall Service");
                     }
                 }
                 else
                 {
-                    select1Dict["Install"] = Locale.GetString("Install Service");
+                    select1Dict["Install"] = Locale<Args_Empty>.GetString("Install Service");
                 }
-                select1Dict["Exit"] = Locale.GetString("Return to Main Menu");
+                select1Dict["Exit"] = Locale<Args_Empty>.GetString("Return to Main Menu");
                 var select1 = QbSelect.ArrowSelect(select1Dict.ToArray(), selectedForegroundColor: ConsoleColor.Green);
                 var selectName = select1Dict[select1];
                 ConsoleUtils.ConsoleWriteLine($"----------{selectName}-----------");
@@ -376,7 +376,7 @@ namespace YiQiDong.ArgsHandlers
                 }
                 catch (Exception ex)
                 {
-                    ConsoleUtils.ConsoleWriteLine(Locale.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
+                    ConsoleUtils.ConsoleWriteLine(Locale<Args_Empty>.GetString("Error when execute [{0}]", selectName), ConsoleColor.Red);
                     ConsoleUtils.ConsoleWriteLine(ExceptionUtils.GetExceptionMessage(ex), ConsoleColor.Red);
                 }
             }

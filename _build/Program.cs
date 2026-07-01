@@ -11,7 +11,7 @@ using YiQiDong.Protocol.V1.Model;
 
 var appFolder = QbFolder.GetAppFolder();
 if (appFolder == Environment.CurrentDirectory)
-    Environment.CurrentDirectory = Path.GetFullPath("../../../../../");
+    Environment.CurrentDirectory = Path.GetFullPath("../../../../");
 
 //准备目录变量
 var baseFolder = Environment.CurrentDirectory;
@@ -34,7 +34,8 @@ if (!Directory.Exists("bin"))
 
 Console.WriteLine("正在删除Release目录...");
 //先删除Release目录
-QbFolder.DeleteFolders("src", "Release", SearchOption.AllDirectories);
+QbFolder.DeleteFolders("YiQiDong", "Release", SearchOption.AllDirectories);
+QbFolder.DeleteFolders("YiQiDong.TestImage", "Release", SearchOption.AllDirectories);
 
 //如果是制作易启动程序包
 if (selectedBuildType == "YiQiDong")
@@ -46,7 +47,7 @@ if (selectedBuildType == "YiQiDong")
         selectArchs = allArchs;
 
     //修改常量文件中的版本号
-    var ConstsFile = "src/YiQiDong/Consts.cs";
+    var ConstsFile = "YiQiDong/Consts.cs";
     var ConstsVersionLine = 4;
     var ConstsArchLine = 5;
     var versionLine = QbFile.ReadLine(ConstsFile, ConstsVersionLine);
@@ -61,10 +62,10 @@ if (selectedBuildType == "YiQiDong")
         foreach (var rid in selectArchs)
         {
             QbFile.WriteLine(ConstsFile, ConstsArchLine, $"public const string ARCH = \"{rid}\";");
-            var publishFolderTemplate = "src/{0}/bin/Release/{1}/publish/";
+            var publishFolderTemplate = "{0}/bin/Release/{1}/publish/";
             var publishFolder_YiQiDong = string.Format(publishFolderTemplate, selectedBuildType, rid);
             Console.WriteLine($"开始编译[{rid}]...");
-            QbCommand.Run("dotnet", $"publish src/YiQiDong -c Release -r {rid} -p:PublishSingleFile=true --self-contained");
+            QbCommand.Run("dotnet", $"publish YiQiDong -c Release -r {rid} -p:PublishSingleFile=true --self-contained");
             //配置文件中添加版本号
             QbJson.WriteString(Path.Combine(publishFolder_YiQiDong, Consts.CONFIG_JSON_FILENAME), nameof(Consts.Version), version);
             //配置文件中添加架构
@@ -105,14 +106,14 @@ else if(selectedBuildType =="YiQiDong.TestImage")
     var productName = "易启动测试镜像";
     var outFolder = "bin";
     var productDir = selectedBuildType;
-    var publishFolder = $"src/{productDir}/bin/Release/publish";
+    var publishFolder = $"{productDir}/bin/Release/publish";
     var outFile = Path.Combine(outFolder, $"{productName}-{version}.ymg");
 
     //再删除ymg文件
     QbFile.Delete(outFile);
 
     Console.WriteLine("正在发布项目...");
-    QbCommand.Run("dotnet", $"publish src/{productDir} -c Release");
+    QbCommand.Run("dotnet", $"publish {productDir} -c Release");
     //生成元信息文件                
     var metaObj = new ImageInfo()
     {

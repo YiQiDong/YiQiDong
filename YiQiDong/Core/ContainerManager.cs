@@ -18,8 +18,13 @@ namespace YiQiDong.Core
 
         private void refreshContainerDict()
         {
-            containerIdContainerDict = ContainerList.ToDictionary(t => t.ContainerInfo.Id, t => t);
-            containerNameContainerDict = ContainerList.ToDictionary(t => t.ContainerInfo.Name, t => t);
+            containerIdContainerDict = new();
+            containerNameContainerDict = new();
+            foreach (var t in ContainerList)
+            {
+                containerIdContainerDict[t.ContainerInfo.Id] = t;
+                containerNameContainerDict[t.ContainerInfo.Name] = t;
+            }
         }
 
         public void RaiseEvent_ContainerChanged()

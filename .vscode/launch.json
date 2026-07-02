@@ -5,14 +5,14 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": ".NET Core Launch (web)",
+            "name": "YiQiDong(debug)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/YiQiDong/bin/Debug/YiQiDong.dll",
+            "program": "${workspaceFolder}/YiQiDong/bin/Debug/YiQiDong.dll",
             "args": ["-debug"],
-            "cwd": "${workspaceFolder}/src/YiQiDong",
+            "cwd": "${workspaceFolder}/YiQiDong",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {

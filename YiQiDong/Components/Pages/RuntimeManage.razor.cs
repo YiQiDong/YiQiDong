@@ -23,6 +23,7 @@ namespace YiQiDong.Components.Pages
         private ModalWindow modalWindow;
         private ModalPrompt modalPrompt;
 
+        private CancellationTokenSource operateCts;
         private ElementReference inputRuntimeFile;
         [Inject]
         private IFileReaderService fileReaderService { get; set; }
@@ -79,66 +80,99 @@ namespace YiQiDong.Components.Pages
                                 modalAlert.Show("错误", $"删除运行库[{model.Name} {model.Version}]时出错！原因：{ExceptionUtils.GetExceptionString(ex)}");
                             }
                             modalLoading.Close();
-                            InvokeAsync(() => StateHasChanged());
+                            InvokeAsync(StateHasChanged);
                         });
                     }
                 });
         }
 
-        private async Task<string> import(string fileInfoStr, string file, string runtimeId, CancellationTokenSource cts)
+        private async Task import(string fileInfoStr, string file, string runtimeId, CancellationTokenSource cts)
         {
-            modalLoading.UpdateProgress(null, null);
-            modalLoading.Show($"加载运行库", $"正在加载运行库文件[{fileInfoStr}]...", true, cts.Cancel);
-            modalLoading.UpdateProgress(0, "文件读取中...");
-            await Task.Delay(100);
-            string loadMessage = null;
-            var runtimeInfo = await Core.RuntimeManager.Instance.LoadRuntimeFile(file, (total, current, name) =>
+            try
             {
-                modalLoading.UpdateProgress(Convert.ToInt32(current * 100 / total), $"{current}/{total} {name}");
-            }, cts.Token, runtimeId, t => loadMessage = t);
+                modalLoading?.UpdateProgress(null, null);
+                modalLoading?.Show($"导入运行库", $"正在加载运行库文件[{fileInfoStr}]...", true, cts.Cancel);
+                modalLoading?.UpdateProgress(0, "文件读取中...");
+                await Task.Delay(100);
+                string loadMessage = null;
+                var runtimeInfo = await RuntimeManager.Instance.LoadRuntimeFile(file, (total, current, name) =>
+                {
+                    modalLoading?.UpdateProgress(Convert.ToInt32(current * 100 / total), $"{current}/{total} {name}");
+                }, cts.Token, runtimeId, t => loadMessage = t);
 
-            if (cts.IsCancellationRequested)
-                return null;
-            if (runtimeInfo == null)
-                throw new BadImageFormatException($"运行库文件[{fileInfoStr}]无效。.");
-            return loadMessage;
+                if (runtimeInfo == null)
+                    throw new BadImageFormatException($"运行库文件[{fileInfoStr}]无效。.");
+                await InvokeAsync(StateHasChanged);
+                modalAlert?.Show("导入成功", loadMessage);
+            }
+            catch (OperationCanceledException)
+            {
+                modalAlert?.Show("导入已取消", $"已取消上传运行库文件[{fileInfoStr}].");
+            }
+            catch (Exception ex)
+            {
+                modalAlert?.Show("导入失败", ExceptionUtils.GetExceptionString(ex));
+            }
+            finally
+            {
+                modalLoading?.Close();
+            }
         }
 
-        private void SelectRuntime(string runtimeId)
+        private async Task UploadImport(string runtimeId)
         {
-            var cts = new CancellationTokenSource();
+            var fileReaderRef = fileReaderService.CreateReference(inputRuntimeFile);
+
+            operateCts = new CancellationTokenSource();
+
+            UploadFileInfo uploadingFileInfo = default;
+            string uploadingFileInfoStr = null;
+            string uploadingFile = null;
+            try
+            {
+                modalLoading?.Show($"上传运行库", "正在获取上传文件信息...", false, operateCts.Cancel);
+                var fileReference = (await fileReaderRef.EnumerateFilesAsync()).FirstOrDefault();
+                uploadingFile = await FileUploadHelper.UploadFileAsync(fileReference,
+                    fileInfo =>
+                    {
+                        uploadingFileInfo = fileInfo;
+                        uploadingFileInfoStr = $"{fileInfo.Name} ({fileInfo.SizeString})";
+                        modalLoading?.Show($"上传运行库", $"正在上传运行库文件[{uploadingFileInfoStr}]...", false, operateCts.Cancel);
+                        return null;
+                    },
+                    progressInfo => modalLoading?.UpdateProgress(progressInfo.Percent, progressInfo.Message),
+                    operateCts.Token);
+                await import(uploadingFileInfoStr, uploadingFile, runtimeId, operateCts);
+            }
+            finally
+            {
+                if (uploadingFile != null && File.Exists(uploadingFile))
+                    try { File.Delete(uploadingFile); } catch { }
+                await fileReaderRef.ClearValue();
+                modalLoading?.Close();
+            }
+        }
+
+        private void SelectImport(string runtimeId)
+        {
+            operateCts = new CancellationTokenSource();
 
             Action<string> afterSelectFileAction = async t =>
             {
-                modalWindow.Close();
+                modalWindow?.Close();
 
                 lastImportDir = Path.GetDirectoryName(t);
                 var fileInfoStr = Path.GetFileName(t);
                 try
                 {
-                    var loadMessage = await import(fileInfoStr, t, runtimeId, cts);
-                    if (cts.IsCancellationRequested)
-                    {
-                        modalAlert.Show("导入已取消", $"已取消导入运行库文件[{fileInfoStr}].");
-                        return;
-                    }
-                    await InvokeAsync(StateHasChanged);
-                    modalAlert.Show("导入运行库成功", loadMessage);
-                }
-                catch (TaskCanceledException)
-                {
-                    modalAlert.Show("导入已取消", $"已取消加载运行库文件[{fileInfoStr}].");
-                }
-                catch (Exception ex)
-                {
-                    modalAlert.Show("导入失败", ExceptionUtils.GetExceptionString(ex));
+                    await import(fileInfoStr, t, runtimeId, operateCts);
                 }
                 finally
                 {
-                    modalLoading.Close();
+                    modalLoading?.Close();
                 }
             };
-            modalWindow.Show("选择运行库文件",
+            modalWindow?.Show("选择运行库文件",
                 new DialogParameters<Controls.FileSelectControl>
                 {
                     {x=>x.Dir, lastImportDir},
@@ -149,13 +183,12 @@ namespace YiQiDong.Components.Pages
                 });
         }
 
-        private void ImportRuntime(string runtimeId)
+        private void UrlImport(string runtimeId)
         {
-            modalPrompt.Show("请输入导入URL地址", null, async t =>
+            modalPrompt?.Show("请输入导入URL地址", null, async t =>
             {
-                var cts = new CancellationTokenSource();
-                var cancellationToken = cts.Token;
-                modalLoading.Show("导入", "正在下载文件...", true, cts.Cancel);
+                operateCts = new CancellationTokenSource();
+                modalLoading?.Show("导入", "正在下载文件...", true, operateCts.Cancel);
 
                 var fileInfoStr = t;
                 var tmpFile = Path.GetTempFileName();
@@ -176,7 +209,7 @@ namespace YiQiDong.Components.Pages
                         httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
                         httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
                         httpClient.DefaultRequestHeaders.ExpectContinue = false;
-                        using (var rep = await httpClient.GetAsync(t, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                        using (var rep = await httpClient.GetAsync(t, HttpCompletionOption.ResponseHeadersRead, operateCts.Token))
                         using (var fileStream = File.OpenWrite(tmpFile))
                         {
                             var contentLength = rep.Content.Headers.ContentLength;
@@ -194,7 +227,7 @@ namespace YiQiDong.Components.Pages
                                     }, contentLength.Value))
                                     {
                                         modalLoading.UpdateContent(fileInfoStr);
-                                        await commonTransferContext.TransferAsync(stream, fileStream, cancellationToken);
+                                        await commonTransferContext.TransferAsync(stream, fileStream, operateCts.Token);
                                     }
                                 }
                             }
@@ -203,40 +236,25 @@ namespace YiQiDong.Components.Pages
                 }
                 catch (TaskCanceledException)
                 {
-                    modalAlert.Show("下载已取消", $"已取消下载文件: {t}");
+                    modalAlert?.Show("下载已取消", $"已取消下载文件: {t}");
                     if (File.Exists(tmpFile))
                         File.Delete(tmpFile);
                     return;
                 }
                 catch (Exception ex)
                 {
-                    modalAlert.Show("下载失败", ExceptionUtils.GetExceptionString(ex));
+                    modalAlert?.Show("下载失败", ExceptionUtils.GetExceptionString(ex));
                     if (File.Exists(tmpFile))
                         File.Delete(tmpFile);
                     return;
                 }
                 finally
                 {
-                    modalLoading.Close();
+                    modalLoading?.Close();
                 }
                 try
                 {
-                    var loadMessage = await import(fileInfoStr, tmpFile, runtimeId, cts);
-                    if (cts.IsCancellationRequested)
-                    {
-                        modalAlert?.Show("导入已取消", $"已取消上传运行库文件[{fileInfoStr}].");
-                        return;
-                    }
-                    await InvokeAsync(StateHasChanged);
-                    modalAlert?.Show("导入成功", loadMessage);
-                }
-                catch (OperationCanceledException)
-                {
-                    modalAlert?.Show("导入已取消", $"已取消上传运行库文件[{fileInfoStr}].");
-                }
-                catch (Exception ex)
-                {
-                    modalAlert?.Show("导入失败", ExceptionUtils.GetExceptionString(ex));
+                    await import(fileInfoStr, tmpFile, runtimeId, operateCts);
                 }
                 finally
                 {
@@ -250,9 +268,8 @@ namespace YiQiDong.Components.Pages
         private async Task PackRuntime(string runtimeId)
         {
             var runtimeInfo =RuntimeManager.Instance.Get(runtimeId);
-            var cts = new CancellationTokenSource();
-            var cancellationToken = cts.Token;
-            modalLoading?.Show($"打包运行库 - {runtimeInfo.Name}-{runtimeInfo.Version}", null, false, cts.Cancel);
+            operateCts = new CancellationTokenSource();
+            modalLoading?.Show($"打包运行库 - {runtimeInfo.Name}-{runtimeInfo.Version}", null, false, operateCts.Cancel);
             var folderList = new List<DirectoryInfo>();
             var fileList = new List<FileInfo>();
             long totalFileSize = 0;
@@ -297,17 +314,17 @@ namespace YiQiDong.Components.Pages
                             var zipEntry = zipArchive.CreateEntry(entryName);
                             using (var fs = file.OpenRead())
                             using (var zs = zipEntry.Open())
-                                await commonTransferContext.TransferAsync(fs, zs, cancellationToken);
+                                await commonTransferContext.TransferAsync(fs, zs, operateCts.Token);
                         }
                     }
                 }
-                if (cancellationToken.IsCancellationRequested)
+                if (operateCts.IsCancellationRequested)
                 {
                     try { File.Delete(zipFileName); } catch { }
                     modalAlert?.Show("打包运行库", "已取消");
                     return;
                 }
-                modalWindow.Show("打包运行库",
+                modalWindow?.Show("打包运行库",
                 new DialogParameters<Controls.FileManageControl>()
                 {
                     {x=>x.Dir, runtimesFolder},
@@ -331,63 +348,10 @@ namespace YiQiDong.Components.Pages
             }
         }
 
-        private CancellationTokenSource uploadCts;
-        private async Task onInputRuntimeFileChanged(string runtimeId)
-        {
-            var fileReaderRef = fileReaderService.CreateReference(inputRuntimeFile);
-
-            uploadCts = new CancellationTokenSource();
-            UploadFileInfo uploadingFileInfo = default;
-            string uploadingFileInfoStr = null;
-            string uploadingFile = null;
-            try
-            {
-                modalLoading.Show($"上传运行库", "正在获取上传文件信息...", false, uploadCts.Cancel);
-                var fileReference = (await fileReaderRef.EnumerateFilesAsync()).FirstOrDefault();
-                uploadingFile = await FileUploadHelper.UploadFileAsync(fileReference,
-                    fileInfo =>
-                    {
-                        uploadingFileInfo = fileInfo;
-                        uploadingFileInfoStr = $"{fileInfo.Name} ({fileInfo.SizeString})";
-                        modalLoading.Show($"上传运行库", $"正在上传运行库文件[{uploadingFileInfoStr}]...", false, uploadCts.Cancel);
-                        return null;
-                    },
-                    progressInfo => modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message),
-                    uploadCts.Token);
-                modalLoading.UpdateProgress(null, null);
-                modalLoading.Show($"上传运行库", $"正在加载运行库文件[{uploadingFileInfoStr}]...", true, uploadCts.Cancel);
-
-                var loadMessage = await import(uploadingFileInfoStr, uploadingFile, runtimeId, uploadCts);
-                if (uploadCts.IsCancellationRequested)
-                {
-                    modalAlert.Show("上传已取消", $"已取消上传运行库文件[{uploadingFileInfoStr}].");
-                    return;
-                }
-                await InvokeAsync(StateHasChanged);
-                modalAlert?.Show("上传成功", loadMessage);
-
-            }
-            catch (OperationCanceledException)
-            {
-                modalAlert?.Show("上传已取消", $"已取消上传运行库文件[{uploadingFileInfoStr}].");
-            }
-            catch (Exception ex)
-            {
-                modalAlert?.Show("上传失败", ExceptionUtils.GetExceptionString(ex));
-            }
-            finally
-            {
-                if (uploadingFile != null && File.Exists(uploadingFile))
-                    try { File.Delete(uploadingFile); } catch { }
-                await fileReaderRef.ClearValue();
-                modalLoading?.Close();
-            }
-        }
-
         public void Dispose()
         {
-            uploadCts?.Cancel();
-            uploadCts = null;
+            operateCts?.Cancel();
+            operateCts = null;
         }
     }
 }

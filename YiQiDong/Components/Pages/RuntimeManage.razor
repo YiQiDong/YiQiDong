@@ -3,18 +3,18 @@
         <div class="btn-toolbar">
             <div class="btn-group mr-2 mb-1">
                 <div class="btn btn-sm btn-secondary">
-                    <i class="fa fa-upload" aria-hidden="true"></i> 上传
-                    <input @ref="inputRuntimeFile" id="inputRuntimeFile" type="file" accept=".yrt" style="width: 0px; height: 0px; visibility: collapse;" @onchange="@(e=>onInputRuntimeFileChanged(currenRuntimeId))">
-                    <label title="上传" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputRuntimeFile" @onclick="@(e=>currenRuntimeId=null)">
+                    <i class="fa fa-upload" aria-hidden="true"></i> 上传导入
+                    <input @ref="inputRuntimeFile" id="inputRuntimeFile" type="file" accept=".yrt" style="width: 0px; height: 0px; visibility: collapse;" @onchange="@(e=>UploadImport(currenRuntimeId))">
+                    <label title="上传导入" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputRuntimeFile" @onclick="@(e=>currenRuntimeId=null)">
                     </label>
                 </div>
-                <button type="button" class="btn btn-sm btn-secondary" @onclick="@(()=>SelectRuntime(null))">
-                    <i class="fa fa-file" aria-hidden="true"></i>
-                    选择
-                </button>
-                <button type="button" class="btn btn-sm btn-secondary" @onclick="@(()=>ImportRuntime(null))">
+                <button type="button" class="btn btn-sm btn-secondary" @onclick="@(()=>SelectImport(null))">
                     <i class="fa fa-reply" aria-hidden="true"></i>
-                    导入
+                    选择导入
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" @onclick="@(()=>UrlImport(null))">
+                    <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                    URL导入
                 </button>
             </div>
             <div class="input-group mb-1">
@@ -66,11 +66,14 @@
                     <div class="btn-group">
                         <div class="btn btn-sm btn-secondary">
                             <i class="fa fa-upload" aria-hidden="true"></i>
-                            <label title="上传运行库" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputRuntimeFile" @onclick="@(e => currenRuntimeId = t.Id)">
+                            <label title="上传导入" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputRuntimeFile" @onclick="@(e => currenRuntimeId = t.Id)">
                             </label>
                         </div>
-                        <button type="button" title="导入运行库" class="btn btn-sm btn-secondary" @onclick="@(()=>ImportRuntime(t.Id))">
+                        <button type="button" title="选择导入" class="btn btn-sm btn-secondary" @onclick="@(()=>SelectImport(t.Id))">
                             <i class="fa fa-reply" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" title="URL导入" class="btn btn-sm btn-secondary" @onclick="@(()=>UrlImport(t.Id))">
+                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
                         </button>
                         <button type="button" title="打包运行库" class="btn btn-sm btn-secondary" @onclick="@(()=>PackRuntime(t.Id))">
                             <i class="fa fa-inbox" aria-hidden="true"></i>

@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
 using Quick.Blazor.Bootstrap.Admin;
@@ -20,6 +21,7 @@ namespace YiQiDong.Components.Pages
         private ModalLoading modalLoading;
         private ModalAlert modalAlert;
         private ModalWindow modalWindow;
+        private ModalPrompt modalPrompt;
 
         private ElementReference inputRuntimeFile;
         [Inject]
@@ -102,7 +104,7 @@ namespace YiQiDong.Components.Pages
             return loadMessage;
         }
 
-        private void ImportRuntime(string runtimeId)
+        private void SelectRuntime(string runtimeId)
         {
             var cts = new CancellationTokenSource();
 
@@ -145,6 +147,104 @@ namespace YiQiDong.Components.Pages
                     {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
                     {x=>x.SelectAction, afterSelectFileAction},
                 });
+        }
+
+        private void ImportRuntime(string runtimeId)
+        {
+            modalPrompt.Show("请输入导入URL地址", null, async t =>
+            {
+                var cts = new CancellationTokenSource();
+                var cancellationToken = cts.Token;
+                modalLoading.Show("导入", "正在下载文件...", true, cts.Cancel);
+
+                var fileInfoStr = t;
+                var tmpFile = Path.GetTempFileName();
+                try
+                {
+                    var handler = new HttpClientHandler
+                    {
+                        ClientCertificateOptions = ClientCertificateOption.Manual,
+                        ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+                        {
+                            return true;
+                        }
+                    };
+                    using (var httpClient = new HttpClient(handler))
+                    {
+                        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(nameof(YiQiDong), Consts.Version));
+                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+                        httpClient.DefaultRequestHeaders.ExpectContinue = false;
+                        using (var rep = await httpClient.GetAsync(t, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                        using (var fileStream = File.OpenWrite(tmpFile))
+                        {
+                            var contentLength = rep.Content.Headers.ContentLength;
+                            using (var stream = await rep.Content.ReadAsStreamAsync())
+                            {
+                                if (contentLength == null)
+                                {
+                                    await stream.CopyToAsync(fileStream);
+                                }
+                                else
+                                {
+                                    using (var commonTransferContext = new CommonTransferContext(progressInfo =>
+                                    {
+                                        modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message);
+                                    }, contentLength.Value))
+                                    {
+                                        modalLoading.UpdateContent(fileInfoStr);
+                                        await commonTransferContext.TransferAsync(stream, fileStream, cancellationToken);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    modalAlert.Show("下载已取消", $"已取消下载文件: {t}");
+                    if (File.Exists(tmpFile))
+                        File.Delete(tmpFile);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    modalAlert.Show("下载失败", ExceptionUtils.GetExceptionString(ex));
+                    if (File.Exists(tmpFile))
+                        File.Delete(tmpFile);
+                    return;
+                }
+                finally
+                {
+                    modalLoading.Close();
+                }
+                try
+                {
+                    var loadMessage = await import(fileInfoStr, tmpFile, runtimeId, cts);
+                    if (cts.IsCancellationRequested)
+                    {
+                        modalAlert?.Show("导入已取消", $"已取消上传运行库文件[{fileInfoStr}].");
+                        return;
+                    }
+                    await InvokeAsync(StateHasChanged);
+                    modalAlert?.Show("导入成功", loadMessage);
+                }
+                catch (OperationCanceledException)
+                {
+                    modalAlert?.Show("导入已取消", $"已取消上传运行库文件[{fileInfoStr}].");
+                }
+                catch (Exception ex)
+                {
+                    modalAlert?.Show("导入失败", ExceptionUtils.GetExceptionString(ex));
+                }
+                finally
+                {
+                    if (File.Exists(tmpFile))
+                        File.Delete(tmpFile);
+                    modalLoading?.Close();
+                }
+            });
         }
 
         private async Task PackRuntime(string runtimeId)

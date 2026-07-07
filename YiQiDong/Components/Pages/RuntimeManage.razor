@@ -1,19 +1,20 @@
-﻿@using System.IO
-@using YiQiDong.Protocol.V1.Model
-
-<div class="row">
+﻿<div class="row">
     <div class="col-12">
         <div class="btn-toolbar">
             <div class="btn-group mr-2 mb-1">
                 <div class="btn btn-sm btn-secondary">
-                    <i class="fa fa-upload" aria-hidden="true"></i> 上传运行库
+                    <i class="fa fa-upload" aria-hidden="true"></i> 上传
                     <input @ref="inputRuntimeFile" id="inputRuntimeFile" type="file" accept=".yrt" style="width: 0px; height: 0px; visibility: collapse;" @onchange="@(e=>onInputRuntimeFileChanged(currenRuntimeId))">
-                    <label title="上传运行库" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputRuntimeFile" @onclick="@(e=>currenRuntimeId=null)">
+                    <label title="上传" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputRuntimeFile" @onclick="@(e=>currenRuntimeId=null)">
                     </label>
                 </div>
+                <button type="button" class="btn btn-sm btn-secondary" @onclick="@(()=>SelectRuntime(null))">
+                    <i class="fa fa-file" aria-hidden="true"></i>
+                    选择
+                </button>
                 <button type="button" class="btn btn-sm btn-secondary" @onclick="@(()=>ImportRuntime(null))">
                     <i class="fa fa-reply" aria-hidden="true"></i>
-                    导入运行库
+                    导入
                 </button>
             </div>
             <div class="input-group mb-1">
@@ -87,3 +88,4 @@
 <ModalWindow @ref="modalWindow" DialogSizeExtraLarge="true" DialogCentered="false" ModalBodyCls="p-0" />
 <ModalLoading @ref="modalLoading" />
 <ModalAlert @ref="modalAlert" />
+<ModalPrompt @ref="modalPrompt" />

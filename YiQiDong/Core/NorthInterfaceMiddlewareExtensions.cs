@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Quick.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Quick.Protocol;
 using YiQiDong.Utils;
 
 namespace Microsoft.AspNetCore.Builder
@@ -13,7 +8,7 @@ namespace Microsoft.AspNetCore.Builder
         private static Quick.Protocol.WebSocket.Server.AspNetCore.QpWebSocketServer server;
         public static IApplicationBuilder UseNorthInterface(this IApplicationBuilder app)
         {
-            app.UseQuickProtocol(new Quick.Protocol.WebSocket.Server.AspNetCore.QpWebSocketServerOptions()
+            app.UseQuickProtocolWebSocketServer(new ()
             {
                 Path = "/north",
                 Password = YiQiDong.Program.Config.Password,

@@ -78,7 +78,7 @@ public class AgentContext
         catch { }
         try
         {
-            Client?.Close();
+            Client?.Dispose();
             Client = null;
         }
         catch { }

@@ -107,7 +107,7 @@ namespace YiQiDong.Components.Pages
             }
             catch (OperationCanceledException)
             {
-                modalAlert?.Show("导入已取消", $"已取消上传运行库文件[{fileInfoStr}].");
+                modalAlert?.Show("导入已取消", $"已取消导入运行库文件[{fileInfoStr}].");
             }
             catch (Exception ex)
             {

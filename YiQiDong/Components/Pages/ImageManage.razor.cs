@@ -11,17 +11,21 @@ using Quick.Utils;
 using System.IO.Compression;
 using Quick.Blazor.Bootstrap.Admin;
 using Quick.Blazor.Bootstrap.Admin.Core;
+using System.Net.Http.Headers;
 
 namespace YiQiDong.Components.Pages
 {
     public partial class ImageManage : ComponentBase, IDisposable
     {
+        private CancellationTokenSource operateCts;
         private string searchTag;
         private string searchKeywords;
         private string currenImageId;
         private ModalLoading modalLoading;
         private ModalAlert modalAlert;
         private ModalWindow modalWindow;
+        private ModalPrompt modalPrompt;
+        
         private ElementReference inputImageFile;
         [Inject]
         private IFileReaderService fileReaderService { get; set; }
@@ -84,58 +88,85 @@ namespace YiQiDong.Components.Pages
                     }
                 });
         }
-
-        private async Task<string> import(string fileInfoStr, string file, string imageId, CancellationTokenSource cts)
+       private async Task import(string fileInfoStr, string file, string imageId, CancellationTokenSource cts)
         {
-            modalLoading.UpdateProgress(null, null);
-            modalLoading.Show($"加载镜像", $"正在加载镜像文件[{fileInfoStr}]...", true, cts.Cancel);
-            string loadMessage = null;
-            var imageInfo = await Core.ImageManager.Instance.LoadImageFile(file, (total, current, name) =>
+            try
             {
-                modalLoading.UpdateProgress(Convert.ToInt32(current * 100 / total), $"{current}/{total} {name}");
-            }, cts.Token, imageId, t => loadMessage = t);
+                modalLoading?.UpdateProgress(null, null);
+                modalLoading?.Show($"加载镜像", $"正在加载镜像文件[{fileInfoStr}]...", true, cts.Cancel);
+                string loadMessage = null;
+                var imageInfo = await Core.ImageManager.Instance.LoadImageFile(file, (total, current, name) =>
+                {
+                    modalLoading?.UpdateProgress(Convert.ToInt32(current * 100 / total), $"{current}/{total} {name}");
+                }, cts.Token, imageId, t => loadMessage = t);
 
-            if (cts.IsCancellationRequested)
-                return null;
-            if (imageInfo == null)
-                throw new BadImageFormatException($"镜像文件[{fileInfoStr}]无效。.");
-            return loadMessage;
+                if (cts.IsCancellationRequested)
+                    return;
+                if (imageInfo == null)
+                    throw new BadImageFormatException($"镜像文件[{fileInfoStr}]无效。.");
+                await InvokeAsync(StateHasChanged);
+                modalAlert?.Show("导入成功", loadMessage);
+            }
+            catch (OperationCanceledException)
+            {
+                modalAlert?.Show("导入已取消", $"已取消导入镜像文件[{fileInfoStr}].");
+            }
+            catch (Exception ex)
+            {
+                modalAlert?.Show("导入失败", ExceptionUtils.GetExceptionString(ex));
+            }
+            finally
+            {
+                modalLoading?.Close();
+            }
         }
 
-        private void ImportImage(string imageId)
+        private async Task UploadImport(string imageId)
         {
-            var cts = new CancellationTokenSource();
+            var fileReaderRef = fileReaderService.CreateReference(inputImageFile);
+            operateCts = new CancellationTokenSource();
+            UploadFileInfo uploadingFileInfo = default;
+            string uploadingFileInfoStr = null;
+            string uploadingFile = null;
+            try
+            {
+                modalLoading?.Show($"上传镜像", "正在获取上传文件信息...", false, operateCts.Cancel);
+                var fileReference = (await fileReaderRef.EnumerateFilesAsync()).FirstOrDefault();
+                uploadingFile = await FileUploadHelper.UploadFileAsync(fileReference,
+                    fileInfo =>
+                    {
+                        uploadingFileInfo = fileInfo;
+                        uploadingFileInfoStr = $"{fileInfo.Name} ({fileInfo.SizeString})";
+                        modalLoading?.Show($"上传镜像", $"正在上传镜像文件[{uploadingFileInfoStr}]...", false, operateCts.Cancel);
+                        return null;
+                    },
+                    progressInfo => modalLoading?.UpdateProgress(progressInfo.Percent, progressInfo.Message),
+                    operateCts.Token);
+                await import(uploadingFileInfoStr, uploadingFile, imageId, operateCts);
+            }
+            finally
+            {
+                if (uploadingFile != null && File.Exists(uploadingFile))
+                    try { File.Delete(uploadingFile); } catch { }
+                await fileReaderRef.ClearValue();
+                modalLoading?.Close();
+            }
+        }
 
+        private void SelectImport(string imageId)
+        {
             Action<string> afterSelectFileAction = async t =>
             {
                 modalWindow.Close();
-
                 lastImportDir = Path.GetDirectoryName(t);
                 var fileInfoStr = Path.GetFileName(t);
                 try
                 {
-                    modalLoading.Show($"导入镜像", $"导入中...", true, cts.Cancel);
-                    await Task.Delay(100);
-                    var loadMessage = await import(fileInfoStr, t, imageId, cts);
-                    if (cts.IsCancellationRequested)
-                    {
-                        modalAlert.Show("导入已取消", $"已取消导入镜像文件[{fileInfoStr}].");
-                        return;
-                    }
-                    await InvokeAsync(StateHasChanged);
-                    modalAlert.Show("导入镜像成功", loadMessage);
-                }
-                catch (TaskCanceledException)
-                {
-                    modalAlert.Show("导入已取消", $"已取消加载镜像文件[{fileInfoStr}].");
-                }
-                catch (Exception ex)
-                {
-                    modalAlert.Show("导入失败", ExceptionUtils.GetExceptionString(ex));
+                    await import(fileInfoStr, t, imageId, operateCts);
                 }
                 finally
                 {
-                    modalLoading.Close();
+                    modalLoading?.Close();
                 }
             };
             modalWindow.Show("选择镜像文件", new DialogParameters<Controls.FileSelectControl>()
@@ -145,6 +176,88 @@ namespace YiQiDong.Components.Pages
                 {x=>x.FileDoubleClickToDownload, false},
                 {x=>x.FileDoubleClickCustomAction, afterSelectFileAction},
                 {x=>x.SelectAction, afterSelectFileAction},
+            });
+        }
+
+        private void UrlImport(string runtimeId)
+        {
+            modalPrompt?.Show("请输入导入URL地址", null, async t =>
+            {
+                operateCts = new CancellationTokenSource();
+                modalLoading?.Show("导入", "正在下载文件...", true, operateCts.Cancel);
+
+                var fileInfoStr = t;
+                var tmpFile = Path.GetTempFileName();
+                try
+                {
+                    var handler = new HttpClientHandler
+                    {
+                        ClientCertificateOptions = ClientCertificateOption.Manual,
+                        ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+                        {
+                            return true;
+                        }
+                    };
+                    using (var httpClient = new HttpClient(handler))
+                    {
+                        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(nameof(YiQiDong), Consts.Version));
+                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+                        httpClient.DefaultRequestHeaders.ExpectContinue = false;
+                        using (var rep = await httpClient.GetAsync(t, HttpCompletionOption.ResponseHeadersRead, operateCts.Token))
+                        using (var fileStream = File.OpenWrite(tmpFile))
+                        {
+                            var contentLength = rep.Content.Headers.ContentLength;
+                            using (var stream = await rep.Content.ReadAsStreamAsync())
+                            {
+                                if (contentLength == null)
+                                {
+                                    await stream.CopyToAsync(fileStream);
+                                }
+                                else
+                                {
+                                    using (var commonTransferContext = new CommonTransferContext(progressInfo =>
+                                    {
+                                        modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message);
+                                    }, contentLength.Value))
+                                    {
+                                        modalLoading.UpdateContent(fileInfoStr);
+                                        await commonTransferContext.TransferAsync(stream, fileStream, operateCts.Token);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    modalAlert?.Show("下载已取消", $"已取消下载文件: {t}");
+                    if (File.Exists(tmpFile))
+                        File.Delete(tmpFile);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    modalAlert?.Show("下载失败", ExceptionUtils.GetExceptionString(ex));
+                    if (File.Exists(tmpFile))
+                        File.Delete(tmpFile);
+                    return;
+                }
+                finally
+                {
+                    modalLoading?.Close();
+                }
+                try
+                {
+                    await import(fileInfoStr, tmpFile, runtimeId, operateCts);
+                }
+                finally
+                {
+                    if (File.Exists(tmpFile))
+                        File.Delete(tmpFile);
+                    modalLoading?.Close();
+                }
             });
         }
 
@@ -232,63 +345,11 @@ namespace YiQiDong.Components.Pages
                 modalLoading?.Close();
             }
         }
-        
-        private CancellationTokenSource uploadCts;
-
-        private async Task onInputImageFileChanged(string imageId)
-        {
-            var fileReaderRef = fileReaderService.CreateReference(inputImageFile);
-            uploadCts = new CancellationTokenSource();
-            UploadFileInfo uploadingFileInfo = default;
-            string uploadingFileInfoStr = null;
-            string uploadingFile = null;
-            try
-            {
-                modalLoading.Show($"上传镜像", "正在获取上传文件信息...", false, uploadCts.Cancel);
-                var fileReference = (await fileReaderRef.EnumerateFilesAsync()).FirstOrDefault();
-                uploadingFile = await FileUploadHelper.UploadFileAsync(fileReference,
-                    fileInfo =>
-                    {
-                        uploadingFileInfo = fileInfo;
-                        uploadingFileInfoStr = $"{fileInfo.Name} ({fileInfo.SizeString})";
-                        modalLoading.Show($"上传镜像", $"正在上传镜像文件[{uploadingFileInfoStr}]...", false, uploadCts.Cancel);
-                        return null;
-                    },
-                    progressInfo => modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message),
-                    uploadCts.Token);
-
-                modalLoading.UpdateProgress(null, null);
-                modalLoading.Show($"上传镜像", $"正在加载镜像文件[{uploadingFileInfoStr}]...", true, uploadCts.Cancel);
-                var loadMessage = await import(uploadingFileInfoStr, uploadingFile, imageId, uploadCts);
-                if (uploadCts.IsCancellationRequested)
-                {
-                    modalAlert.Show("上传已取消", $"已取消上传镜像文件[{uploadingFileInfoStr}].");
-                    return;
-                }
-                modalAlert?.Show("上传成功", loadMessage);
-                await InvokeAsync(StateHasChanged);
-            }
-            catch (OperationCanceledException)
-            {
-                modalAlert?.Show("上传已取消", $"已取消上传镜像文件[{uploadingFileInfoStr}].");
-            }
-            catch (Exception ex)
-            {
-                modalAlert?.Show("上传失败", ExceptionUtils.GetExceptionString(ex));
-            }
-            finally
-            {
-                if (uploadingFile != null && File.Exists(uploadingFile))
-                    try { File.Delete(uploadingFile); } catch { }
-                await fileReaderRef.ClearValue();
-                modalLoading?.Close();
-            }
-        }
 
         public void Dispose()
         {
-            uploadCts?.Cancel();
-            uploadCts = null;
+            operateCts?.Cancel();
+            operateCts = null;
         }
     }
 }

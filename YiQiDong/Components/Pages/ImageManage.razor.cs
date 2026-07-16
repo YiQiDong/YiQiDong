@@ -157,9 +157,11 @@ namespace YiQiDong.Components.Pages
         {
             Action<string> afterSelectFileAction = async t =>
             {
+                operateCts = new CancellationTokenSource();
                 modalWindow.Close();
                 lastImportDir = Path.GetDirectoryName(t);
                 var fileInfoStr = Path.GetFileName(t);
+                await Task.Delay(100);
                 try
                 {
                     await import(fileInfoStr, t, imageId, operateCts);

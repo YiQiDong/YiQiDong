@@ -155,14 +155,14 @@ namespace YiQiDong.Components.Pages
 
         private void SelectImport(string runtimeId)
         {
-            operateCts = new CancellationTokenSource();
-
             Action<string> afterSelectFileAction = async t =>
             {
+                operateCts = new CancellationTokenSource();
                 modalWindow?.Close();
 
                 lastImportDir = Path.GetDirectoryName(t);
                 var fileInfoStr = Path.GetFileName(t);
+                await Task.Delay(100);
                 try
                 {
                     await import(fileInfoStr, t, runtimeId, operateCts);

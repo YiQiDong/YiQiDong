@@ -16,8 +16,7 @@ public class AgentContext
     public static QpClient Client { get; private set; }
     public static ContainerContext Container { get; private set; }
     public static IAgent Agent { get; private set; }
-    private static string[] logIgnoreList;
-
+    
     private class LogTextWriter : TextWriter
     {
         public override Encoding Encoding => Encoding.UTF8;
@@ -36,10 +35,6 @@ public class AgentContext
 
     public static void Log(LogLevel level, string content)
     {
-        if (logIgnoreList != null)
-            if (logIgnoreList.Any(t => content.Contains(t)))
-                return;
-
         if (!IsContainerRuning)
         {
             Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: [{level}] {content}");
@@ -88,6 +83,7 @@ public class AgentContext
     public static async Task Run<TAgent>(string[] args)
         where TAgent : IAgent, new()
     {
+        QpStdioClientOptions.RegisterUriSchema();
         Quick.Protocol.Pipeline.QpPipelineClientOptions.RegisterUriSchema();
 
         IsContainerRuning = args != null && args.Length > 0;
@@ -121,19 +117,12 @@ public class AgentContext
 
         var containerId = Environment.GetEnvironmentVariable("CONTAINER_ID");
         var containerInterfaceUrl = Environment.GetEnvironmentVariable("CONTAINER_INTERFACE_URL");
+        var useStdioComm = string.IsNullOrEmpty(containerInterfaceUrl);
 
         QpClientOptions options = null;
-        if (string.IsNullOrEmpty(containerInterfaceUrl))
-        {
-            options = new QpStreamClientOptions()
-            {
-                BaseStream = new InputOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput()),
-            };
-        }
-        else
-        {
-            options = QpClientOptions.Parse(new Uri(containerInterfaceUrl));
-        }
+        if (useStdioComm)
+            containerInterfaceUrl="qp.stdio://.";
+        options = QpClientOptions.Parse(new Uri(containerInterfaceUrl));        
         options.Password = nameof(YiQiDong);
         options.TransportTimeout = 60000;
         options.InstructionSet = [Protocol.V1.Instruction.Instance];
@@ -172,10 +161,11 @@ public class AgentContext
             Console.Error.WriteLine("向易启动注册容器失败，原因：" + ExceptionUtils.GetExceptionString(ex));
             return;
         }
-        if (!string.IsNullOrEmpty(Container.LogIgnoreList))
-            logIgnoreList = Container.LogIgnoreList.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        Console.SetOut(new LogTextWriter(LogLevel.Info));
-        Console.SetError(new LogTextWriter(LogLevel.Error));
+        if (useStdioComm)
+        {
+            Console.SetOut(new LogTextWriter(LogLevel.Info));
+            Console.SetError(new LogTextWriter(LogLevel.Error));
+        }
         //设置当前目录到容器目录
         Environment.CurrentDirectory = Container.ContainerFolder;
         //代理初始化

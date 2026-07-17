@@ -162,7 +162,6 @@ namespace YiQiDong.Core
                 StartWarning = newModel.StartWarning,
                 StopScript = newModel.StopScript,
                 StopWarning = newModel.StopWarning,
-                LogIgnoreList = newModel.LogIgnoreList,
                 LogLevel = newModel.LogLevel,
                 EnableRecordLog = newModel.EnableRecordLog,
                 LogSaveDays = newModel.LogSaveDays,
@@ -237,7 +236,6 @@ namespace YiQiDong.Core
             containerInfo.StartWarning = newModel.StartWarning;
             containerInfo.StopScript = newModel.StopScript;
             containerInfo.StopWarning = newModel.StopWarning;
-            containerInfo.LogIgnoreList = newModel.LogIgnoreList;
             containerInfo.LogLevel = newModel.LogLevel;
             containerInfo.EnableRecordLog = newModel.EnableRecordLog;
             containerInfo.LogSaveDays = newModel.LogSaveDays;

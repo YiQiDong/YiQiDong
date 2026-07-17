@@ -41,10 +41,6 @@ namespace YiQiDong.Protocol.V1.Model
         /// </summary>
         public bool AutoStart { get; set; }
         /// <summary>
-        /// 日志忽略列表
-        /// </summary>
-        public string LogIgnoreList { get; set; }
-        /// <summary>
         /// 日志级别
         /// </summary>
         public LogLevel LogLevel { get; set; } = LogLevel.Info;

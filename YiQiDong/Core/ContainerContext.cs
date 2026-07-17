@@ -512,20 +512,25 @@ public class ContainerContext : IDisposable
             process.EnableRaisingEvents = true;
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.BeginErrorReadLine();
+            if (!imageInfo.UseStdioComm)
+            {
+                process.OutputDataReceived += Process_OutputDataReceived;
+                process.BeginOutputReadLine();
+            }
             pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process?.Id}]已创建");
 
             Process = process;
             if (imageInfo.UseStdioComm)
             {
-                var options = new Quick.Protocol.Streams.QpStreamServerOptions()
+                var options = new QpProcessStdioServerOptions()
                 {
-                    BaseStream = new Quick.Protocol.Streams.InputOutputStream(process.StandardOutput.BaseStream, process.StandardInput.BaseStream),
+                    Process = process,
                     Password = nameof(YiQiDong),
                     ServerProgram = "易启动容器接口管理器",
                     InstructionSet = [YiQiDong.Protocol.V1.Instruction.Instance]
                 };
                 handleChannelOptions(options);
-                ProcessChannel =new Quick.Protocol.Streams.QpStreamServerChannel(options);
+                ProcessChannel =new QpProcessStdioServerChannel(options);
             }
             process.WaitForExitAsync().ContinueWith(task =>
             {
@@ -542,8 +547,6 @@ public class ContainerContext : IDisposable
     private void handleChannelOptions(QpServerOptions options)
     {
         options.RegisterCommandExecuterManager(commandExecuterManager);
-        if (options.NoticeHandlerManagerList == null)
-            options.NoticeHandlerManagerList = new List<NoticeHandlerManager>();
         options.RegisterNoticeHandlerManager(noticeHandlerManager);
         options.ProtocolErrorHandler = Process_OnProtocolError;
     }
@@ -558,6 +561,11 @@ public class ContainerContext : IDisposable
     {
         pushLog(LogLevel.Error, e.Data);
     }
+
+    private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        pushLog(LogLevel.Info, e.Data);
+    }    
 
     private void Process_OnProtocolError(Stream stream, ReadOnlySequence<byte> bytes)
     {

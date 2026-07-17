@@ -99,7 +99,6 @@ namespace YiQiDong.Components.Controls
                 createModel.StartWarning = Model.StartWarning;
                 createModel.StopScript = Model.StopScript;
                 createModel.StopWarning = Model.StopWarning;
-                createModel.LogIgnoreList = Model.LogIgnoreList;
                 createModel.LogLevel = Model.LogLevel;
                 createModel.EnableRecordLog = Model.EnableRecordLog;
                 createModel.LogSaveDays = Model.LogSaveDays;

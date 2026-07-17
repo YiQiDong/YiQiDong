@@ -10,13 +10,9 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
         private Process Process { get; set; }
         private StreamWriter Writer;
         public ConfigFileInfo[] GetConfigFiles() => null;
-        private string[] logIgnoreList;
 
         public void Init(Action<Core.AbstractFunction> addFunction)
         {
-            if (!string.IsNullOrEmpty(AgentContext.Container.LogIgnoreList))
-                logIgnoreList = AgentContext.Container.LogIgnoreList.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-
             var imageFolder = AgentContext.Container.ImageFolder;
             var containerFolder = AgentContext.Container.ContainerFolder;
 
@@ -29,9 +25,6 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
             var line = e.Data;
             if (line == null)
                 return;
-            if (logIgnoreList != null)
-                if (logIgnoreList.Any(t => line.Contains(t)))
-                    return;
             AgentContext.LogInfo(line);
         }
 
@@ -40,9 +33,6 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
             var line = e.Data;
             if (line == null)
                 return;
-            if (logIgnoreList != null)
-                if (logIgnoreList.Any(t => line.Contains(t)))
-                    return;
             AgentContext.LogError(line);
         }
 

@@ -100,14 +100,6 @@
                         <ValidationMessage For="@(() => createModel.LogLevel)" />
                     </div>
                     <div class="form-group">
-                        <label>日志忽略列表</label>
-                        <InputTextArea @bind-Value="createModel.LogIgnoreList" class="form-control"></InputTextArea>
-                        <ValidationMessage For="@(() => createModel.LogIgnoreList)" />
-                        <small id="passwordHelpBlock" class="form-text text-muted">
-                            一行一条，日志内容中包含忽略项时，日志忽略。
-                        </small>
-                    </div>
-                    <div class="form-group">
                         <label>日志记录</label>
                         <InputSelect @bind-Value="createModel.EnableRecordLogStr" class="form-control">
                             <option value="False">禁用</option>

@@ -14,7 +14,6 @@ namespace YiQiDong.Core.Agent
             Id = containerInfo.Id;
             Image = containerInfo.Image;
             ImageId = containerInfo.ImageId;
-            LogIgnoreList = containerInfo.LogIgnoreList;
             LogLevel = containerInfo.LogLevel;
             Name = containerInfo.Name;
             RuntimeIds = containerInfo.RuntimeIds;

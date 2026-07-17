@@ -19,7 +19,6 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
 
         private Process Process { get; set; }
         private StreamWriter Writer;
-        private string[] logIgnoreList;
 
         internal EnvironmentVariableInfo GetEnvironmentVariableInfo(string key)
         {
@@ -74,8 +73,6 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
 
         public void Init(Action<AbstractFunction> addFunction)
         {
-            if (!string.IsNullOrEmpty(AgentContext.Container.LogIgnoreList))
-                logIgnoreList = AgentContext.Container.LogIgnoreList.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var metaConfig = ConfigModel.Parse(AgentContext.Container.Image.AgentConfig);
             metaInfo = metaConfig.GetContainerMetaInfo();
             if (metaInfo == null)
@@ -205,9 +202,6 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             var line = e.Data;
             if (line == null)
                 return;
-            if (logIgnoreList != null)
-                if (logIgnoreList.Any(t => line.Contains(t)))
-                    return;
             AgentContext.LogInfo(line);
         }
 
@@ -216,9 +210,6 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
             var line = e.Data;
             if (line == null)
                 return;
-            if (logIgnoreList != null)
-                if (logIgnoreList.Any(t => line.Contains(t)))
-                    return;
             AgentContext.LogError(e.Data);
         }
 

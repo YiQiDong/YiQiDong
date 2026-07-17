@@ -9,23 +9,32 @@
     <TabPane Key="container">
         <Tab>容器</Tab>
         <ChildContent>
-            <table class="table table-sm table-striped table-borderless table-hover mb-0"
-                   style="overflow-wrap: anywhere;">
-                <tbody>
-                    <tr>
-                        <th style="min-width: 5rem;">通道</th>
-                        <td>@Container.ProcessChannel.ChannelName</td>
-                    </tr>
-                    <tr>
-                        <th>已接收</th>
-                        <td>@Container.ProcessChannel.BytesReceived</td>
-                    </tr>
-                    <tr>
-                        <th>已发送</th>
-                        <td>@Container.ProcessChannel.BytesSent</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="card-body small p-0">
+                <div class="m-2">
+                    <div class="btn-group" role="group" aria-label="BasicButtons">
+                        <button type="button" class="btn btn-sm btn-secondary" @onclick="StateHasChanged">
+                            刷新
+                        </button>
+                    </div>
+                </div>
+                <table class="table table-sm table-striped table-borderless table-hover mb-0"
+                       style="overflow-wrap: anywhere;">
+                    <tbody>
+                        <tr>
+                            <th style="min-width: 5rem;">通道</th>
+                            <td>@Container.ProcessChannel.ChannelName</td>
+                        </tr>
+                        <tr>
+                            <th>已接收</th>
+                            <td>@Container.ProcessChannel.BytesReceived</td>
+                        </tr>
+                        <tr>
+                            <th>已发送</th>
+                            <td>@Container.ProcessChannel.BytesSent</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </ChildContent>
     </TabPane>
 </Tabs>

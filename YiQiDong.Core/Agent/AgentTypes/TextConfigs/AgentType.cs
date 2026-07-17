@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using YiQiDong.Agent.AgentTypes.TextConfigs.Functions;
 using YiQiDong.Core;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Core.Utils;
 using YiQiDong.Core.Utils.Unix;
 

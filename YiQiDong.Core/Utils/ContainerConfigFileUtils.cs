@@ -1,4 +1,4 @@
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core.Utils;
 

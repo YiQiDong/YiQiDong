@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using YiQiDong.Core.JsonConverters;
 
 namespace YiQiDong.Protocol.V1.Model
 {
@@ -48,6 +48,11 @@ namespace YiQiDong.Protocol.V1.Model
         /// 构建时间
         /// </summary>
         public string BuildTime { get; set; }
+        /// <summary>
+        /// 使用STDIO通讯
+        /// </summary>
+        [JsonConverter(typeof(JsonBoolConverter))]
+        public bool UseStdioComm { get; set; } = true;
         /// <summary>
         /// Agent执行文件，默认是dotnet
         /// </summary>

@@ -88,6 +88,8 @@ public class AgentContext
     public static async Task Run<TAgent>(string[] args)
         where TAgent : IAgent, new()
     {
+        Quick.Protocol.Pipeline.QpPipelineClientOptions.RegisterUriSchema();
+
         IsContainerRuning = args != null && args.Length > 0;
         var commandExecuterManager = new CommandExecuterManager();
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetFunctionList.Request(), CommandExecuters.GetFunctionList.Execute);
@@ -116,15 +118,28 @@ public class AgentContext
         }
         cts = new CancellationTokenSource();
         LogInfo("正在连接到易启动...");
-        var options = new QpStreamClientOptions()
+
+        var containerId = Environment.GetEnvironmentVariable("CONTAINER_ID");
+        var containerInterfaceUrl = Environment.GetEnvironmentVariable("CONTAINER_INTERFACE_URL");
+
+        QpClientOptions options = null;
+        if (string.IsNullOrEmpty(containerInterfaceUrl))
         {
-            BaseStream = new InputOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput()),
-            Password = nameof(YiQiDong),
-            TransportTimeout = 60000,
-            InstructionSet = new[] { Protocol.V1.Instruction.Instance }
-        };
+            options = new QpStreamClientOptions()
+            {
+                BaseStream = new InputOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput()),
+            };
+        }
+        else
+        {
+            options = QpClientOptions.Parse(new Uri(containerInterfaceUrl));
+        }
+        options.Password = nameof(YiQiDong);
+        options.TransportTimeout = 60000;
+        options.InstructionSet = [Protocol.V1.Instruction.Instance];
         options.RegisterCommandExecuterManager(commandExecuterManager);
-        Client = new QpStreamClient(options);
+        Client = options.CreateClient();
+
         Client.Disconnected += (sender, e) =>
         {
             Console.Error.WriteLine("与易启动南向接口的连接已断开，容器进程正在退出...");
@@ -142,7 +157,10 @@ public class AgentContext
         try
         {
             //注册容器
-            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request());
+            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request()
+            {
+                ContainerId = containerId
+            });
             Container = new ContainerContext(rep.ContainerInfo)
             {
                 ContainerFolder = rep.ContainerFolder,

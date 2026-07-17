@@ -1,6 +1,6 @@
 ﻿using Quick.Protocol;
 using System.Text.Json.Serialization.Metadata;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Protocol.V1.QpCommands.GetConfigFileList
 {

@@ -1,15 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Quick.Blazor.Bootstrap.Terminal;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using YiQiDong.Core;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
 

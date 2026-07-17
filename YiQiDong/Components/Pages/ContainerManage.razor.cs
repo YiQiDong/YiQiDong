@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using System.Text;
 using System.Diagnostics;
 using Quick.Utils;
+using YiQiDong.Components.Controls;
 
 namespace YiQiDong.Components.Pages
 {
@@ -102,9 +103,9 @@ namespace YiQiDong.Components.Pages
         {
             modalWindow.Show(
                 $"{containerContext.ContainerInfo.Name} - 进程",
-                new DialogParameters<Quick.Blazor.Bootstrap.Admin.ProcessViewControl>()
+                new DialogParameters<ContainerProcessInfoControl>()
                 {
-                    {x=>x.PID, containerContext.Process.Id}
+                    {x=>x.Container, containerContext}
                 }
             );
         }

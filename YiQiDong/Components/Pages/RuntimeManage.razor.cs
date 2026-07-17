@@ -8,7 +8,7 @@ using Quick.Blazor.Bootstrap.Admin.Utils;
 using Quick.Utils;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Core;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Utils;
 using static Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper;
 

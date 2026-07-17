@@ -1,6 +1,6 @@
 ﻿using Quick.Utils;
 using YiQiDong.Core;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Agent
 {

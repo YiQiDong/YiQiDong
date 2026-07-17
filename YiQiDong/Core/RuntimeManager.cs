@@ -1,12 +1,9 @@
 ﻿using SharpCompress.Archives;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Core.Utils;
 using YiQiDong.Utils;
-using SharpCompress.Archives.SevenZip;
-using SharpCompress.Archives.Zip;
 using YiQiDong.Core.Utils.Unix;
 using Quick.Utils;
-using SharpCompress.Readers;
 
 namespace YiQiDong.Core
 {

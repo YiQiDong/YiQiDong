@@ -1,7 +1,6 @@
 ﻿using Quick.Fields;
 using Quick.Utils;
 using YiQiDong.Agent;
-using YiQiDong.Core.Protocol.V1.Model;
 using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Core;

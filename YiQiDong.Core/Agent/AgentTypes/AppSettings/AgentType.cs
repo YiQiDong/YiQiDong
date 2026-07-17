@@ -1,7 +1,7 @@
 ﻿using Quick.Shell.Utils;
 using Quick.Utils;
 using System.Diagnostics;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Agent.AgentTypes.AppSettings
 {

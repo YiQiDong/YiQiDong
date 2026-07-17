@@ -2,7 +2,7 @@
 using Quick.Shell;
 using Quick.Shell.Utils;
 using Quick.Utils;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Pages.LinuxTools
 {

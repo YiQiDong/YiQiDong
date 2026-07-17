@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace YiQiDong.Core.Protocol.V1.Model;
+namespace YiQiDong.Protocol.V1.Model;
 
 [JsonSerializable(typeof(RuntimeInfo))]
 internal partial class RuntimeInfoSerializerContext : JsonSerializerContext { }

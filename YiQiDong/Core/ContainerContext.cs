@@ -8,10 +8,9 @@ using Quick.Utils;
 using System.Buffers;
 using System.Diagnostics;
 using System.Text;
-using YiQiDong.Core.Protocol.V1.Model;
+using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Core.Utils;
 using YiQiDong.Model;
-using YiQiDong.Protocol.V1.Model;
 using YiQiDong.Protocol.V1.QpNotices;
 using YiQiDong.Utils;
 using LogLevel = YiQiDong.Protocol.V1.Model.LogLevel;
@@ -63,7 +62,7 @@ public class ContainerContext : IDisposable
         ReverseProxyRuleListChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
+    public YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
     {
         channel.Disconnected += Channel_Disconnected;
         pushLog(LogLevel.Info, $"[平台]容器连接成功.");
@@ -488,7 +487,11 @@ public class ContainerContext : IDisposable
             //添加镜像目录、容器目录环境变量
             psi.Environment["IMAGE_DIR"] = imageFolder;
             psi.Environment["CONTAINER_DIR"] = containerFolder;
-
+            if (!imageInfo.UseStdioComm)
+            {
+                psi.Environment["CONTAINER_INTERFACE_URL"] = ContainerInterfaceManager.Instance.InterfaceUrl;
+                psi.Environment["CONTAINER_ID"] = containerInfo.Id;
+            }
             //添加运行库的其他环境变量
             foreach (var item in RuntimeManager.Instance.GetRuntimesEnvironment(runtimes))
                 psi.Environment[item.Key] = item.Value;
@@ -511,18 +514,19 @@ public class ContainerContext : IDisposable
             process.BeginErrorReadLine();
             pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process?.Id}]已创建");
 
-            var options = new Quick.Protocol.Streams.QpStreamServerOptions()
-            {
-                BaseStream = new Quick.Protocol.Streams.InputOutputStream(process.StandardOutput.BaseStream, process.StandardInput.BaseStream),
-                Password = nameof(YiQiDong),
-                ServerProgram = "易启动容器接口管理器",
-                InstructionSet = new[] { YiQiDong.Protocol.V1.Instruction.Instance }
-            };
-            options.RegisterCommandExecuterManager(commandExecuterManager);
-            options.RegisterNoticeHandlerManager(noticeHandlerManager);
-            options.ProtocolErrorHandler = Process_OnProtocolError;
             Process = process;
-            ProcessChannel = new Quick.Protocol.Streams.QpStreamServerChannel(options);
+            if (imageInfo.UseStdioComm)
+            {
+                var options = new Quick.Protocol.Streams.QpStreamServerOptions()
+                {
+                    BaseStream = new Quick.Protocol.Streams.InputOutputStream(process.StandardOutput.BaseStream, process.StandardInput.BaseStream),
+                    Password = nameof(YiQiDong),
+                    ServerProgram = "易启动容器接口管理器",
+                    InstructionSet = [YiQiDong.Protocol.V1.Instruction.Instance]
+                };
+                handleChannelOptions(options);
+                ProcessChannel =new Quick.Protocol.Streams.QpStreamServerChannel(options);
+            }
             process.WaitForExitAsync().ContinueWith(task =>
             {
                 pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process.Id}]已退出，退出码：{process.ExitCode}");
@@ -533,6 +537,21 @@ public class ContainerContext : IDisposable
         {
             pushLog(LogLevel.Error, $"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
         }
+    }
+
+    private void handleChannelOptions(QpServerOptions options)
+    {
+        options.RegisterCommandExecuterManager(commandExecuterManager);
+        if (options.NoticeHandlerManagerList == null)
+            options.NoticeHandlerManagerList = new List<NoticeHandlerManager>();
+        options.RegisterNoticeHandlerManager(noticeHandlerManager);
+        options.ProtocolErrorHandler = Process_OnProtocolError;
+    }
+
+    public void SetChannel(QpServerChannel channel)
+    {
+        handleChannelOptions(channel.Options);
+        ProcessChannel = channel;
     }
 
     private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)

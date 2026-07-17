@@ -51,6 +51,9 @@ namespace YiQiDong.Core
             if (!Directory.Exists(containersFolder))
                 Directory.CreateDirectory(containersFolder);
             ContainerList.Clear();
+            containerIdContainerDict = new();
+            containerNameContainerDict = new();
+            
             foreach (var containerFolder in Directory.GetDirectories(containersFolder))
             {
                 var containerMetaFile = Path.Combine(containerFolder, Consts.CONTAINER_META_FILE);
@@ -64,14 +67,15 @@ namespace YiQiDong.Core
                 containerMeta.Image = ImageManager.Instance.Get(containerMeta.ImageId);
 
                 var containerContext = new ContainerContext(containerMeta);
-                containerContext.BeginEnable();
                 ContainerList.Add(containerContext);
+                containerIdContainerDict[containerMeta.Id] = containerContext;
+                containerNameContainerDict[containerMeta.Name] = containerContext;
+                containerContext.BeginEnable();
 
                 //每加载一个启用的容器后，等待指定的间隔时间
                 if (containerMeta.Enable)
                     Thread.Sleep(Program.Config.AgentInitInterval);
             }
-            refreshContainerDict();
             IsInited = true;
             RaiseEvent_ContainerChanged();
         }

@@ -487,11 +487,9 @@ public class ContainerContext : IDisposable
             //添加镜像目录、容器目录环境变量
             psi.Environment["IMAGE_DIR"] = imageFolder;
             psi.Environment["CONTAINER_DIR"] = containerFolder;
-            if (!imageInfo.UseStdioComm)
-            {
-                psi.Environment["CONTAINER_INTERFACE_URL"] = ContainerInterfaceManager.Instance.InterfaceUrl;
-                psi.Environment["CONTAINER_ID"] = containerInfo.Id;
-            }
+            psi.Environment["CONTAINER_INTERFACE_URL"] = ContainerInterfaceManager.Instance.InterfaceUrl;
+            psi.Environment["CONTAINER_ID"] = containerInfo.Id;
+
             //添加运行库的其他环境变量
             foreach (var item in RuntimeManager.Instance.GetRuntimesEnvironment(runtimes))
                 psi.Environment[item.Key] = item.Value;
@@ -512,26 +510,12 @@ public class ContainerContext : IDisposable
             process.EnableRaisingEvents = true;
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.BeginErrorReadLine();
-            if (!imageInfo.UseStdioComm)
-            {
-                process.OutputDataReceived += Process_OutputDataReceived;
-                process.BeginOutputReadLine();
-            }
+            process.OutputDataReceived += Process_OutputDataReceived;
+            process.BeginOutputReadLine();
+
             pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process?.Id}]已创建");
 
             Process = process;
-            if (imageInfo.UseStdioComm)
-            {
-                var options = new QpProcessStdioServerOptions()
-                {
-                    Process = process,
-                    Password = nameof(YiQiDong),
-                    ServerProgram = "易启动容器接口管理器",
-                    InstructionSet = [YiQiDong.Protocol.V1.Instruction.Instance]
-                };
-                handleChannelOptions(options);
-                ProcessChannel =new QpProcessStdioServerChannel(options);
-            }
             process.WaitForExitAsync().ContinueWith(task =>
             {
                 pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process.Id}]已退出，退出码：{process.ExitCode}");

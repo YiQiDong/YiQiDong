@@ -1,5 +1,4 @@
 ﻿using Quick.Protocol;
-using Quick.Protocol.Streams;
 using Quick.Utils;
 using System.Text;
 using YiQiDong.Core;

@@ -49,11 +49,6 @@ namespace YiQiDong.Protocol.V1.Model
         /// </summary>
         public string BuildTime { get; set; }
         /// <summary>
-        /// 使用STDIO通讯
-        /// </summary>
-        [JsonConverter(typeof(JsonBoolConverter))]
-        public bool UseStdioComm { get; set; } = false;
-        /// <summary>
         /// Agent执行文件，默认是dotnet
         /// </summary>
         public string AgentExecute { get; set; }

@@ -1,12 +1,21 @@
-﻿using System.Text.Json;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using YiQiDong.Core.JsonConverters;
 
 namespace YiQiDong.Protocol.V1.Model
 {
     [JsonSerializable(typeof(ImageInfo))]
-    internal partial class ImageInfoSerializerContext : JsonSerializerContext { }
+    public partial class ImageInfoSerializerContext : JsonSerializerContext
+    {
+        public static ImageInfoSerializerContext Default2 { get; } = new ImageInfoSerializerContext(new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+    }
+
     /// <summary>
     /// 镜像信息
     /// </summary>
@@ -83,7 +92,12 @@ namespace YiQiDong.Protocol.V1.Model
 
         public static ImageInfo Parse(string content)
         {
-            return (ImageInfo)JsonSerializer.Deserialize(content, typeof(ImageInfo), ImageInfoSerializerContext.Default);
+            return (ImageInfo)JsonSerializer.Deserialize(content, typeof(ImageInfo), ImageInfoSerializerContext.Default2);
+        }
+
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this, ImageInfoSerializerContext.Default2.ImageInfo);
         }
     }
 }

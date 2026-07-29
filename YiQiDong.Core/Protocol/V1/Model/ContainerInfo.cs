@@ -1,10 +1,19 @@
-﻿using System.Text.Json;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace YiQiDong.Protocol.V1.Model
 {
     [JsonSerializable(typeof(ContainerInfo))]
-    internal partial class ContainerInfoSerializerContext : JsonSerializerContext { }
+    public partial class ContainerInfoSerializerContext : JsonSerializerContext
+    {
+        public static ContainerInfoSerializerContext Default2 { get; } = new ContainerInfoSerializerContext(new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+    }
 
     public class ContainerInfo
     {
@@ -47,8 +56,13 @@ namespace YiQiDong.Protocol.V1.Model
 
         public static ContainerInfo Parse(string content)
         {
-            try { return (ContainerInfo)JsonSerializer.Deserialize(content, typeof(ContainerInfo), ContainerInfoSerializerContext.Default); }
+            try { return (ContainerInfo)JsonSerializer.Deserialize(content, typeof(ContainerInfo), ContainerInfoSerializerContext.Default2); }
             catch { return null; }
+        }
+        
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this, ContainerInfoSerializerContext.Default2.ContainerInfo);
         }
     }
 }

@@ -1,11 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace YiQiDong.Protocol.V1.Model;
 
 [JsonSerializable(typeof(RuntimeInfo))]
-internal partial class RuntimeInfoSerializerContext : JsonSerializerContext { }
+public partial class RuntimeInfoSerializerContext : JsonSerializerContext
+{
+    public static RuntimeInfoSerializerContext Default2 { get; } = new RuntimeInfoSerializerContext(new JsonSerializerOptions()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    });
+}
 
 /// <summary>
 /// 运行库信息
@@ -55,6 +63,11 @@ public class RuntimeInfo
 
     public static RuntimeInfo Parse(string content)
     {
-        return (RuntimeInfo)JsonSerializer.Deserialize(content, typeof(RuntimeInfo), RuntimeInfoSerializerContext.Default);
+        return (RuntimeInfo)JsonSerializer.Deserialize(content, typeof(RuntimeInfo), RuntimeInfoSerializerContext.Default2);
+    }
+
+    public string ToJson()
+    {
+        return JsonSerializer.Serialize(this, RuntimeInfoSerializerContext.Default2.RuntimeInfo);
     }
 }

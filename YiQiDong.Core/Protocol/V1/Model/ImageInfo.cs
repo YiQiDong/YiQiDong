@@ -52,7 +52,7 @@ namespace YiQiDong.Protocol.V1.Model
         /// 使用STDIO通讯
         /// </summary>
         [JsonConverter(typeof(JsonBoolConverter))]
-        public bool UseStdioComm { get; set; } = true;
+        public bool UseStdioComm { get; set; } = false;
         /// <summary>
         /// Agent执行文件，默认是dotnet
         /// </summary>

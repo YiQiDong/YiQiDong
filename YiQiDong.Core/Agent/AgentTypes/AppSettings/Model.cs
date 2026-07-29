@@ -1,12 +1,20 @@
 ﻿using Quick.Fields;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace YiQiDong.Agent.AgentTypes.AppSettings
 {
     [JsonSerializable(typeof(Model))]
-    [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
-    internal partial class ModelSerializerContext : JsonSerializerContext { }
+    public partial class ModelSerializerContext : JsonSerializerContext
+    {
+        public static ModelSerializerContext Default2 { get; } = new ModelSerializerContext(new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+    }
 
     public class Model
     {
@@ -15,12 +23,12 @@ namespace YiQiDong.Agent.AgentTypes.AppSettings
 
         public string ToJsonString()
         {
-            return JsonSerializer.Serialize(this, typeof(Model), ModelSerializerContext.Default);
+            return JsonSerializer.Serialize(this, typeof(Model), ModelSerializerContext.Default2);
         }
 
         public static Model FromJsonString(string json)
         {
-            return (Model)JsonSerializer.Deserialize(json, typeof(Model), ModelSerializerContext.Default);
+            return (Model)JsonSerializer.Deserialize(json, typeof(Model), ModelSerializerContext.Default2);
         }
     }
 }

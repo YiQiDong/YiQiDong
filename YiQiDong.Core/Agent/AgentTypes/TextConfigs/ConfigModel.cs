@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -9,7 +7,15 @@ using System.Text.Json.Serialization;
 namespace YiQiDong.Agent.AgentTypes.TextConfigs
 {
     [JsonSerializable(typeof(ConfigModel))]
-    internal partial class AgentConfigModelSerializerContext : JsonSerializerContext { }
+    public partial class AgentConfigModelSerializerContext : JsonSerializerContext
+    {
+        public static AgentConfigModelSerializerContext Default2 { get; } = new AgentConfigModelSerializerContext(new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+    }
 
     public class ConfigModel
     {
@@ -18,12 +24,17 @@ namespace YiQiDong.Agent.AgentTypes.TextConfigs
         /// </summary>
         public ContainerMetaInfo[] ContainerMetaInfos { get; set; }
 
-        internal static ConfigModel Parse(JsonObject agentConfig)
+        public static ConfigModel Parse(JsonObject agentConfig)
         {
             return (ConfigModel)JsonSerializer.Deserialize(
                 agentConfig.ToJsonString(),
                 typeof(ConfigModel),
-                AgentConfigModelSerializerContext.Default);
+                AgentConfigModelSerializerContext.Default2);
+        }
+
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this, AgentConfigModelSerializerContext.Default2.ConfigModel);
         }
 
         internal ContainerMetaInfo GetContainerMetaInfo()

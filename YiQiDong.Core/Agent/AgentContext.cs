@@ -114,7 +114,6 @@ public class AgentContext
         cts = new CancellationTokenSource();
         LogInfo("正在连接到易启动...");
 
-        var containerId = Environment.GetEnvironmentVariable("CONTAINER_ID");
         var containerInterfaceUrl = Environment.GetEnvironmentVariable("CONTAINER_INTERFACE_URL");
         var useStdioComm = string.IsNullOrEmpty(containerInterfaceUrl);
 
@@ -145,10 +144,7 @@ public class AgentContext
         try
         {
             //注册容器
-            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request()
-            {
-                ContainerId = containerId
-            });
+            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request());
             Container = new ContainerContext(rep.ContainerInfo)
             {
                 ContainerFolder = rep.ContainerFolder,

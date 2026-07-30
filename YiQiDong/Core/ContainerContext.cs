@@ -506,7 +506,6 @@ public class ContainerContext : IDisposable
             psi.Environment["IMAGE_DIR"] = imageFolder;
             psi.Environment["CONTAINER_DIR"] = containerFolder;
             psi.Environment["CONTAINER_INTERFACE_URL"] = interfaceUrl;
-            psi.Environment["CONTAINER_ID"] = containerInfo.Id;
 
             //添加运行库的其他环境变量
             foreach (var item in RuntimeManager.Instance.GetRuntimesEnvironment(runtimes))

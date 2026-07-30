@@ -32,6 +32,7 @@ public class ContainerContext : IDisposable
     private NLog.ILogger logger;
 
     public YqdContainerInfo ContainerInfo { get; private set; }
+    private QpServer containerServer;
     public Process Process { get; private set; }
     public QpServerChannel ProcessChannel { get; private set; }
     private List<ReverseProxyRule> reverseProxyRuleList = new List<ReverseProxyRule>();
@@ -64,6 +65,7 @@ public class ContainerContext : IDisposable
 
     public YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
     {
+        ProcessChannel = (QpServerChannel)channel;
         channel.Disconnected += Channel_Disconnected;
         pushLog(LogLevel.Info, $"[平台]容器连接成功.");
         //如果需要手动触发容器初始化完成通知，则延迟1秒后触发
@@ -482,12 +484,28 @@ public class ContainerContext : IDisposable
         }
         try
         {
+            var pipeName = $"{nameof(YiQiDong)}.ContainerInterface.{ContainerInfo.Id}";
+            var interfaceUrl = $"{Quick.Protocol.Pipeline.QpPipelineClientOptions.URI_SCHEMA}://./{pipeName}";
+            var options = new Quick.Protocol.Pipeline.QpPipelineServerOptions()
+            {
+                PipeName = pipeName,
+                MaxNumberOfServerInstances = 1,
+                Password = nameof(YiQiDong),
+                ServerProgram = "易启动容器接口管理器",
+                InstructionSet = [YiQiDong.Protocol.V1.Instruction.Instance]
+            };
+            options.RegisterCommandExecuterManager(commandExecuterManager);
+            options.RegisterNoticeHandlerManager(noticeHandlerManager);
+            options.ProtocolErrorHandler = Process_OnProtocolError;
+            containerServer = options.CreateServer();
+            containerServer.Start();
+
             pushLog(LogLevel.Info, "[平台]容器进程文件名：" + psi.FileName);
             pushLog(LogLevel.Info, "[平台]容器进程参数：" + string.Join(" ", psi.ArgumentList));
             //添加镜像目录、容器目录环境变量
             psi.Environment["IMAGE_DIR"] = imageFolder;
             psi.Environment["CONTAINER_DIR"] = containerFolder;
-            psi.Environment["CONTAINER_INTERFACE_URL"] = ContainerInterfaceManager.Instance.InterfaceUrl;
+            psi.Environment["CONTAINER_INTERFACE_URL"] = interfaceUrl;
             psi.Environment["CONTAINER_ID"] = containerInfo.Id;
 
             //添加运行库的其他环境变量
@@ -514,31 +532,19 @@ public class ContainerContext : IDisposable
             process.BeginOutputReadLine();
 
             pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process?.Id}]已创建");
-
             Process = process;
             process.WaitForExitAsync().ContinueWith(task =>
             {
+                containerServer.Stop();
                 pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process.Id}]已退出，退出码：{process.ExitCode}");
                 _ = afterContainerDisconnected();
             });
         }
         catch (Exception ex)
         {
+            containerServer.Stop();
             pushLog(LogLevel.Error, $"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
         }
-    }
-
-    private void handleChannelOptions(QpServerOptions options)
-    {
-        options.RegisterCommandExecuterManager(commandExecuterManager);
-        options.RegisterNoticeHandlerManager(noticeHandlerManager);
-        options.ProtocolErrorHandler = Process_OnProtocolError;
-    }
-
-    public void SetChannel(QpServerChannel channel)
-    {
-        handleChannelOptions(channel.Options);
-        ProcessChannel = channel;
     }
 
     private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)

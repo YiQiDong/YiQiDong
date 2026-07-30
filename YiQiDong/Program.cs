@@ -119,8 +119,6 @@ namespace YiQiDong
                             RuntimeManager.Instance.Init();
                             ConsoleUtils.ConsoleWriteLine("正在初始化镜像管理器...");
                             ImageManager.Instance.Init();
-                            ConsoleUtils.ConsoleWriteLine("正在启动容器接口管理器...");
-                            ContainerInterfaceManager.Instance.Start();
                             ConsoleUtils.ConsoleWriteLine("正在启动容器管理器...");
                             ContainerManager.Instance.Start();
                         }

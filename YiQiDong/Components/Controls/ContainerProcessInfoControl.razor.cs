@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using YiQiDong.Core;
+using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Controls
 {
@@ -7,5 +8,16 @@ namespace YiQiDong.Components.Controls
     {
         [Parameter]
         public ContainerContext Container { get; set; }
+
+        private ThreadInfo[] threads;
+
+        private void RefreshThreadList()
+        {
+            try
+            {
+                threads = Container.GetThreadList();
+            }
+            catch { }
+        }
     }
 }

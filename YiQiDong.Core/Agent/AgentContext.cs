@@ -1,5 +1,6 @@
 ﻿using Quick.Protocol;
 using Quick.Utils;
+using System.Collections;
 using System.Text;
 using YiQiDong.Core;
 using YiQiDong.Core.Agent;
@@ -87,7 +88,7 @@ public class AgentContext
 
         IsContainerRuning = args != null && args.Length > 0;
         var commandExecuterManager = new CommandExecuterManager();
-        commandExecuterManager.Register(new Protocol.V1.QpCommands.GetStackTrace.Request(), CommandExecuters.GetStackTrace.Execute);
+        commandExecuterManager.Register(new Protocol.V1.QpCommands.GetThreadList.Request(), CommandExecuters.GetThreadList.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetFunctionList.Request(), CommandExecuters.GetFunctionList.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.ExecuteFunction.Request(), CommandExecuters.ExecuteFunction.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetConfigFileList.Request(), CommandExecuters.GetConfigFileList.Execute);
@@ -144,8 +145,15 @@ public class AgentContext
         }
         try
         {
+            var environmentVariableDict = new Dictionary<string,string>();
+            foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+                environmentVariableDict[env.Key.ToString()] = env.Value?.ToString();
+
             //注册容器
-            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request());
+            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request()
+            {
+                EnviromentVariables = environmentVariableDict
+            });
             Container = new ContainerContext(rep.ContainerInfo)
             {
                 ContainerFolder = rep.ContainerFolder,

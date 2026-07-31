@@ -44,6 +44,8 @@ public class ContainerContext : IDisposable
     private CommandExecuterManager commandExecuterManager;
     private NoticeHandlerManager noticeHandlerManager;
 
+    public IReadOnlyDictionary<string, string> EnviromentVariables { get; private set; }
+
     public event EventHandler FunctionListChanged;
     public event EventHandler ConfigFileListChanged;
     public event EventHandler ReverseProxyRuleListChanged;
@@ -65,6 +67,7 @@ public class ContainerContext : IDisposable
 
     public YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
     {
+        EnviromentVariables = request.EnviromentVariables;
         ProcessChannel = (QpServerChannel)channel;
         channel.Disconnected += Channel_Disconnected;
         pushLog(LogLevel.Info, $"[平台]容器连接成功.");
@@ -906,6 +909,13 @@ public class ContainerContext : IDisposable
         var ret = ProcessChannel?.SendCommand(
             new YiQiDong.Protocol.V1.QpCommands.ExecuteFunction.Request() { Data = request }, function.ExecuteTimeout).Result;
         return ret?.Items;
+    }
+
+    public ThreadInfo[] GetThreadList()
+    {
+        var ret = ProcessChannel?.SendCommand(
+            new YiQiDong.Protocol.V1.QpCommands.GetThreadList.Request()).Result;
+        return ret.Threads;
     }
 
     //检查删除日志文件

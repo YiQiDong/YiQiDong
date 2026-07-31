@@ -487,7 +487,7 @@ public class ContainerContext : IDisposable
         }
         try
         {
-            var pipeName = $"{nameof(YiQiDong)}.ContainerInterface.{ContainerInfo.Id}";
+            var pipeName = $"{nameof(YiQiDong)}.ContainerInterface.{ContainerInfo.Id}.{DateTime.Now.Ticks}";
             var interfaceUrl = $"{Quick.Protocol.Pipeline.QpPipelineClientOptions.URI_SCHEMA}://./{pipeName}";
             var options = new Quick.Protocol.Pipeline.QpPipelineServerOptions()
             {

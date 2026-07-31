@@ -43,8 +43,8 @@ public partial class StartCommandSerializerContext : JsonSerializerContext { }
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class StopCommandSerializerContext : JsonSerializerContext { }
 
-[JsonSerializable(typeof(Using.Request))]
-[JsonSerializable(typeof(Using.Response))]
+[JsonSerializable(typeof(GetStackTrace.Request))]
+[JsonSerializable(typeof(GetStackTrace.Response))]
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class UsingCommandSerializerContext : JsonSerializerContext { }
 

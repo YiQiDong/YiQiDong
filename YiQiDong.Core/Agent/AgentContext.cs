@@ -87,6 +87,7 @@ public class AgentContext
 
         IsContainerRuning = args != null && args.Length > 0;
         var commandExecuterManager = new CommandExecuterManager();
+        commandExecuterManager.Register(new Protocol.V1.QpCommands.GetStackTrace.Request(), CommandExecuters.GetStackTrace.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetFunctionList.Request(), CommandExecuters.GetFunctionList.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.ExecuteFunction.Request(), CommandExecuters.ExecuteFunction.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetConfigFileList.Request(), CommandExecuters.GetConfigFileList.Execute);

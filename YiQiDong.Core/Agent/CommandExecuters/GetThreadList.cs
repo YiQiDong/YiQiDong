@@ -14,7 +14,7 @@ namespace YiQiDong.Agent.CommandExecuters
                 var processThread = threadCollection[i];
                 string startTime = null;
                 if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
-                    startTime = processThread.StartTime.ToString();
+                    startTime = processThread.StartTime.ToString("yyyy-MM-dd HH:mm:ss");
                 threadList.Add(new ThreadInfo()
                 {
                     Id = processThread.Id.ToString(),

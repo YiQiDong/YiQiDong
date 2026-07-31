@@ -186,73 +186,12 @@ namespace YiQiDong.Components.Pages
             modalPrompt?.Show("请输入导入URL地址", null, async t =>
             {
                 operateCts = new CancellationTokenSource();
-                modalLoading?.Show("导入", "正在下载文件...", true, operateCts.Cancel);
-
-                var fileInfoStr = t;
-                var tmpFile = Path.GetTempFileName();
+                var tmpFile = await PageDownloadUtils.DownloadAsync(t, modalLoading, modalAlert, operateCts);
+                if (tmpFile == null)
+                    return;
                 try
                 {
-                    var handler = new HttpClientHandler
-                    {
-                        ClientCertificateOptions = ClientCertificateOption.Manual,
-                        ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
-                        {
-                            return true;
-                        }
-                    };
-                    using (var httpClient = new HttpClient(handler))
-                    {
-                        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(nameof(YiQiDong), Consts.Version));
-                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
-                        httpClient.DefaultRequestHeaders.ExpectContinue = false;
-                        using (var rep = await httpClient.GetAsync(t, HttpCompletionOption.ResponseHeadersRead, operateCts.Token))
-                        using (var fileStream = File.OpenWrite(tmpFile))
-                        {
-                            var contentLength = rep.Content.Headers.ContentLength;
-                            using (var stream = await rep.Content.ReadAsStreamAsync())
-                            {
-                                if (contentLength == null)
-                                {
-                                    await stream.CopyToAsync(fileStream);
-                                }
-                                else
-                                {
-                                    using (var commonTransferContext = new CommonTransferContext(progressInfo =>
-                                    {
-                                        modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message);
-                                    }, contentLength.Value))
-                                    {
-                                        modalLoading.UpdateContent(fileInfoStr);
-                                        await commonTransferContext.TransferAsync(stream, fileStream, operateCts.Token);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (TaskCanceledException)
-                {
-                    modalAlert?.Show("下载已取消", $"已取消下载文件: {t}");
-                    if (File.Exists(tmpFile))
-                        File.Delete(tmpFile);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    modalAlert?.Show("下载失败", ExceptionUtils.GetExceptionString(ex));
-                    if (File.Exists(tmpFile))
-                        File.Delete(tmpFile);
-                    return;
-                }
-                finally
-                {
-                    modalLoading?.Close();
-                }
-                try
-                {
-                    await import(fileInfoStr, tmpFile, runtimeId, operateCts);
+                    await import(t, tmpFile, runtimeId, operateCts);
                 }
                 finally
                 {

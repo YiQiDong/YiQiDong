@@ -145,46 +145,22 @@
                     <div class="alert alert-info" role="alert">
                         当前软件版本：@(Consts.Version)-@(Consts.ARCH)
                     </div>
-                    <form>
-                        <div class="form-group">
-                            <label>上传文件更新</label>
-                            <div class="input-group">
-                                <div class="btn btn-sm btn-secondary col-sm-5 col-md-4 col-lg-2">
-                                    <i class="fa fa-upload" aria-hidden="true"></i> 上传
-                                    <input @ref="inputUpdateFile" id="inputUpdateFile" type="file" accept=".zip"
-                                        style="width: 0px; height: 0px; visibility: collapse;"
-                                        @onchange="@(e => onInputUpdateFileChanged())">
-                                    <label title="上传"
-                                        style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer"
-                                        for="inputUpdateFile">
-                                    </label>
-                                </div>
-                            </div>
+                    <div class="btn-group mr-2 mb-1">
+                        <div class="btn btn-secondary">
+                            <i class="fa fa-upload" aria-hidden="true"></i> 上传更新
+                            <input @ref="inputUpdateFile" id="inputUpdateFile" type="file" accept=".zip" style="width: 0px; height: 0px; visibility: collapse;" @onchange="UploadUpdate">
+                            <label title="上传更新" style="position: absolute;top: 0;left: 0;right:0;margin:0;height:100%;cursor:pointer" for="inputUpdateFile">
+                            </label>
                         </div>
-                        <div class="form-group">
-                            <label>从服务器选择文件更新</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <button title="选择文件" type="button" class="btn btn-secondary"
-                                        @onclick="btnSelect_Click">
-                                        <i class="fa fa-reply" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <input type="text" class="form-control col-auto" @bind-value="@argUpdateFile" />
-                                <div class="input-group-append">
-                                    @if (string.IsNullOrEmpty(argUpdateFile))
-                                    {
-                                        <button type="button" class="btn btn-secondary" disabled>开始更新</button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn btn-secondary"
-                                            @onclick="btnStartUpdate_Click">开始更新</button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                        <button type="button" class="btn btn-secondary" @onclick="SelectUpdate">
+                            <i class="fa fa-reply" aria-hidden="true"></i>
+                            选择更新
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="UrlUpdate">
+                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                            URL更新
+                        </button>
+                    </div>
                 </div>
             </div>
         </ChildContent>
@@ -204,3 +180,4 @@
 <ModalWindow @ref="modalWindow" DialogCentered="false" DialogSizeExtraLarge="true" ModalBodyCls="p-0"></ModalWindow>
 <ModalLoading @ref="modalLoading" />
 <ModalAlert @ref="modalAlert" />
+<ModalPrompt @ref="modalPrompt" />

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
+using Quick.Blazor.Bootstrap.Admin.Core;
 using Quick.Blazor.Bootstrap.Admin.Utils;
 using Quick.Build;
 using Quick.Shell.PowerShell;
 using Quick.Utils;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Http.Headers;
 using System.Text;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components.Controls;
@@ -29,13 +31,14 @@ namespace YiQiDong.Components.Pages
         private ModalAlert modalAlert;
         private ModalWindow modalWindow;
         private ModalLoading modalLoading;
+        private ModalPrompt modalPrompt;
 
         private Model.ConfigModel configModel;
         private PasswordManageModel passwordManageModel;
         private ElementReference inputUpdateFile;
         [Inject]
         private IFileReaderService fileReaderService { get; set; }
-        private string argUpdateFile;
+        private CancellationTokenSource operateCts;
 
         protected override void OnInitialized()
         {
@@ -170,25 +173,21 @@ namespace YiQiDong.Components.Pages
             }
         }
 
-        private void btnSelect_Click()
+        private void SelectUpdate()
         {
-            string dir = null;
-            if (!string.IsNullOrEmpty(argUpdateFile) && File.Exists(argUpdateFile))
-                dir = Path.GetDirectoryName(argUpdateFile);
-
             modalWindow.Show("选择易启动更新文件", new DialogParameters<FileSelectControl>()
             {
                 {x=>x.FileFilter, "*.zip"},
                 {x=> x.SelectAction, t =>
                 {
-                    argUpdateFile = t;
                     modalWindow.Close();
-                    InvokeAsync(StateHasChanged);
+                    confirmUpdate(t, false);
                 }}
             });
+
         }
 
-        private void btnStartUpdate_Click(string updateFile, bool deleteUpdateFile)
+        private void confirmUpdate(string updateFile, bool deleteUpdateFile)
         {
             try
             {
@@ -215,9 +214,16 @@ namespace YiQiDong.Components.Pages
             }
         }
 
-        private void btnStartUpdate_Click()
+        private async Task UrlUpdate()
         {
-            btnStartUpdate_Click(argUpdateFile, false);
+            modalPrompt?.Show("请输入更新URL地址", null, async t =>
+            {
+                operateCts = new CancellationTokenSource();
+                var tmpFile = await PageDownloadUtils.DownloadAsync(t, modalLoading, modalAlert, operateCts);
+                if (tmpFile == null)
+                    return;
+                confirmUpdate(t, true);
+            });
         }
 
         private void btnRestart_Click()
@@ -311,32 +317,31 @@ Remove-Item ""{psFileName}""
             YiQiDongUtils.RestartService();
         }
 
-        private CancellationTokenSource uploadCts;
-        private async Task onInputUpdateFileChanged()
+        private async Task UploadUpdate()
         {
             var fileReaderRef = fileReaderService.CreateReference(inputUpdateFile);
 
             var uploadSuccess = false;
-            uploadCts = new CancellationTokenSource();
+            operateCts = new CancellationTokenSource();
             UploadFileInfo uploadingFileInfo = default;
             string uploadingFileInfoStr = null;
             string uploadingFile = null;
             try
             {
-                modalLoading.Show($"上传更新文件", "正在获取上传文件信息...", false, uploadCts.Cancel);
+                modalLoading.Show($"上传更新文件", "正在获取上传文件信息...", false, operateCts.Cancel);
                 var fileReference = (await fileReaderRef.EnumerateFilesAsync()).FirstOrDefault();
                 uploadingFile = await FileUploadHelper.UploadFileAsync(fileReference,
                     fileInfo =>
                     {
                         uploadingFileInfo = fileInfo;
                         uploadingFileInfoStr = $"{fileInfo.Name} ({fileInfo.SizeString})";
-                        modalLoading.Show($"上传更新文件", $"正在上传更新文件[{uploadingFileInfoStr}]...", false, uploadCts.Cancel);
+                        modalLoading.Show($"上传更新文件", $"正在上传更新文件[{uploadingFileInfoStr}]...", false, operateCts.Cancel);
                         return null;
                     },
                     progressInfo => modalLoading.UpdateProgress(progressInfo.Percent, progressInfo.Message),
-                    uploadCts.Token);
+                    operateCts.Token);
                 uploadSuccess = true;
-                btnStartUpdate_Click(uploadingFile, true);
+                confirmUpdate(uploadingFile, true);
             }
             catch (OperationCanceledException)
             {
@@ -359,8 +364,8 @@ Remove-Item ""{psFileName}""
 
         public void Dispose()
         {
-            uploadCts?.Cancel();
-            uploadCts = null;
+            operateCts?.Cancel();
+            operateCts = null;
         }
     }
 }

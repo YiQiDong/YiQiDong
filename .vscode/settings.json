@@ -1,1 +1,14 @@
-{}
+{
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true,
+        "doc": true,
+        "resource": true
+    },
+    "search.exclude": {
+        "**/bin": true,
+        "**/obj": true,
+        "doc": true,
+        "resource": true
+    }
+}

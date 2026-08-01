@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.ComTypes;
 using Quick.Shell.WinCmd;
 using Windows.Win32.System.SystemInformation;
 using System.ComponentModel;
+using Quick.Blazor.Bootstrap.Admin.Utils;
 
 namespace YiQiDong.Utils
 {
@@ -44,27 +45,8 @@ namespace YiQiDong.Utils
                     }
                     //获取操作系统名称
                     {
-                        //优先用wmic从WMI获取操作系统名称。Win11以上操作系统默认不再启用wmic功能。
-                        var ret = ProcessUtils.ExecuteShell("wmic os get caption");
-                        if (ret.ExitCode == 0)
-                        {
-                            osName = ret.Output.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-                        }
-                        //其次用Get-CimInstance从WMI中获取操作系统名称。
-                        if (string.IsNullOrEmpty(osName))
-                        {
-                            using(var context = new Quick.Shell.PowerShell.PowerShellCommandContext())
-                            {
-                                context.Open();
-                                //优先使用Get-CimInstance查询
-                                var cmdRet = context.ExecuteCommand("Get-CimInstance -Class Win32_OperatingSystem | Select-Object -Property Caption",true);
-                                //其次使用Get-WmiObject查询
-                                if (cmdRet.ExitCode != 0)
-                                    cmdRet = context.ExecuteCommand("Get-WmiObject -Class Win32_OperatingSystem | Select-Object -Property Caption",true);
-                                if (cmdRet.ExitCode == 0)
-                                    osName = cmdRet.Output.LastOrDefault();
-                            }
-                        }
+                        //优先从WMI获取操作系统名称
+                        osName = WmiUtils.GetValue("Win32_OperatingSystem",null,"Caption");
                         //其次从注册表中获取操作系统名称
                         if (string.IsNullOrEmpty(osName))
                         {

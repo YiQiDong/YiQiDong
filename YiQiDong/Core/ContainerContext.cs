@@ -422,7 +422,7 @@ public class ContainerContext : IDisposable
                 }
             }
         }
-        ProcessStartInfo psi = new ProcessStartInfo();
+        var psi = new ProcessStartInfo() { WorkingDirectory = imageFolder };
         //如果没有AgentExecute，则由YiQiDong启动加载
         if (string.IsNullOrEmpty(imageInfo.AgentExecute))
         {

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using System;
-using System.Linq;
-using YiQiDong.Utils;
+﻿using YiQiDong.Utils;
 
 namespace YiQiDong.ArgsHandlers
 {
@@ -10,7 +7,7 @@ namespace YiQiDong.ArgsHandlers
         internal static void Invoke(string[] args)
         {
             var firstArg = args?.FirstOrDefault() ?? string.Empty;
-            if (firstArg == "-agent")
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Core.Consts.CONTAINER_INTERFACE_URL)))
             {
                 Args_Agent.Invoke(args);
                 return;

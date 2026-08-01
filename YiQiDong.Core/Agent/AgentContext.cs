@@ -116,7 +116,7 @@ public class AgentContext
         cts = new CancellationTokenSource();
         LogInfo("正在连接到易启动...");
 
-        var containerInterfaceUrl = Environment.GetEnvironmentVariable("CONTAINER_INTERFACE_URL");
+        var containerInterfaceUrl = Environment.GetEnvironmentVariable(Consts.CONTAINER_INTERFACE_URL);
         var useStdioComm = string.IsNullOrEmpty(containerInterfaceUrl);
 
         QpClientOptions options = null;

@@ -58,12 +58,6 @@ namespace YiQiDong.Model
         /// </summary>
         public string EnvironmentVariables { get; set; }
 
-        /// <summary>
-        /// 是否手动触发容器初始化完成通知。为了兼容老的镜像增加此属性
-        /// </summary>
-        [JsonIgnore]
-        public bool ManualRaiseContainerInitedNotice { get; set; } = false;
-
         public string ToJsonString()
         {
             return JsonSerializer.Serialize(this, YqdContainerInfoSerializerContext.Default.YqdContainerInfo);

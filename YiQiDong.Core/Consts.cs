@@ -10,4 +10,8 @@ public class Consts
 
     public const string CONTAINERS_FOLDER = "Containers";
     public const string CONTAINER_META_FILE = "YiQiDong.Container.json";
+
+    public const string IMAGE_DIR = nameof(IMAGE_DIR);
+    public const string CONTAINER_DIR = nameof(CONTAINER_DIR);
+    public const string CONTAINER_INTERFACE_URL = nameof(CONTAINER_INTERFACE_URL);
 }

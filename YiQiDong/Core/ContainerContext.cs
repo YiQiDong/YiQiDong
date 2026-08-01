@@ -71,11 +71,6 @@ public class ContainerContext : IDisposable
         ProcessChannel = (QpServerChannel)channel;
         channel.Disconnected += Channel_Disconnected;
         pushLog(LogLevel.Info, $"[平台]容器连接成功.");
-        //如果需要手动触发容器初始化完成通知，则延迟1秒后触发
-        if (ContainerInfo.ManualRaiseContainerInitedNotice)
-        {
-            Task.Delay(1000).ContinueWith(t => handleContainerInitedNotice(channel, new ContainerInitedNotice()));
-        }
         return new YiQiDong.Protocol.V1.QpCommands.Register.Response()
         {
             ContainerInfo = ContainerInfo,
@@ -427,64 +422,38 @@ public class ContainerContext : IDisposable
                 }
             }
         }
-        ProcessStartInfo psi = null;
-        var processFileName = imageInfo.AgentExecute;
-        if (string.IsNullOrEmpty(processFileName))
-            processFileName = "dotnet";
-
-        var tmpFileName = Path.Combine(imageFolder, processFileName);
-        if (File.Exists(tmpFileName))
+        ProcessStartInfo psi = new ProcessStartInfo();
+        //如果没有AgentExecute，则由YiQiDong启动加载
+        if (string.IsNullOrEmpty(imageInfo.AgentExecute))
         {
-            processFileName = tmpFileName;
-            //如果是在非Windows上运行，则检查添加文件可执行权限
-            if (!OperatingSystem.IsWindows())
-                Utils.Unix.UnixUtils.AddExecutePermissionToFile(processFileName);
-        }
-        psi = new ProcessStartInfo(processFileName);
-        //如果是最老的镜像
-        if (string.IsNullOrEmpty(containerInfo.Image.AgentStartup) && string.IsNullOrEmpty(containerInfo.Image.AgentExecute))
-        {
-            psi.WorkingDirectory = containerFolder;
 #if DEBUG
+            psi.FileName = "dotnet";
             var executeFileAgentDir = Path.GetFullPath(FolderUtils.GetPathUnderProgramDir("../../../YiQiDong/bin/Debug"));
             psi.ArgumentList.Add(Path.Combine(executeFileAgentDir, $"{EXECUTE_FILE_AGENT}.dll"));
 #else
-                var executeFileName = FolderUtils.GetPathUnderProgramDir(EXECUTE_FILE_AGENT);
-                if (OperatingSystem.IsWindows())
-                    executeFileName += ".exe";
-                psi.FileName = executeFileName;
+            var executeFileName = EXECUTE_FILE_AGENT;
+            if (OperatingSystem.IsWindows())
+                executeFileName += ".exe";
+            psi.FileName = executeFileName;
 #endif
-            psi.ArgumentList.Add("-agent");
-            psi.ArgumentList.Add(containerInfo.Id);
-            containerInfo.ManualRaiseContainerInitedNotice = false;
         }
-        //如果是老镜像
-        else if (File.Exists(Path.Combine(imageFolder, "YiQiDong.Protocol.dll")))
-        {
-            psi.WorkingDirectory = containerFolder;
-            if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
-            {
-                var agentStartup = imageInfo.AgentStartup;
-                var agentStartupFullPath = Path.Combine(imageFolder, agentStartup);
-                if (File.Exists(agentStartupFullPath))
-                    agentStartup = agentStartupFullPath;
-                psi.ArgumentList.Add(agentStartup);
-            }
-            psi.ArgumentList.Add($"YiQiDong.ContainerId=\"{containerInfo.Id}\"");
-            psi.ArgumentList.Add($"YiQiDong.DataFolder=\"{FolderUtils.GetDataDir()}\"");
-            psi.ArgumentList.Add($"YiQiDong.TransportTimeout=\"{Program.Config.AgentTransportTimeout}\"");
-            containerInfo.ManualRaiseContainerInitedNotice = true;
-        }
-        //否则是新镜像
+        //否则运行指定的AgentExecute
         else
         {
-            psi.WorkingDirectory = imageFolder;
-            if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
-                psi.ArgumentList.Add(imageInfo.AgentStartup);
-            psi.ArgumentList.Add(containerInfo.Name);
-            psi.ArgumentList.Add(containerInfo.Id);
-            containerInfo.ManualRaiseContainerInitedNotice = false;
+            var processFileName = imageInfo.AgentExecute;
+            var tmpFileName = Path.Combine(imageFolder, processFileName);
+            if (File.Exists(tmpFileName))
+            {
+                processFileName = tmpFileName;
+                //如果是在非Windows上运行，则检查添加文件可执行权限
+                if (!OperatingSystem.IsWindows())
+                    Utils.Unix.UnixUtils.AddExecutePermissionToFile(processFileName);
+            }
+            psi.FileName = processFileName;
         }
+        if (!string.IsNullOrEmpty(imageInfo.AgentStartup))
+            psi.ArgumentList.Add(imageInfo.AgentStartup);
+        psi.ArgumentList.Add(containerInfo.Name);
         try
         {
             var pipeName = $"{nameof(YiQiDong)}.ContainerInterface.{ContainerInfo.Id}.{DateTime.Now.Ticks}";
@@ -506,9 +475,9 @@ public class ContainerContext : IDisposable
             pushLog(LogLevel.Info, "[平台]容器进程文件名：" + psi.FileName);
             pushLog(LogLevel.Info, "[平台]容器进程参数：" + string.Join(" ", psi.ArgumentList));
             //添加镜像目录、容器目录环境变量
-            psi.Environment["IMAGE_DIR"] = imageFolder;
-            psi.Environment["CONTAINER_DIR"] = containerFolder;
-            psi.Environment["CONTAINER_INTERFACE_URL"] = interfaceUrl;
+            psi.Environment[Consts.IMAGE_DIR] = imageFolder;
+            psi.Environment[Consts.CONTAINER_DIR] = containerFolder;
+            psi.Environment[Consts.CONTAINER_INTERFACE_URL] = interfaceUrl;
 
             //添加运行库的其他环境变量
             foreach (var item in RuntimeManager.Instance.GetRuntimesEnvironment(runtimes))

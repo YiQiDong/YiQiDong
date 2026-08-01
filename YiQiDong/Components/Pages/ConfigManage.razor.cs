@@ -178,10 +178,10 @@ namespace YiQiDong.Components.Pages
             modalWindow.Show("选择易启动更新文件", new DialogParameters<FileSelectControl>()
             {
                 {x=>x.FileFilter, "*.zip"},
-                {x=> x.SelectAction, t =>
+                {x=> x.SelectAction, file =>
                 {
                     modalWindow.Close();
-                    confirmUpdate(t, false);
+                    confirmUpdate(file, false);
                 }}
             });
 
@@ -216,13 +216,13 @@ namespace YiQiDong.Components.Pages
 
         private async Task UrlUpdate()
         {
-            modalPrompt?.Show("请输入更新URL地址", null, async t =>
+            modalPrompt?.Show("请输入更新URL地址", null, async url =>
             {
                 operateCts = new CancellationTokenSource();
-                var tmpFile = await PageDownloadUtils.DownloadAsync(t, modalLoading, modalAlert, operateCts);
+                var tmpFile = await PageDownloadUtils.DownloadAsync(url, modalLoading, modalAlert, operateCts);
                 if (tmpFile == null)
                     return;
-                confirmUpdate(t, true);
+                confirmUpdate(tmpFile, true);
             });
         }
 

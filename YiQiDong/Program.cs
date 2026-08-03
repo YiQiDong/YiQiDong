@@ -9,7 +9,6 @@ using YiQiDong.Components;
 using Blazored.LocalStorage;
 using Quick.Shell.Utils;
 using Quick.Utils;
-using System.Diagnostics;
 
 namespace YiQiDong
 {
@@ -106,7 +105,10 @@ namespace YiQiDong
                             ConsoleUtils.ConsoleWriteLine($"执行启动脚本完成。退出码：{ret.ExitCode}，输出：{ret.Output}{ret.Error}");
                         });
                     }
+                    //Glash相关初始化
+                    Glash.Blazor.Client.Core.ConnectionContextManager.Instance.Init();
                     Glash.Blazor.Agent.Core.GlashAgentManager.Instance.Init();
+                    //Crontab管理器初始化
                     Quick.Blazor.Bootstrap.CrontabManager.Core.CrontabManager.Instance.Start();
 
                     //异步加载

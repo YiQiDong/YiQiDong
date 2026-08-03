@@ -63,49 +63,4 @@
             </div>
         </ChildContent>
     </TabPane>
-    <TabPane Key="stackTrace">
-        <Tab>线程列表</Tab>
-        <ChildContent>
-            <div class="card-body small p-0">
-                <div class="m-2">
-                    <div class="btn-group" role="group" aria-label="BasicButtons">
-                        <button type="button" class="btn btn-sm btn-secondary" @onclick="RefreshThreadList">
-                            刷新
-                        </button>
-                    </div>
-                </div>
-                <table class="table table-sm table-striped table-borderless table-hover mb-0"
-                       style="overflow-wrap: anywhere;">
-                    <tbody>
-                        <tr>
-                            <th>编号</th>
-                            <th>时间</th>
-                            <th>地址</th>
-                            <th>状态</th>
-                            <th>等待原因</th>
-                            <th>总用时</th>
-                            <th>用户用时</th>
-                            <th>特权用时</th>
-                        </tr>
-                        @if(threads!=null)
-                        {
-                            @foreach(var thread in threads)
-                            {
-                                <tr>
-                                    <td>@thread.Id</td>
-                                    <td>@thread.StartTime</td>
-                                    <td>@thread.StartAddress</td>
-                                    <td>@thread.ThreadState</td>
-                                    <td>@thread.WaitReason</td>
-                                    <td>@thread.TotalProcessorTime</td>
-                                    <td>@thread.UserProcessorTime</td>
-                                    <td>@thread.PrivilegedProcessorTime</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </ChildContent>
-    </TabPane>
 </Tabs>

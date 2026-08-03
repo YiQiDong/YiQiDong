@@ -43,11 +43,6 @@ public partial class StartCommandSerializerContext : JsonSerializerContext { }
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class StopCommandSerializerContext : JsonSerializerContext { }
 
-[JsonSerializable(typeof(GetThreadList.Request))]
-[JsonSerializable(typeof(GetThreadList.Response))]
-[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
-public partial class UsingCommandSerializerContext : JsonSerializerContext { }
-
 [JsonSerializable(typeof(OpenFunctionSession.Request))]
 [JsonSerializable(typeof(OpenFunctionSession.Response))]
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]

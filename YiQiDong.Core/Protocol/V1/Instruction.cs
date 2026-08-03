@@ -11,7 +11,6 @@ namespace YiQiDong.Protocol.V1
             CommandInfos =
             [
                 QpCommandInfo.Create(new QpCommands.Register.Request()),
-                QpCommandInfo.Create(new QpCommands.GetThreadList.Request()),
                 QpCommandInfo.Create(new QpCommands.GetFunctionList.Request()),
                 QpCommandInfo.Create(new QpCommands.GetConfigFileList.Request()),
                 QpCommandInfo.Create(new QpCommands.ExecuteFunction.Request()),

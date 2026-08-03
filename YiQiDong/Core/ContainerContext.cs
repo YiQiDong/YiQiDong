@@ -880,13 +880,6 @@ public class ContainerContext : IDisposable
         return ret?.Items;
     }
 
-    public ThreadInfo[] GetThreadList()
-    {
-        var ret = ProcessChannel?.SendCommand(
-            new YiQiDong.Protocol.V1.QpCommands.GetThreadList.Request()).Result;
-        return ret.Threads;
-    }
-
     //检查删除日志文件
     private void checkDeleteLogFiles()
     {

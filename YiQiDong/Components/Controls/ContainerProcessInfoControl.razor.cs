@@ -8,16 +8,5 @@ namespace YiQiDong.Components.Controls
     {
         [Parameter]
         public ContainerContext Container { get; set; }
-
-        private ThreadInfo[] threads;
-
-        private void RefreshThreadList()
-        {
-            try
-            {
-                threads = Container.GetThreadList();
-            }
-            catch { }
-        }
     }
 }

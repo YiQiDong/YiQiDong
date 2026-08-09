@@ -31,7 +31,7 @@ public partial class ContainerFunctionControl : IDisposable
                     functionSessionId = Container.OpenFunctionSession(Function);
                     Container.AddFunctionSessionChangedNoticeHandler(functionSessionId, t =>
                         {
-                            controls.SetFields(t.Items.ToArray());
+                            controls.SetFields(t.Items);
                         });
                     executeFunction();
                 });
@@ -43,7 +43,7 @@ public partial class ContainerFunctionControl : IDisposable
         }
     }
 
-    private void executeFunction(FieldForGet field = null, FieldForGet[] fieldForGetArray = null)
+    private void executeFunction(FieldForGet field = null, IEnumerable<FieldForGet> fieldForGetArray = null)
     {
         if (isExecuting)
             return;
@@ -61,7 +61,7 @@ public partial class ContainerFunctionControl : IDisposable
             try
             {
                 var ret = Container.ExecuteFunction(Function, field?.GetFullFieldIds(), fields, functionSessionId);
-                controls.SetFields(ret.ToArray());
+                controls.SetFields(ret);
             }
             catch (Exception ex)
             {
@@ -106,7 +106,7 @@ public partial class ContainerFunctionControl : IDisposable
         });
     }
 
-    private void OnFieldChanged(FieldForGet field, FieldForGet[] fields)
+    private void OnFieldChanged(FieldForGet field, IEnumerable<FieldForGet> fields)
     {
         executeFunction(field, fields);
     }

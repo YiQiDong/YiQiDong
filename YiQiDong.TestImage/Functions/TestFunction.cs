@@ -8,7 +8,7 @@ public class TestFunction : AbstractFunction
 {
     public override string Name => "测试功能";
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         return [
             new ()

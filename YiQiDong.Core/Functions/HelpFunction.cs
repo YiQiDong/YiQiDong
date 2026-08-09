@@ -13,7 +13,7 @@ public class HelpFunction : AbstractFunction
         this.helpDict = helpDict;
     }
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         return
         [
@@ -32,8 +32,8 @@ public class HelpFunction : AbstractFunction
                             if(string.IsNullOrEmpty(p))
                                 return new FieldForGet(){ Type = FieldType.ContainerRow,MarginBottom = 3};
                             return new FieldForGet(){ Type = FieldType.HtmlParagraph,Value = p};
-                        }).ToArray()
-                }).ToArray()
+                        }).ToList()
+                }).ToList()
             }
         ];
     }

@@ -23,7 +23,7 @@ public class TaskExecuteFunction : AbstractSessionFunction
         cts?.Cancel();
     }
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         if (request != null)
         {

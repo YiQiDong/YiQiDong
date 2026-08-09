@@ -31,7 +31,7 @@ public partial class ContainerFunctionControl : IDisposable
                     functionSessionId = Container.OpenFunctionSession(Function);
                     Container.AddFunctionSessionChangedNoticeHandler(functionSessionId, t =>
                         {
-                            controls.SetFields(t.Items);
+                            controls.SetFields(t.Items.ToArray());
                         });
                     executeFunction();
                 });
@@ -50,7 +50,7 @@ public partial class ContainerFunctionControl : IDisposable
         isExecuting = true;
         InvokeAsync(StateHasChanged);
 
-        var fields = fieldForGetArray?.Select(t => t.ToPost()).ToArray();
+        var fields = fieldForGetArray?.Select(t => t.ToPost()).ToList();
         var message = "正在处理...";
         if (field != null)
         {
@@ -61,7 +61,7 @@ public partial class ContainerFunctionControl : IDisposable
             try
             {
                 var ret = Container.ExecuteFunction(Function, field?.GetFullFieldIds(), fields, functionSessionId);
-                controls.SetFields(ret);
+                controls.SetFields(ret.ToArray());
             }
             catch (Exception ex)
             {

@@ -31,7 +31,7 @@ namespace YiQiDong.Core.Functions
         private CancellationTokenSource cts;
 
         
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             List<FieldForGet> list = new();
             try
@@ -123,7 +123,7 @@ namespace YiQiDong.Core.Functions
             {
                 list.Add(new FieldForGet() { Type = FieldType.HtmlPre, Value = ExceptionUtils.GetExceptionString(ex) });
             }
-            return list.ToArray();
+            return list;
         }
 
         private async Task beginRefresh(CancellationToken cancellationToken)

@@ -7,6 +7,6 @@ namespace YiQiDong.Protocol.V1.QpCommands.ExecuteFunction
     public class Response: AbstractQpSerializer<Response>
     {
         protected override JsonTypeInfo<Response> GetTypeInfo() => ExecuteFunctionCommandSerializerContext.Default.Response;
-        public FieldForGet[] Items { get; set; }
+        public List<FieldForGet> Items { get; set; }
     }
 }

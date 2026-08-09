@@ -10,5 +10,5 @@ public class FunctionSessionChangedNotice : AbstractQpSerializer<FunctionSession
 {
     protected override JsonTypeInfo<FunctionSessionChangedNotice> GetTypeInfo() => NoticesSerializerContext.Default.FunctionSessionChangedNotice;
     public string SessionId { get; set; }
-    public FieldForGet[] Items { get; set; }
+    public List<FieldForGet> Items { get; set; }
 }

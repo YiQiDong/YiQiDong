@@ -18,7 +18,7 @@ public abstract class AbstractSessionFunction : AbstractFunction
         Channel = channel;
     }
 
-    protected void OnSessionChanged(FieldForGet[] fields)
+    protected void OnSessionChanged(List<FieldForGet> fields)
     {
         if (string.IsNullOrEmpty(SessionId))
             throw new ArgumentNullException(nameof(SessionId));

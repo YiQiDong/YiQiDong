@@ -78,15 +78,15 @@ namespace YiQiDong.Core.Functions
             return false;
         }
 
-        public bool isFieldsChanged(FieldForGet[] aItems, FieldForGet[] bItems)
+        public bool isFieldsChanged(List<FieldForGet> aItems, List<FieldForGet> bItems)
         {
             if (aItems == null && bItems == null)
                 return false;
             if (aItems == null || bItems == null)
                 return true;
-            if (aItems.Length != bItems.Length)
+            if (aItems.Count != bItems.Count)
                 return true;
-            for (int i = 0; i < aItems.Length; i++)
+            for (int i = 0; i < aItems.Count; i++)
             {
                 var aItem = aItems[i];
                 var bItem = bItems[i];
@@ -99,7 +99,7 @@ namespace YiQiDong.Core.Functions
         }
 
         //aItems->bItems
-        private void copyFieldsValue(FieldForGet[] aItems, FieldForGet[] bItems)
+        private void copyFieldsValue(List<FieldForGet> aItems, List<FieldForGet> bItems)
         {
             if (aItems == null || bItems == null)
                 return;
@@ -114,7 +114,7 @@ namespace YiQiDong.Core.Functions
             }
         }
 
-        private void copyValue(FieldForPost[] newFields, FieldForGet[] oldFields)
+        private void copyValue(List<FieldForPost> newFields, List<FieldForGet> oldFields)
         {
             if (newFields == null || oldFields == null)
                 return;
@@ -223,7 +223,7 @@ namespace YiQiDong.Core.Functions
             return list.ToList();
         }
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             var isReadOnly = false;
             if (isReadonlyFunc != null)
@@ -233,7 +233,7 @@ namespace YiQiDong.Core.Functions
             {
                 if (request.IsFieldIdsMatch("Save"))
                 {
-                    AppSettings.Fields = list.ToArray();
+                    AppSettings.Fields = list.ToList();
                     var containerConfigFile = Path.Combine(containerFolder, Quick.Fields.AppSettings.Model.APPSETTINGS_JSON_FILENAME);
                     File.WriteAllText(containerConfigFile, AppSettings.ToJsonString());
                     list.Add(new FieldForGet()
@@ -246,7 +246,7 @@ namespace YiQiDong.Core.Functions
             }
             if (!isReadOnly)
                 addSaveButton(list);
-            return list.ToArray();
+            return list;
         }
 
         private void addSaveButton(List<FieldForGet> list)

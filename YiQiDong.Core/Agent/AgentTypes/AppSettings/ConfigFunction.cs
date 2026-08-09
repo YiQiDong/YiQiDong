@@ -175,7 +175,7 @@ public class ConfigFunction : AbstractFunction
         return list.ToList();
     }
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         var isReadOnly = AgentContext.Container.AutoStart;
         var list = innerGet(request, isReadOnly);
@@ -196,7 +196,7 @@ public class ConfigFunction : AbstractFunction
         }
         if (!isReadOnly)
             addSaveButton(list);
-        return list.ToArray();
+        return list;
     }
 
     private void addSaveButton(List<FieldForGet> list)

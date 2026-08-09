@@ -575,7 +575,7 @@ public class ContainerContext : IDisposable
             {
                 pushLog(LogLevel.Info, "[平台]向容器发送退出指令出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
             }
-            ProcessChannel?.Stop();
+            ProcessChannel?.Dispose();
             ProcessChannel = null;
         }
 
@@ -630,7 +630,7 @@ public class ContainerContext : IDisposable
             if (processChannel != null)
             {
                 processChannel.Disconnected -= Channel_Disconnected;
-                processChannel.Stop();
+                processChannel.Dispose();
             }
         }
         catch (Exception ex)
@@ -866,7 +866,7 @@ public class ContainerContext : IDisposable
             new YiQiDong.Protocol.V1.QpCommands.CloseFunctionSession.Request() { SessionId = sessionId }, function.ExecuteTimeout).Result;
     }
 
-    public FieldForGet[] ExecuteFunction(FunctionInfo function, string[] fieldIds = null, FieldForPost[] fields = null, string sessionId = null)
+    public List<FieldForGet> ExecuteFunction(FunctionInfo function, string[] fieldIds = null, List<FieldForPost> fields = null, string sessionId = null)
     {
         var request = new FunctionRequest()
         {

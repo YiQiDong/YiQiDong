@@ -47,7 +47,7 @@ namespace YiQiDong.Core.Functions
             return list;
         }
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             var isReadOnly = isReadonlyFunc();
             var list = innerGet(request,isReadOnly);
@@ -79,7 +79,7 @@ namespace YiQiDong.Core.Functions
                     addSaveButton(list);
                 }
             }
-            return list.ToArray();
+            return list;
         }
 
         private void addSaveButton(List<FieldForGet> list)

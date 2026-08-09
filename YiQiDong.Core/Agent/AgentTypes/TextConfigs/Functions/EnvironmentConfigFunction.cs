@@ -49,7 +49,7 @@ internal class EnvironmentConfigFunction : AbstractFunction
         {
             Type = FieldType.ContainerGroup,
             Name = "容器环境变量",
-            Children = list.ToArray()
+            Children = list
         };
     }
 
@@ -328,12 +328,12 @@ internal class EnvironmentConfigFunction : AbstractFunction
             Id = CUSTOM_ENVIRONMENT_LIST,
             Name = "子进程环境变量",
             Type = FieldType.ContainerGroup,
-            Children = list.ToArray()
+            Children = list
         };
     }
 
 
-    private FieldForGet[] innerGet(FunctionRequest request, bool isReadOnly)
+    private List<FieldForGet> innerGet(FunctionRequest request, bool isReadOnly)
     {
         return [
            new FieldForGet()
@@ -347,7 +347,7 @@ internal class EnvironmentConfigFunction : AbstractFunction
         ];
     }
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         if(request==null)
             configModel = agentType.configModel.Clone();

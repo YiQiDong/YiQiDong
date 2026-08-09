@@ -19,7 +19,7 @@ internal class SendCommandFunction : AbstractFunction
     public override string Name => "发送命令";
     public override bool IsVisiable() => AgentContext.Container.AutoStart;
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         var isReadOnly = !AgentContext.Container.AutoStart;
         var cmd = request!=null?request.GetFieldValue(TXT_COMMAND):null;
@@ -68,6 +68,6 @@ internal class SendCommandFunction : AbstractFunction
                 });
             }
         }
-        return list.ToArray();
+        return list;
     }
 }

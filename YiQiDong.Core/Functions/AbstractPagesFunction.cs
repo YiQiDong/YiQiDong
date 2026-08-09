@@ -56,7 +56,7 @@ public abstract class AbstractPagesFunction : AbstractFunction
         defaultPage = pages.FirstOrDefault()?.PageId;
     }
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         var response = new List<FieldForGet>();
         var variableDict = new Dictionary<string, string>();
@@ -83,6 +83,6 @@ public abstract class AbstractPagesFunction : AbstractFunction
             if (pageDict.TryGetValue(currentPage, out var page))
                 page.Render(request, response, variableDict);
         }
-        return response.ToArray();
+        return response;
     }
 }

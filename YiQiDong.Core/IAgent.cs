@@ -31,7 +31,7 @@ namespace YiQiDong.Core
         /// 执行功能
         /// </summary>
         /// <returns></returns>
-        FieldForGet[] ExecuteFunction(FunctionRequest content);
+        List<FieldForGet> ExecuteFunction(FunctionRequest content);
         /// <summary>
         /// 启动进程
         /// </summary>

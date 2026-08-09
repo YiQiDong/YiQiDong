@@ -86,7 +86,7 @@ namespace YiQiDong.Core.Functions
 
         protected abstract List<FieldForGet> innerGet(FunctionRequest request, T requestModel, bool isReadOnly = false);
 
-        public override FieldForGet[] Execute(FunctionRequest request)
+        public override List<FieldForGet> Execute(FunctionRequest request)
         {
             if (request == null)
                 Model = ReadConfig();
@@ -107,7 +107,7 @@ namespace YiQiDong.Core.Functions
             }
             if (!isReadOnly)
                 addSaveButton(list);
-            return list.ToArray();
+            return list;
         }
     }
 }

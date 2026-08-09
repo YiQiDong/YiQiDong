@@ -12,7 +12,7 @@ public class AutoRefreshTimeFunction : AbstractAutoRefreshFunction
     private AutoRefreshTimeFunction(string sessionId, QpChannel channel) : base(sessionId, channel) { }
     public override AbstractSessionFunction Create(string sessionId, QpChannel channel) => new AutoRefreshTimeFunction(sessionId, channel);
 
-    public override FieldForGet[] Execute(FunctionRequest request)
+    public override List<FieldForGet> Execute(FunctionRequest request)
     {
         return
         [

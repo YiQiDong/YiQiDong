@@ -66,7 +66,7 @@ public abstract class AbstractAgent : IAgent
         return session;
     }
 
-    public virtual FieldForGet[] ExecuteFunction(FunctionRequest request)
+    public virtual List<FieldForGet> ExecuteFunction(FunctionRequest request)
     {
         AbstractFunction function = null;
         if (string.IsNullOrEmpty(request.SessionId))

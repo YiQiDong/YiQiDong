@@ -16,5 +16,5 @@ public abstract class AbstractFunction
 
     public virtual FunctionInfo Info => new FunctionInfo() { Id = Id, Name = Name, HasSession = HasSession, ExecuteTimeout = ExecuteTimeout };
 
-    public virtual FieldForGet[] Execute(FunctionRequest request) => [];
+    public virtual List<FieldForGet> Execute(FunctionRequest request) => new List<FieldForGet>();
 }

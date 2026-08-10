@@ -22,19 +22,35 @@
                     <tbody>
                         <tr>
                             <th style="min-width: 5rem;">通道</th>
-                            <td>@Container.ProcessChannel.ChannelName</td>
+                            <td>@Container.ProcessChannel?.ChannelName</td>
                         </tr>
                         <tr>
                             <th>连接时间</th>
-                            <td>@Container.ProcessChannel.LastConnectedTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>@Container.ProcessChannel?.LastConnectedTime?.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                        <tr>
+                            <th>传输超时</th>
+                            <td>@Container.ProcessChannel?.TransportTimeout</td>
+                        </tr>
+                        <tr>
+                            <th>心跳间隔</th>
+                            <td>@Container.ProcessChannel?.HeartBeatInterval</td>
+                        </tr>
+                        <tr>
+                            <th>启用压缩</th>
+                            <td>@Container.ProcessChannel?.EnableCompress</td>
+                        </tr>
+                        <tr>
+                            <th>启用加密</th>
+                            <td>@Container.ProcessChannel?.EnableEncrypt</td>
                         </tr>
                         <tr>
                             <th>已接收</th>
-                            <td>@Container.ProcessChannel.BytesReceived</td>
+                            <td>@Container.ProcessChannel?.BytesReceived</td>
                         </tr>
                         <tr>
                             <th>已发送</th>
-                            <td>@Container.ProcessChannel.BytesSent</td>
+                            <td>@Container.ProcessChannel?.BytesSent</td>
                         </tr>
                     </tbody>
                 </table>

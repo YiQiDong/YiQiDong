@@ -575,7 +575,7 @@ public class ContainerContext : IDisposable
             {
                 pushLog(LogLevel.Info, "[平台]向容器发送退出指令出错。原因：" + ExceptionUtils.GetExceptionMessage(ex));
             }
-            ProcessChannel?.Stop();
+            ProcessChannel?.Dispose();
             ProcessChannel = null;
         }
 
@@ -630,8 +630,7 @@ public class ContainerContext : IDisposable
             if (processChannel != null)
             {
                 processChannel.Disconnected -= Channel_Disconnected;
-                processChannel.Disconnect();
-                processChannel.Stop();
+                processChannel.Dispose();
             }
         }
         catch (Exception ex)

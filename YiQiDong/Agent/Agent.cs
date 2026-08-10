@@ -11,7 +11,7 @@ namespace YiQiDong.Agent
         {
             var agentTypeName = AgentContext.Container.Image.AgentType;
             if (agentTypeName == null)
-                throw new IOException($"镜像未配置[{nameof(AgentContext.Container.Image.AgentExecute)}]或[{nameof(AgentContext.Container.Image.AgentType)}]");
+                agentTypeName = nameof(AgentTypes.AppSettings);
             switch (agentTypeName)
             {
                 case nameof(AgentTypes.TextConfigs):

@@ -29,8 +29,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Quick.Fields" Version="2026.6.809" />
-		<PackageReference Include="Quick.Protocol" Version="2.8.6" />
-		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.8.6" />
+		<PackageReference Include="Quick.Protocol" Version="2.8.7" />
+		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.8.7" />
 		<PackageReference Include="Quick.Shell" Version="1.0.4" />
 	</ItemGroup>
 </Project>

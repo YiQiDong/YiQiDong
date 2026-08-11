@@ -38,12 +38,35 @@
                         </tr>
                         <tr>
                             <th>启用压缩</th>
-                            <td>@Container.ProcessChannel?.EnableCompress</td>
+                            <td>
+                                @if (Container.ProcessChannel != null)
+                                {
+                                    <div class="custom-control custom-switch">
+                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableCompress" disabled />
+                                        <label class="custom-control-label"></label>
+                                    </div>
+                                }
+                            </td>
                         </tr>
                         <tr>
                             <th>启用加密</th>
-                            <td>@Container.ProcessChannel?.EnableEncrypt</td>
+                            <td>
+                                @if (Container.ProcessChannel != null)
+                                {
+                                    <div class="custom-control custom-switch">
+                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableEncrypt" disabled />
+                                        <label class="custom-control-label"></label>
+                                    </div>
+                                }
+                            </td>
                         </tr>
+                        @if(EnableEncrypt)
+                        {
+                            <tr>
+                                <th>加密变换串</th>
+                                <td>@EncryptTransformation</td>
+                            </tr>
+                        }
                         <tr>
                             <th>已接收</th>
                             <td>@Container.ProcessChannel?.BytesReceived</td>

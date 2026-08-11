@@ -49,10 +49,6 @@ public class ConfigModel
     /// </summary>
     public int AgentInitInterval { get; set; } = 1000;
     /// <summary>
-    /// 容器传输超时时间
-    /// </summary>
-    public int AgentTransportTimeout { get; set; } = 60000;
-    /// <summary>
     /// 上传缓冲区大小
     /// </summary>
     public int UploadBufferSize { get; set; } = 1 * 1024 * 1024;

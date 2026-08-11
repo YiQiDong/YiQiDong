@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Admin.Core;
 using Quick.Blazor.Bootstrap.Admin.Utils;
 using Quick.Build;
 using Quick.Shell.PowerShell;
 using Quick.Utils;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Headers;
 using System.Text;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components.Controls;
 using YiQiDong.Core.Utils.Unix;
 using YiQiDong.Utils;
-using static Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper;
 
 namespace YiQiDong.Components.Pages
 {
@@ -69,7 +66,6 @@ namespace YiQiDong.Components.Pages
                 //是否需要重启服务
                 var isNeedRestartService = Program.Config.DataFolder != configModel.DataFolder
                     || Program.Config.AgentInitInterval != configModel.AgentInitInterval
-                    || Program.Config.AgentTransportTimeout != configModel.AgentTransportTimeout
                     || isStringChanged(Program.Config.LinuxOSLang, configModel.LinuxOSLang)
                     || isStringChanged(Program.Config.LinuxOSTimeZone, configModel.LinuxOSTimeZone);
 
@@ -78,7 +74,6 @@ namespace YiQiDong.Components.Pages
                 Program.Config.DataFolder = configModel.DataFolder;
                 Program.Config.DefaultHtml = configModel.DefaultHtml;
                 Program.Config.AgentInitInterval = configModel.AgentInitInterval;
-                Program.Config.AgentTransportTimeout = configModel.AgentTransportTimeout;
                 Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper.UploadBufferSize = Program.Config.UploadBufferSize = configModel.UploadBufferSize;
                 Program.Config.LinuxOSLang = configModel.LinuxOSLang;
                 Program.Config.LinuxOSTimeZone = configModel.LinuxOSTimeZone;
@@ -323,7 +318,7 @@ Remove-Item ""{psFileName}""
 
             var uploadSuccess = false;
             operateCts = new CancellationTokenSource();
-            UploadFileInfo uploadingFileInfo = default;
+            Quick.Blazor.Bootstrap.Admin.Utils.FileUploadHelper.UploadFileInfo uploadingFileInfo = default;
             string uploadingFileInfoStr = null;
             string uploadingFile = null;
             try

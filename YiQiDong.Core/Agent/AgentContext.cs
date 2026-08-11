@@ -121,7 +121,14 @@ public class AgentContext
         QpClientOptions options = null;
         if (useStdioComm)
             containerInterfaceUrl="qp.stdio://.";
-        options = QpClientOptions.Parse(new Uri(containerInterfaceUrl));        
+        try
+        {
+            options = QpClientOptions.Parse(new Uri(containerInterfaceUrl));
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"解析连接URL[{containerInterfaceUrl}]时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
+        }
         options.Password = nameof(YiQiDong);
         options.InstructionSet = [Protocol.V1.Instruction.Instance];
         options.RegisterCommandExecuterManager(commandExecuterManager);
@@ -136,9 +143,9 @@ public class AgentContext
         {
             await Client.ConnectAsync();
         }
-        catch
+        catch (Exception ex)
         {
-            Console.Error.WriteLine("连接到易启动失败，容器进程正在退出...");
+            Console.Error.WriteLine($"连接到易启动失败，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
             return;
         }
         try

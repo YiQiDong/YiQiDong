@@ -462,7 +462,12 @@ public class ContainerContext : IDisposable
             if (containerInfo.EnableCompress)
                 interfaceUrl += $"&{nameof(containerInfo.EnableCompress)}={containerInfo.EnableCompress}";
             if (containerInfo.EnableEncrypt)
+            {
                 interfaceUrl += $"&{nameof(containerInfo.EnableEncrypt)}={containerInfo.EnableEncrypt}";
+                interfaceUrl += $"&{nameof(containerInfo.EncryptAlgorithm)}={containerInfo.EncryptAlgorithm}";
+                interfaceUrl += $"&{nameof(containerInfo.EncryptMode)}={containerInfo.EncryptMode}";
+                interfaceUrl += $"&{nameof(containerInfo.EncryptPadding)}={containerInfo.EncryptPadding}";
+            }
             var options = new Quick.Protocol.Pipeline.QpPipelineServerOptions()
             {
                 PipeName = pipeName,

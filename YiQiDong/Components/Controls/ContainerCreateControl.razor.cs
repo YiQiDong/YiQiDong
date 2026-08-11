@@ -104,6 +104,9 @@ namespace YiQiDong.Components.Controls
                 createModel.EnvironmentVariables = Model.EnvironmentVariables;
                 createModel.EnableCompress = Model.EnableCompress;
                 createModel.EnableEncrypt = Model.EnableEncrypt;
+                createModel.EncryptAlgorithm = Model.EncryptAlgorithm;
+                createModel.EncryptMode = Model.EncryptMode;
+                createModel.EncryptPadding = Model.EncryptPadding;
                 createModel.TransportTimeout = Model.TransportTimeout;
             }
         }

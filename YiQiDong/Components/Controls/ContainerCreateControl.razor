@@ -1,4 +1,6 @@
-﻿<div class="modal-body">
+﻿@using System.Security.Cryptography
+
+<div class="modal-body">
     <EditForm Model="@createModel" OnValidSubmit="Ok">
         <DataAnnotationsValidator />
         <Tabs NavTabsExtraClass="mb-3">
@@ -146,6 +148,39 @@
                             <label class="custom-control-label" for="createModel_EnableEncrypt"></label>
                         </div>
                     </div>
+                    @if(createModel.EnableEncrypt)
+                    {
+                        <div class="form-group">
+                            <label>加密算法</label>
+                            <InputSelect @bind-Value="createModel.EncryptAlgorithm" class="form-control">
+                                <option value="DES">DES</option>
+                                <option value="AES">AES</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => createModel.EncryptAlgorithm)" />
+                        </div>
+                        <div class="form-group">
+                            <label>加密模式</label>
+                            <InputSelect @bind-Value="createModel.EncryptMode" class="form-control">
+                                <option value="@nameof(CipherMode.CBC)">@nameof(CipherMode.CBC)</option>
+                                <option value="@nameof(CipherMode.ECB)">@nameof(CipherMode.ECB)</option>
+                                <option value="@nameof(CipherMode.OFB)">@nameof(CipherMode.OFB)</option>
+                                <option value="@nameof(CipherMode.CFB)">@nameof(CipherMode.CFB)</option>
+                                <option value="@nameof(CipherMode.CTS)">@nameof(CipherMode.CTS)</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => createModel.EncryptMode)" />
+                        </div>
+                        <div class="form-group">
+                            <label>加密填充</label>
+                            <InputSelect @bind-Value="createModel.EncryptPadding" class="form-control">
+                                <option value="@nameof(PaddingMode.None)">@nameof(PaddingMode.None)</option>
+                                <option value="@nameof(PaddingMode.PKCS7)">@nameof(PaddingMode.PKCS7)</option>
+                                <option value="@nameof(PaddingMode.Zeros)">@nameof(PaddingMode.Zeros)</option>
+                                <option value="@nameof(PaddingMode.ANSIX923)">@nameof(PaddingMode.ANSIX923)</option>
+                                <option value="@nameof(PaddingMode.ISO10126)">@nameof(PaddingMode.ISO10126)</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => createModel.EncryptPadding)" />
+                        </div>
+                    }
                     <div class="form-group">
                         <label>传输超时</label>
                         <InputNumber class="form-control" @bind-Value="createModel.TransportTimeout" />

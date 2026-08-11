@@ -42,7 +42,7 @@
                                 @if (Container.ProcessChannel != null)
                                 {
                                     <div class="custom-control custom-switch">
-                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableCompress" disabled />
+                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableCompress" />
                                         <label class="custom-control-label"></label>
                                     </div>
                                 }
@@ -54,7 +54,7 @@
                                 @if (Container.ProcessChannel != null)
                                 {
                                     <div class="custom-control custom-switch">
-                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableEncrypt" disabled />
+                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableEncrypt" />
                                         <label class="custom-control-label"></label>
                                     </div>
                                 }
@@ -64,7 +64,7 @@
                         {
                             <tr>
                                 <th>加密算法</th>
-                                <td>@Container.ProcessChannel?.EncryptMethod</td>
+                                <td>@Container.ProcessChannel?.EncryptAlgorithm</td>
                             </tr>
                             <tr>
                                 <th>加密模式</th>

@@ -58,6 +58,9 @@ namespace YiQiDong.Model
         public string EnvironmentVariables { get; set; }
         public bool EnableCompress { get; set; }
         public bool EnableEncrypt { get; set; }
-        public int TransportTimeout { get; set; }
+        public string EncryptAlgorithm { get; set; }
+        public string EncryptMode { get; set; }
+        public string EncryptPadding { get; set; }
+        public int TransportTimeout { get; set; }        
     }
 }

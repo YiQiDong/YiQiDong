@@ -57,6 +57,18 @@ namespace YiQiDong.Protocol.V1.Model
         /// 启用加密
         /// </summary>
         public bool EnableEncrypt { get; set; }
+        /// <summary>
+        /// 加密算法
+        /// </summary>
+        public string EncryptAlgorithm { get; set; } = "DES";
+        /// <summary>
+        /// 加密模式
+        /// </summary>
+        public string EncryptMode { get; set; } = "ECB";
+        /// <summary>
+        /// 加密填充
+        /// </summary>
+        public string EncryptPadding { get; set; } = "PKCS7";
         /// 传输超时时间
         /// </summary>
         public int TransportTimeout { get; set; } = 60000;

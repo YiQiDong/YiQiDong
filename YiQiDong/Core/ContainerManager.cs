@@ -175,6 +175,9 @@ namespace YiQiDong.Core
                 EnvironmentVariables = newModel.EnvironmentVariables,
                 EnableCompress = newModel.EnableCompress,
                 EnableEncrypt = newModel.EnableEncrypt,
+                EncryptAlgorithm = newModel.EncryptAlgorithm,
+                EncryptMode = newModel.EncryptMode,
+                EncryptPadding = newModel.EncryptPadding,
                 TransportTimeout = newModel.TransportTimeout
             };
             ContainerManager.Instance.Create(containerMeta);
@@ -252,6 +255,9 @@ namespace YiQiDong.Core
             containerInfo.EnvironmentVariables = newModel.EnvironmentVariables;
             containerInfo.EnableCompress = newModel.EnableCompress;
             containerInfo.EnableEncrypt = newModel.EnableEncrypt;
+            containerInfo.EncryptAlgorithm = newModel.EncryptAlgorithm;
+            containerInfo.EncryptMode = newModel.EncryptMode;
+            containerInfo.EncryptPadding = newModel.EncryptPadding;
             containerInfo.TransportTimeout = newModel.TransportTimeout;
             if (containerInfo.Image == null || !string.IsNullOrEmpty(newModel.ImageId))
             {

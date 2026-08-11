@@ -63,10 +63,20 @@
                         @if(EnableEncrypt)
                         {
                             <tr>
-                                <th>加密变换串</th>
-                                <td>@EncryptTransformation</td>
+                                <th>加密算法</th>
+                                <td>@Container.ProcessChannel?.EncryptMethod</td>
+                            </tr>
+                            <tr>
+                                <th>加密模式</th>
+                                <td>@Container.ProcessChannel?.EncryptMode</td>
+                            </tr>
+                            <tr>
+                                <th>加密填充</th>
+                                <td>@Container.ProcessChannel?.EncryptPadding</td>
                             </tr>
                         }
+                        @if(EnableNetstat)
+                        {
                         <tr>
                             <th>已接收</th>
                             <td>@Container.ProcessChannel?.BytesReceived</td>
@@ -75,6 +85,7 @@
                             <th>已发送</th>
                             <td>@Container.ProcessChannel?.BytesSent</td>
                         </tr>
+                        }
                     </tbody>
                 </table>
             </div>

@@ -14,6 +14,7 @@ using YiQiDong.Model;
 using YiQiDong.Protocol.V1.QpNotices;
 using YiQiDong.Utils;
 using LogLevel = YiQiDong.Protocol.V1.Model.LogLevel;
+using Glash.Blazor.Agent.Model;
 
 namespace YiQiDong.Core;
 
@@ -457,7 +458,11 @@ public class ContainerContext : IDisposable
         try
         {
             var pipeName = $"{nameof(YiQiDong)}.ContainerInterface.{ContainerInfo.Id}.{DateTime.Now.Ticks}";
-            var interfaceUrl = $"{Quick.Protocol.Pipeline.QpPipelineClientOptions.URI_SCHEMA}://./{pipeName}";
+            var interfaceUrl = $"{Quick.Protocol.Pipeline.QpPipelineClientOptions.URI_SCHEMA}://./{pipeName}?TransportTimeout={containerInfo.TransportTimeout}";
+            if (containerInfo.EnableCompress)
+                interfaceUrl += $"&{nameof(containerInfo.EnableCompress)}={containerInfo.EnableCompress}";
+            if (containerInfo.EnableEncrypt)
+                interfaceUrl += $"&{nameof(containerInfo.EnableEncrypt)}={containerInfo.EnableEncrypt}";
             var options = new Quick.Protocol.Pipeline.QpPipelineServerOptions()
             {
                 PipeName = pipeName,

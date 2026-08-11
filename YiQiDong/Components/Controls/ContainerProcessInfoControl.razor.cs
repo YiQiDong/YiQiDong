@@ -21,15 +21,10 @@ namespace YiQiDong.Components.Controls
             set { }
         }
 
-        public string EncryptTransformation
+        public bool EnableNetstat
         {
-            get
-            {
-                var channel = Container.ProcessChannel;
-                if (channel == null)
-                    return null;
-                return $"{channel.EncryptMethod}/{channel.EncryptMode}/{channel.EncryptPadding}";
-            }
+            get => Container.ProcessChannel != null && Container.ProcessChannel.Options.EnableNetstat;
+            set { }
         }
     }
 }

@@ -123,7 +123,6 @@ public class AgentContext
             containerInterfaceUrl="qp.stdio://.";
         options = QpClientOptions.Parse(new Uri(containerInterfaceUrl));        
         options.Password = nameof(YiQiDong);
-        options.TransportTimeout = 60000;
         options.InstructionSet = [Protocol.V1.Instruction.Instance];
         options.RegisterCommandExecuterManager(commandExecuterManager);
         Client = options.CreateClient();

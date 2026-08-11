@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using YiQiDong.Core;
 using YiQiDong.Model;
-using YiQiDong.Protocol.V1.Model;
 
 namespace YiQiDong.Components.Controls
 {
@@ -106,6 +102,9 @@ namespace YiQiDong.Components.Controls
                 createModel.StopCron = Model.StopCron;
                 createModel.RestartCron = Model.RestartCron;
                 createModel.EnvironmentVariables = Model.EnvironmentVariables;
+                createModel.EnableCompress = Model.EnableCompress;
+                createModel.EnableEncrypt = Model.EnableEncrypt;
+                createModel.TransportTimeout = Model.TransportTimeout;
             }
         }
 

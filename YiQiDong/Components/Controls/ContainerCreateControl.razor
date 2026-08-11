@@ -130,8 +130,35 @@
                 </ChildContent>
             </TabPane>
             <TabPane Key="5">
-                <Tab>其他</Tab>
+                <Tab>连接</Tab>
                 <ChildContent>
+                    <div class="form-group">
+                        <label>启用压缩</label>
+                        <div class="custom-control custom-switch">
+                            <InputCheckbox class="custom-control-input" @bind-Value="createModel.EnableCompress" id="createModel_EnableCompress" />
+                            <label class="custom-control-label" for="createModel_EnableCompress"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>启用加密</label>
+                        <div class="custom-control custom-switch">
+                            <InputCheckbox class="custom-control-input" @bind-Value="createModel.EnableEncrypt" id="createModel_EnableEncrypt" />
+                            <label class="custom-control-label" for="createModel_EnableEncrypt"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>传输超时</label>
+                        <InputNumber class="form-control" @bind-Value="createModel.TransportTimeout" />
+                        <ValidationMessage For="@(() => createModel.TransportTimeout)" />
+                        <small id="passwordHelpBlock" class="form-text text-muted">
+                            单位：毫秒
+                        </small>
+                    </div>
+                </ChildContent>
+            </TabPane>
+            <TabPane Key="6">
+                <Tab>其他</Tab>
+                <ChildContent>                    
                     <div class="form-group">
                         <label>启动警告</label>
                         <InputTextArea class="form-control" @bind-Value="createModel.StartWarning" />

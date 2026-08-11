@@ -56,5 +56,8 @@ namespace YiQiDong.Model
         public string StopCron { get; set; }
         public string RestartCron { get; set; }
         public string EnvironmentVariables { get; set; }
+        public bool EnableCompress { get; set; }
+        public bool EnableEncrypt { get; set; }
+        public int TransportTimeout { get; set; }
     }
 }

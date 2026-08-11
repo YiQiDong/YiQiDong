@@ -14,4 +14,5 @@ public class Consts
     public const string IMAGE_DIR = nameof(IMAGE_DIR);
     public const string CONTAINER_DIR = nameof(CONTAINER_DIR);
     public const string CONTAINER_INTERFACE_URL = nameof(CONTAINER_INTERFACE_URL);
+    public const string CONTAINER_INTERFACE_TRANSPORT_TIMEOUT = nameof(CONTAINER_INTERFACE_TRANSPORT_TIMEOUT);
 }

@@ -172,7 +172,10 @@ namespace YiQiDong.Core
                 StartCron = newModel.StartCron,
                 StopCron = newModel.StopCron,
                 RestartCron = newModel.RestartCron,
-                EnvironmentVariables = newModel.EnvironmentVariables
+                EnvironmentVariables = newModel.EnvironmentVariables,
+                EnableCompress = newModel.EnableCompress,
+                EnableEncrypt = newModel.EnableEncrypt,
+                TransportTimeout = newModel.TransportTimeout
             };
             ContainerManager.Instance.Create(containerMeta);
         }
@@ -247,6 +250,9 @@ namespace YiQiDong.Core
             containerInfo.StopScript = newModel.StopScript;
             containerInfo.RestartCron = newModel.RestartCron;
             containerInfo.EnvironmentVariables = newModel.EnvironmentVariables;
+            containerInfo.EnableCompress = newModel.EnableCompress;
+            containerInfo.EnableEncrypt = newModel.EnableEncrypt;
+            containerInfo.TransportTimeout = newModel.TransportTimeout;
             if (containerInfo.Image == null || !string.IsNullOrEmpty(newModel.ImageId))
             {
                 containerInfo.ImageId = newModel.ImageId;

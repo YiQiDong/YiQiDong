@@ -50,6 +50,17 @@ namespace YiQiDong.Protocol.V1.Model
         /// </summary>
         public bool AutoStart { get; set; }
         /// <summary>
+        /// 启用压缩
+        /// </summary>
+        public bool EnableCompress { get; set; }
+        /// <summary>
+        /// 启用加密
+        /// </summary>
+        public bool EnableEncrypt { get; set; }
+        /// 传输超时时间
+        /// </summary>
+        public int TransportTimeout { get; set; } = 60000;
+        /// <summary>
         /// 日志级别
         /// </summary>
         public LogLevel LogLevel { get; set; } = LogLevel.Info;

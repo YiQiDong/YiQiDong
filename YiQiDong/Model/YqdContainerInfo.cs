@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using YiQiDong.Protocol.V1.Model;
@@ -8,8 +9,15 @@ namespace YiQiDong.Model
 {
     [JsonSerializable(typeof(YqdContainerInfo[]))]
     [JsonSerializable(typeof(YqdContainerInfo))]
-    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, WriteIndented = true)]
-    internal partial class YqdContainerInfoSerializerContext : JsonSerializerContext { }
+    public partial class YqdContainerInfoSerializerContext : JsonSerializerContext
+    {
+        public static YqdContainerInfoSerializerContext Default2 { get; } = new YqdContainerInfoSerializerContext(new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+    }
 
     public class YqdContainerInfo : ContainerInfo
     {
@@ -60,12 +68,12 @@ namespace YiQiDong.Model
 
         public string ToJsonString()
         {
-            return JsonSerializer.Serialize(this, YqdContainerInfoSerializerContext.Default.YqdContainerInfo);
+            return JsonSerializer.Serialize(this, YqdContainerInfoSerializerContext.Default2.YqdContainerInfo);
         }
 
         public static new YqdContainerInfo Parse(string content)
         {
-            try { return JsonSerializer.Deserialize(content, YqdContainerInfoSerializerContext.Default.YqdContainerInfo); }
+            try { return JsonSerializer.Deserialize(content, YqdContainerInfoSerializerContext.Default2.YqdContainerInfo); }
             catch { return null; }
         }
 

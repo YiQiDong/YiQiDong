@@ -13,6 +13,7 @@ namespace YiQiDong.Protocol.V1
                 QpCommandInfo.Create(new QpCommands.Register.Request()),
                 QpCommandInfo.Create(new QpCommands.GetFunctionList.Request()),
                 QpCommandInfo.Create(new QpCommands.GetConfigFileList.Request()),
+                QpCommandInfo.Create(new QpCommands.GetEnviromentVariables.Request()),
                 QpCommandInfo.Create(new QpCommands.ExecuteFunction.Request()),
                 QpCommandInfo.Create(new QpCommands.Start.Request()),
                 QpCommandInfo.Create(new QpCommands.Stop.Request()),

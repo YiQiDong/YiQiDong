@@ -98,16 +98,33 @@
         <Tab>环境变量</Tab>
         <ChildContent>
             <div class="card-body small p-0">
+                <div class="m-2">
+                    <div class="btn-group" role="group" aria-label="BasicButtons">
+                        <button type="button" class="btn btn-sm btn-secondary" @onclick="RefreshEnviromentVariables">
+                            刷新
+                        </button>
+                    </div>
+                </div>
                 <table class="table table-sm table-striped table-borderless table-hover mb-0"
                        style="overflow-wrap: anywhere;">
                     <tbody>
-                        @if(Container.EnviromentVariables!=null)
+                        @if (enviromentVariables != null)
                         {
-                            @foreach(var item in Container.EnviromentVariables)
+                            @foreach (var item in enviromentVariables)
                             {
                                 <tr>
                                     <th style="min-width: 20rem;">@item.Key</th>
                                     <td>@item.Value</td>
+                                </tr>
+                            }
+                        }
+                        @if (enviromentVariablesErrorLines != null)
+                        {
+                            @foreach (var item in enviromentVariablesErrorLines)
+                            {
+                                <tr>
+                                    <th style="min-width: 5rem;">-</th>
+                                    <td>@item</td>
                                 </tr>
                             }
                         }

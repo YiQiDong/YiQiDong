@@ -91,6 +91,7 @@ public class AgentContext
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetFunctionList.Request(), CommandExecuters.GetFunctionList.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.ExecuteFunction.Request(), CommandExecuters.ExecuteFunction.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.GetConfigFileList.Request(), CommandExecuters.GetConfigFileList.Execute);
+        commandExecuterManager.Register(new Protocol.V1.QpCommands.GetEnviromentVariables.Request(), CommandExecuters.GetEnviromentVariables.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.Start.Request(), CommandExecuters.Start.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.Stop.Request(), CommandExecuters.Stop.Execute);
         commandExecuterManager.Register(new Protocol.V1.QpCommands.Exit.Request(), CommandExecuters.Exit.Execute);
@@ -150,15 +151,8 @@ public class AgentContext
         }
         try
         {
-            var environmentVariableDict = new Dictionary<string,string>();
-            foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
-                environmentVariableDict[env.Key.ToString()] = env.Value?.ToString();
-
             //注册容器
-            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request()
-            {
-                EnviromentVariables = environmentVariableDict
-            });
+            var rep = await Client.SendCommand(new Protocol.V1.QpCommands.Register.Request());
             Container = new ContainerContext(rep.ContainerInfo)
             {
                 ContainerFolder = rep.ContainerFolder,

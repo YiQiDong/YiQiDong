@@ -22,6 +22,10 @@ public partial class ExitCommandSerializerContext : JsonSerializerContext { }
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 public partial class GetFunctionListCommandSerializerContext : JsonSerializerContext { }
 
+[JsonSerializable(typeof(GetEnviromentVariables.Request))]
+[JsonSerializable(typeof(GetEnviromentVariables.Response))]
+[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+public partial class GetEnviromentVariablesCommandSerializerContext : JsonSerializerContext { }
 
 [JsonSerializable(typeof(GetConfigFileList.Request))]
 [JsonSerializable(typeof(GetConfigFileList.Response))]

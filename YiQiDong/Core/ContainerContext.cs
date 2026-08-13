@@ -15,6 +15,7 @@ using YiQiDong.Protocol.V1.QpNotices;
 using YiQiDong.Utils;
 using LogLevel = YiQiDong.Protocol.V1.Model.LogLevel;
 using Glash.Blazor.Agent.Model;
+using System.Reflection.Metadata.Ecma335;
 
 namespace YiQiDong.Core;
 
@@ -45,8 +46,6 @@ public class ContainerContext : IDisposable
     private CommandExecuterManager commandExecuterManager;
     private NoticeHandlerManager noticeHandlerManager;
 
-    public IReadOnlyDictionary<string, string> EnviromentVariables { get; private set; }
-
     public event EventHandler FunctionListChanged;
     public event EventHandler ConfigFileListChanged;
     public event EventHandler ReverseProxyRuleListChanged;
@@ -68,7 +67,6 @@ public class ContainerContext : IDisposable
 
     public YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
     {
-        EnviromentVariables = request.EnviromentVariables;
         ProcessChannel = (QpServerChannel)channel;
         channel.Disconnected += Channel_Disconnected;
         pushLog(LogLevel.Info, $"[平台]容器连接成功.");
@@ -258,6 +256,12 @@ public class ContainerContext : IDisposable
             }
             RaiseEvent_ConfigFileListChanged();
         });
+    }
+
+    public async Task<Dictionary<string, string>> GetEnviromentVariables()
+    {
+        var rep = await ProcessChannel.SendCommand(new YiQiDong.Protocol.V1.QpCommands.GetEnviromentVariables.Request());
+        return rep.EnviromentVariables;
     }
 
     //处理容器初始化完成通知

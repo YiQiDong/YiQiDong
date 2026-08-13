@@ -20,62 +20,62 @@ namespace YiQiDong.Protocol.V1.Model
         /// <summary>
         /// 编号
         /// </summary>
-        public string Id { get; set; }
+        public virtual string Id { get; set; }
         /// <summary>
         /// 名称
         /// </summary>
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         /// <summary>
         /// 描述
         /// </summary>
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
         /// <summary>
         /// 标签
         /// </summary>
-        public string[] Tags { get; set; }
+        public virtual string[] Tags { get; set; }
         /// <summary>
         /// 镜像编号
         /// </summary>
-        public string ImageId { get; set; }
+        public virtual string ImageId { get; set; }
         /// <summary>
         /// 关联的镜像
         /// </summary>
-        public ImageInfo Image { get; set; }
+        public virtual ImageInfo Image { get; set; }
         /// <summary>
         /// 关联的运行库编号
         /// </summary>
-        public string[] RuntimeIds { get; set; }
+        public virtual string[] RuntimeIds { get; set; }
         /// <summary>
         /// 自动启动
         /// </summary>
-        public bool AutoStart { get; set; }
+        public virtual bool AutoStart { get; set; }
         /// <summary>
         /// 启用压缩
         /// </summary>
-        public bool EnableCompress { get; set; }
+        public virtual bool EnableCompress { get; set; }
         /// <summary>
         /// 启用加密
         /// </summary>
-        public bool EnableEncrypt { get; set; }
+        public virtual bool EnableEncrypt { get; set; }
         /// <summary>
         /// 加密算法
         /// </summary>
-        public string EncryptAlgorithm { get; set; } = "DES";
+        public virtual string EncryptAlgorithm { get; set; } = "DES";
         /// <summary>
         /// 加密模式
         /// </summary>
-        public string EncryptMode { get; set; } = "ECB";
+        public virtual string EncryptMode { get; set; } = "ECB";
         /// <summary>
         /// 加密填充
         /// </summary>
-        public string EncryptPadding { get; set; } = "PKCS7";
+        public virtual string EncryptPadding { get; set; } = "PKCS7";
         /// 传输超时时间
         /// </summary>
-        public int TransportTimeout { get; set; } = 60000;
+        public virtual int TransportTimeout { get; set; } = 60000;
         /// <summary>
         /// 日志级别
         /// </summary>
-        public LogLevel LogLevel { get; set; } = LogLevel.Info;
+        public virtual LogLevel LogLevel { get; set; } = LogLevel.Info;
 
         public static ContainerInfo Parse(string content)
         {

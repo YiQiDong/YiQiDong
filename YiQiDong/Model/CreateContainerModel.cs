@@ -1,25 +1,37 @@
-﻿using System.ComponentModel.DataAnnotations;
-using YiQiDong.Protocol.V1.Model;
-using Quick.Blazor.Bootstrap;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using YiQiDong.Core;
-using LogLevel = YiQiDong.Protocol.V1.Model.LogLevel;
 
 namespace YiQiDong.Model
 {
-    public class CreateContainerModel : PropertyNotifyModel
+    public class CreateContainerModel : YqdContainerInfo, INotifyPropertyChanging, INotifyPropertyChanged
     {
-        private string _ImageId;
-        [Required(ErrorMessage = "必须选择镜像编号")]
-        public string ImageId
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
-            get { return _ImageId; }
+            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+        }
+
+        public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        [Required(ErrorMessage = "必须选择镜像编号")]
+        public override string ImageId
+        {
+            get { return base.ImageId; }
             set
             {
                 RaisePropertyChanging();
-                _ImageId = value;
-                if (!string.IsNullOrEmpty(_ImageId))
+                base.ImageId = value;
+                if (!string.IsNullOrEmpty(base.ImageId))
                 {
-                    var imageInfo = Core.ImageManager.Instance.Get(_ImageId);
+                    var imageInfo = ImageManager.Instance.Get(base.ImageId);
                     if (imageInfo != null)
                     {
                         var idAndName = ContainerManager.Instance.GenerateNewContainerIdAndName(imageInfo.DefaultId ?? imageInfo.Id, imageInfo.Name);
@@ -30,37 +42,29 @@ namespace YiQiDong.Model
                 RaisePropertyChanged();
             }
         }
+        
         [Required(ErrorMessage = "必须输入编号")]
         [StringLength(100, ErrorMessage = "编号太长")]
-        public string Id { get; set; }
+        public override string Id { get => base.Id; set => base.Id = value; }
+
         [Required(ErrorMessage = "必须输入名称")]
         [StringLength(100, ErrorMessage = "名称太长")]
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string[] Tags { get; set; }
-        public string[] RuntimeIds { get; set; }
-        public string StartScript { get; set; }
-        public string StartWarning { get; set; }
-        public string StopScript { get; set; }
-        public string StopWarning { get; set; }
-        public bool EnableRecordLog { get; set; }
+        public override string Name { get => base.Name; set => base.Name = value; }
+        public override int TransportTimeout
+        {
+            get => base.TransportTimeout;
+            set
+            {
+                if (value < 3000)
+                    return;
+                base.TransportTimeout = value;
+            }
+        }
+
         public string EnableRecordLogStr
         {
             get { return EnableRecordLog.ToString(); }
             set { EnableRecordLog = bool.Parse(value); }
         }
-        public string LogIgnoreList { get; set; }
-        public LogLevel LogLevel { get; set; }
-        public int LogSaveDays { get; set; }
-        public string StartCron { get; set; }
-        public string StopCron { get; set; }
-        public string RestartCron { get; set; }
-        public string EnvironmentVariables { get; set; }
-        public bool EnableCompress { get; set; }
-        public bool EnableEncrypt { get; set; }
-        public string EncryptAlgorithm { get; set; }
-        public string EncryptMode { get; set; }
-        public string EncryptPadding { get; set; }
-        public int TransportTimeout { get; set; }        
     }
 }

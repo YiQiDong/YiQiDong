@@ -10,7 +10,7 @@ namespace YiQiDong.Components.Controls
         [Parameter]
         public YqdContainerInfo Model { get; set; }
         [Parameter]
-        public Action<CreateContainerModel> OkAction { get; set; }
+        public Action<YqdContainerInfo> OkAction { get; set; }
         
         public class SelectTagInfo
         {
@@ -33,7 +33,7 @@ namespace YiQiDong.Components.Controls
         {
             createModel.Tags = selectTags?.Where(t => t.Checked).Select(t => t.Name).ToArray();
             createModel.RuntimeIds = selectRuntimes?.Where(t => t.Checked).Select(t => t.Id).ToArray();
-            OkAction?.Invoke(createModel);
+            OkAction?.Invoke(createModel.Clone());
         }
         
         private void checkTag(SelectTagInfo tag)

@@ -24,52 +24,54 @@ namespace YiQiDong.Model
         /// <summary>
         /// 是否启用
         /// </summary>
-        public bool Enable { get; set; } = true;
+        public virtual bool Enable { get; set; } = true;
         /// <summary>
         /// 启动时执行脚本
         /// </summary>
-        public string StartScript { get; set; }
+        public virtual string StartScript { get; set; }
         /// <summary>
         /// 启动警告
         /// </summary>
-        public string StartWarning { get; set; }
+        public virtual string StartWarning { get; set; }
         /// <summary>
         /// 停止时执行脚本
         /// </summary>
-        public string StopScript { get; set; }
+        public virtual string StopScript { get; set; }
         /// <summary>
         /// 停止警告
         /// </summary>
-        public string StopWarning { get; set; }
+        public virtual string StopWarning { get; set; }
         /// <summary>
         /// 启动记录日志
         /// </summary>
-        public bool EnableRecordLog { get; set; }
+        public virtual bool EnableRecordLog { get; set; }
         /// <summary>
         /// 日志保存天数
         /// </summary>
-        public int LogSaveDays { get; set; }
+        public virtual int LogSaveDays { get; set; }
         /// <summary>
         /// 启动定时任务表达式
         /// </summary>
-        public string StartCron { get; set; }
+        public virtual string StartCron { get; set; }
         /// <summary>
         /// 停止定时任务表达式
         /// </summary>
-        public string StopCron { get; set; }
+        public virtual string StopCron { get; set; }
         /// <summary>
         /// 重启定时任务表达式
         /// </summary>
-        public string RestartCron { get; set; }
+        public virtual string RestartCron { get; set; }
         /// <summary>
         /// 环境变量
         /// </summary>
-        public string EnvironmentVariables { get; set; }
+        public virtual string EnvironmentVariables { get; set; }
 
         public string ToJsonString()
         {
             return JsonSerializer.Serialize(this, YqdContainerInfoSerializerContext.Default2.YqdContainerInfo);
         }
+
+        public YqdContainerInfo Clone() => (YqdContainerInfo)MemberwiseClone();
 
         public static new YqdContainerInfo Parse(string content)
         {

@@ -152,37 +152,6 @@ namespace YiQiDong.Core
             RaiseEvent_ContainerChanged();
         }
 
-        public void Create(CreateContainerModel newModel)
-        {
-            var containerMeta = new YqdContainerInfo()
-            {
-                Id = newModel.Id,
-                Name = newModel.Name,
-                Description = newModel.Description,
-                Tags = newModel.Tags,
-                RuntimeIds = newModel.RuntimeIds,
-                ImageId = newModel.ImageId,
-                StartScript = newModel.StartScript,
-                StartWarning = newModel.StartWarning,
-                StopScript = newModel.StopScript,
-                StopWarning = newModel.StopWarning,
-                LogLevel = newModel.LogLevel,
-                EnableRecordLog = newModel.EnableRecordLog,
-                LogSaveDays = newModel.LogSaveDays,
-                StartCron = newModel.StartCron,
-                StopCron = newModel.StopCron,
-                RestartCron = newModel.RestartCron,
-                EnvironmentVariables = newModel.EnvironmentVariables,
-                EnableCompress = newModel.EnableCompress,
-                EnableEncrypt = newModel.EnableEncrypt,
-                EncryptAlgorithm = newModel.EncryptAlgorithm,
-                EncryptMode = newModel.EncryptMode,
-                EncryptPadding = newModel.EncryptPadding,
-                TransportTimeout = newModel.TransportTimeout
-            };
-            ContainerManager.Instance.Create(containerMeta);
-        }
-
         public void SaveContainerFile(YqdContainerInfo model)
         {
             var containerFolder = ContainerPathUtils.GetContainerFolder(model.Id);
@@ -225,12 +194,12 @@ namespace YiQiDong.Core
             RaiseEvent_ContainerChanged();
         }
 
-        public void Update(YqdContainerInfo containerInfo, CreateContainerModel newModel)
+        public void Update(YqdContainerInfo containerInfo, YqdContainerInfo newModel)
         {
             //如果容器编号有改变
             if (containerInfo.Id != newModel.Id)
             {
-                var checkContainerContext = ContainerManager.Instance.Get(newModel.Id);
+                var checkContainerContext = Get(newModel.Id);
                 if (checkContainerContext != null && containerInfo != checkContainerContext.ContainerInfo)
                     throw new IOException($"已经存在编号为[{newModel.Id}]的容器");
                 //移动原容器到新目录

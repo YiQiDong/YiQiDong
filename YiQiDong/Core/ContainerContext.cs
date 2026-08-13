@@ -14,8 +14,6 @@ using YiQiDong.Model;
 using YiQiDong.Protocol.V1.QpNotices;
 using YiQiDong.Utils;
 using LogLevel = YiQiDong.Protocol.V1.Model.LogLevel;
-using Glash.Blazor.Agent.Model;
-using System.Reflection.Metadata.Ecma335;
 
 namespace YiQiDong.Core;
 
@@ -573,10 +571,13 @@ public class ContainerContext : IDisposable
             ProcessChannel.Disconnected -= Channel_Disconnected;
             try
             {
+                ProcessChannel.ClearCommandExecuterManagers();
+                ProcessChannel.ClearNoticeHandlerManagers();
+
                 //先尝试发送退出指令。最多等待1秒
                 ProcessChannel.SendCommand(
-                    new YiQiDong.Protocol.V1.QpCommands.Exit.Request())
-                    .Wait(1000);
+                    new YiQiDong.Protocol.V1.QpCommands.Exit.Request(), 1000).Wait();
+
                 //如果发送退出指令成功，则等待进程退出。最多等待10秒
                 if (Process != null)
                 {

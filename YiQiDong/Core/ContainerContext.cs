@@ -32,7 +32,6 @@ public class ContainerContext : IDisposable
     private NLog.ILogger logger;
 
     public YqdContainerInfo ContainerInfo { get; private set; }
-    private QpServer containerServer;
     public Process Process { get; private set; }
     public QpServerChannel ProcessChannel { get; private set; }
     private List<ReverseProxyRule> reverseProxyRuleList = new List<ReverseProxyRule>();
@@ -371,7 +370,7 @@ public class ContainerContext : IDisposable
 
         if (Process != null)
             return;
-
+        QpServer containerServer = null;
         pushLog(LogLevel.Info, "[平台]正在启用容器...");
         var imageInfo = containerInfo.Image;
         if (imageInfo == null)
@@ -518,14 +517,15 @@ public class ContainerContext : IDisposable
             Process = process;
             process.WaitForExitAsync().ContinueWith(task =>
             {
-                containerServer.Stop();
+                containerServer?.Dispose();
                 pushLog(LogLevel.Info, $"[平台]容器进程[PID:{process.Id}]已退出，退出码：{process.ExitCode}");
-                _ = afterContainerDisconnected();
+                if (ContainerInfo.Enable)
+                    _ = afterContainerDisconnected();
             });
         }
         catch (Exception ex)
         {
-            containerServer.Stop();
+            containerServer?.Dispose();
             pushLog(LogLevel.Error, $"[平台]启动容器进程失败，文件：{psi.FileName}，参数：{psi.Arguments}，原因：{ExceptionUtils.GetExceptionMessage(ex)}...");
         }
     }

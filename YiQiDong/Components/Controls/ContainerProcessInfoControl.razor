@@ -17,77 +17,80 @@
                         </button>
                     </div>
                 </div>
-                <table class="table table-sm table-striped table-borderless table-hover mb-0"
-                       style="overflow-wrap: anywhere;">
-                    <tbody>
-                        <tr>
-                            <th style="min-width: 5rem;">通道</th>
-                            <td>@Container.ProcessChannel?.ChannelName</td>
-                        </tr>
-                        <tr>
-                            <th>连接时间</th>
-                            <td>@Container.ProcessChannel?.LastConnectedTime?.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                        </tr>
-                        <tr>
-                            <th>传输超时</th>
-                            <td>@Container.ProcessChannel?.TransportTimeout</td>
-                        </tr>
-                        <tr>
-                            <th>心跳间隔</th>
-                            <td>@Container.ProcessChannel?.HeartBeatInterval</td>
-                        </tr>
-                        <tr>
-                            <th>启用压缩</th>
-                            <td>
-                                @if (Container.ProcessChannel != null)
-                                {
-                                    <div class="custom-control custom-switch">
-                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableCompress" />
-                                        <label class="custom-control-label"></label>
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>启用加密</th>
-                            <td>
-                                @if (Container.ProcessChannel != null)
-                                {
-                                    <div class="custom-control custom-switch">
-                                        <InputCheckbox class="custom-control-input" @bind-Value="EnableEncrypt" />
-                                        <label class="custom-control-label"></label>
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                        @if(EnableEncrypt)
-                        {
+                @if (Container.ProcessChannel != null)
+                {
+                    <table class="table table-sm table-striped table-borderless table-hover mb-0"
+                           style="overflow-wrap: anywhere;">
+                        <tbody>
                             <tr>
-                                <th>加密算法</th>
-                                <td>@Container.ProcessChannel?.EncryptAlgorithm</td>
+                                <th style="min-width: 5rem;">通道</th>
+                                <td>@Container.ProcessChannel?.ChannelName</td>
                             </tr>
                             <tr>
-                                <th>加密模式</th>
-                                <td>@Container.ProcessChannel?.EncryptMode</td>
+                                <th>连接时间</th>
+                                <td>@Container.ProcessChannel?.LastConnectedTime?.ToString("yyyy-MM-dd HH:mm:ss")</td>
                             </tr>
                             <tr>
-                                <th>加密填充</th>
-                                <td>@Container.ProcessChannel?.EncryptPadding</td>
+                                <th>传输超时</th>
+                                <td>@Container.ProcessChannel?.TransportTimeout.ToString("N0")</td>
                             </tr>
-                        }
-                        @if(EnableNetstat)
-                        {
-                        <tr>
-                            <th>已接收</th>
-                            <td>@Container.ProcessChannel?.BytesReceived</td>
-                        </tr>
-                        <tr>
-                            <th>已发送</th>
-                            <td>@Container.ProcessChannel?.BytesSent</td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
+                            <tr>
+                                <th>心跳间隔</th>
+                                <td>@(Container.ProcessChannel?.HeartBeatInterval.ToString("N0"))</td>
+                            </tr>
+                            <tr>
+                                <th>启用压缩</th>
+                                <td>
+                                    @if (Container.ProcessChannel != null)
+                                    {
+                                        <div class="custom-control custom-switch">
+                                            <InputCheckbox class="custom-control-input" @bind-Value="EnableCompress" />
+                                            <label class="custom-control-label"></label>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>启用加密</th>
+                                <td>
+                                    @if (Container.ProcessChannel != null)
+                                    {
+                                        <div class="custom-control custom-switch">
+                                            <InputCheckbox class="custom-control-input" @bind-Value="EnableEncrypt" />
+                                            <label class="custom-control-label"></label>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                            @if (EnableEncrypt)
+                            {
+                                <tr>
+                                    <th>加密算法</th>
+                                    <td>@Container.ProcessChannel?.EncryptAlgorithm</td>
+                                </tr>
+                                <tr>
+                                    <th>加密模式</th>
+                                    <td>@Container.ProcessChannel?.EncryptMode</td>
+                                </tr>
+                                <tr>
+                                    <th>加密填充</th>
+                                    <td>@Container.ProcessChannel?.EncryptPadding</td>
+                                </tr>
+                            }
+                            @if (EnableNetstat)
+                            {
+                                <tr>
+                                    <th>已接收</th>
+                                    <td>@Container.ProcessChannel?.BytesReceived.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <th>已发送</th>
+                                    <td>@Container.ProcessChannel?.BytesSent.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
             </div>
         </ChildContent>
     </TabPane>

@@ -2,7 +2,7 @@
 {
     public class ExecuteFunction
     {
-        public static Protocol.V1.QpCommands.ExecuteFunction.Response Execute(Quick.Protocol.QpChannel handler, Protocol.V1.QpCommands.ExecuteFunction.Request request)
+        public static async ValueTask<Protocol.V1.QpCommands.ExecuteFunction.Response> Execute(Quick.Protocol.QpChannel handler, Protocol.V1.QpCommands.ExecuteFunction.Request request)
         {
             return new Protocol.V1.QpCommands.ExecuteFunction.Response()
             {

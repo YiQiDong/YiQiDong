@@ -4,7 +4,7 @@ namespace YiQiDong.Agent.CommandExecuters
 {
     public class Exit
     {
-        public static Protocol.V1.QpCommands.Exit.Response Execute(Quick.Protocol.QpChannel channel, Protocol.V1.QpCommands.Exit.Request request)
+        public static async ValueTask<Protocol.V1.QpCommands.Exit.Response> Execute(Quick.Protocol.QpChannel channel, Protocol.V1.QpCommands.Exit.Request request)
         {
             //停止代理上下文
             try

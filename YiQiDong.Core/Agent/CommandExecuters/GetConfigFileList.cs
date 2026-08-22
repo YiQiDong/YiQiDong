@@ -2,7 +2,7 @@
 
 public class GetConfigFileList
 {
-    public static Protocol.V1.QpCommands.GetConfigFileList.Response Execute(Quick.Protocol.QpChannel channel, Protocol.V1.QpCommands.GetConfigFileList.Request request)
+    public static async ValueTask<Protocol.V1.QpCommands.GetConfigFileList.Response> Execute(Quick.Protocol.QpChannel channel, Protocol.V1.QpCommands.GetConfigFileList.Request request)
     {
         return new Protocol.V1.QpCommands.GetConfigFileList.Response()
         {

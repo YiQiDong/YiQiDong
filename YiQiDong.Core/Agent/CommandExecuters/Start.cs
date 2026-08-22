@@ -2,7 +2,7 @@
 {
     public class Start
     {
-        public static Protocol.V1.QpCommands.Start.Response Execute(Quick.Protocol.QpChannel channel, Protocol.V1.QpCommands.Start.Request request)
+        public static async ValueTask<Protocol.V1.QpCommands.Start.Response> Execute(Quick.Protocol.QpChannel channel, Protocol.V1.QpCommands.Start.Request request)
         {
             AgentContext.Start();
             return new Protocol.V1.QpCommands.Start.Response();

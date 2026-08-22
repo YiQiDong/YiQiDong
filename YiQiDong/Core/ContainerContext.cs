@@ -62,7 +62,7 @@ public class ContainerContext : IDisposable
         ReverseProxyRuleListChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public YiQiDong.Protocol.V1.QpCommands.Register.Response Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
+    public async ValueTask<YiQiDong.Protocol.V1.QpCommands.Register.Response> Register(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.Register.Request request)
     {
         ProcessChannel = (QpServerChannel)channel;
         channel.Disconnected += Channel_Disconnected;
@@ -75,7 +75,7 @@ public class ContainerContext : IDisposable
         };
     }
 
-    private YiQiDong.Protocol.V1.QpCommands.AddReverseProxyRule.Response AddReverseProxyRule(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.AddReverseProxyRule.Request request)
+    private async ValueTask<YiQiDong.Protocol.V1.QpCommands.AddReverseProxyRule.Response> AddReverseProxyRule(QpChannel channel, YiQiDong.Protocol.V1.QpCommands.AddReverseProxyRule.Request request)
     {
         if (!request.Path.StartsWith("/"))
             throw new CommandException(255, "Path必须以'/'开头！");
@@ -214,15 +214,15 @@ public class ContainerContext : IDisposable
     }
 
     //处理容器日志通知
-    private void handleContainerLogNotice(QpChannel channel, YiQiDong.Protocol.V1.QpNotices.ContainerLogNotice notice)
+    private async ValueTask handleContainerLogNotice(QpChannel channel, YiQiDong.Protocol.V1.QpNotices.ContainerLogNotice notice)
     {
         pushLog(notice.Level, notice.Content);
     }
 
     //处理功能列表已改变通知
-    private void RefreshFunctionList()
+    private async ValueTask RefreshFunctionList()
     {
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             try
             {
@@ -237,9 +237,9 @@ public class ContainerContext : IDisposable
         });
     }
 
-    private void RefreshConfigFileList()
+    private async ValueTask RefreshConfigFileList()
     {
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             try
             {
@@ -262,17 +262,17 @@ public class ContainerContext : IDisposable
     }
 
     //处理容器初始化完成通知
-    private void handleContainerInitedNotice(QpChannel channel, ContainerInitedNotice notice)
+    private async ValueTask handleContainerInitedNotice(QpChannel channel, ContainerInitedNotice notice)
     {
         Process?.Refresh();
         pushLog(LogLevel.Info, $"[平台]容器启用完成.");
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             //刷新容器配置文件
-            RefreshConfigFileList();
+            _ = RefreshConfigFileList();
             //刷新容器功能列表
-            RefreshFunctionList();
-            
+            _ = RefreshFunctionList();
+
             //如果设置了自动启动
             if (ContainerInfo.AutoStart)
                 await Start();
@@ -329,12 +329,12 @@ public class ContainerContext : IDisposable
         });
     }
 
-    private void handleContainerStartedNotice(QpChannel channel, ContainerStartedNotice notice)
+    private async ValueTask handleContainerStartedNotice(QpChannel channel, ContainerStartedNotice notice)
     {
         pushLog(LogLevel.Info, "[平台]容器启动完成.");
     }
 
-    private void handleContainerStopedNotice(QpChannel channel, ContainerStopedNotice notice)
+    private async ValueTask handleContainerStopedNotice(QpChannel channel, ContainerStopedNotice notice)
     {
         pushLog(LogLevel.Info, "[平台]容器停止完成.");
     }
@@ -354,7 +354,7 @@ public class ContainerContext : IDisposable
                 functionSessionChangedNoticeHandlerDict.Remove(sessionId);
     }
 
-    private void handleFunctionSessionChangedNotice(QpChannel channel, FunctionSessionChangedNotice notice)
+    private async ValueTask handleFunctionSessionChangedNotice(QpChannel channel, FunctionSessionChangedNotice notice)
     {
         if (functionSessionChangedNoticeHandlerDict.TryGetValue(notice.SessionId, out var handler))
             handler.Invoke(notice);

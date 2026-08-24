@@ -106,15 +106,6 @@ namespace YiQiDong.Core.Functions
                                new (){ Type =  FieldType.ContainerTableTh,Value="每秒接收"},
                                new (){ Type =  FieldType.ContainerTableTd,Value=channel.BytesReceivedPerSec.ToString("N0")}
                            ]
-                       },
-                       new ()
-                       {
-                           Type = FieldType.ContainerTableTr,
-                           Children =
-                           [
-                               new (){ Type =  FieldType.ContainerTableTh,Value="包发送队列数量"},
-                               new (){ Type =  FieldType.ContainerTableTd,Value=channel.PackageSendQueueCount.ToString()}
-                           ]
                        }
                     ]
                 });

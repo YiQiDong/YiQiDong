@@ -6,7 +6,7 @@
 		<PackageTags>易启动;YiQiDong</PackageTags>
 		<Description>易启动核心库</Description>
 		<Product>易启动</Product>
-		<Version>2026.38.822</Version>
+		<Version>2026.39.824</Version>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/YiQiDong/YiQiDong</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/YiQiDong/YiQiDong</PackageProjectUrl>
@@ -29,8 +29,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Quick.Fields" Version="2026.6.809" />
-		<PackageReference Include="Quick.Protocol" Version="2.9.2" />
-		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.9.2" />
+		<PackageReference Include="Quick.Protocol" Version="2.9.3" />
+		<PackageReference Include="Quick.Protocol.Pipeline" Version="2.9.3" />
 		<PackageReference Include="Quick.Shell" Version="1.0.4" />
 	</ItemGroup>
 </Project>

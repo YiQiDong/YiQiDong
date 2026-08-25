@@ -26,7 +26,7 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="NLog" Version="6.1.4" />
+		<PackageReference Include="NLog" Version="6.2.0" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.Admin" Version="2026.31.813" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.CrontabManager" Version="2026.31.813" />
 		<PackageReference Include="Quick.Blazor.Bootstrap.QuickFields" Version="2026.31.813" />

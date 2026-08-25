@@ -19,10 +19,10 @@
 	<ItemGroup>
 		<PackageReference Include="Blazor.ECharts" Version="1.0.6" />
 		<PackageReference Include="Epoch.net" Version="4.1.0" />
-		<PackageReference Include="Glash.Blazor.Agent" Version="2026.28.824" />
-		<PackageReference Include="Glash.Blazor.Server" Version="2026.28.824" />
-		<PackageReference Include="Glash.Blazor.Client" Version="2026.28.824" />
-		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.298">
+		<PackageReference Include="Glash.Blazor.Agent" Version="2026.29.825" />
+		<PackageReference Include="Glash.Blazor.Server" Version="2026.29.825" />
+		<PackageReference Include="Glash.Blazor.Client" Version="2026.29.825" />
+		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.321">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
@@ -38,7 +38,7 @@
 		<PackageReference Include="Quick.Protocol.Tcp" Version="2.9.3" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Client" Version="2.9.3" />
 		<PackageReference Include="Quick.Protocol.WebSocket.Server.AspNetCore" Version="2.9.3" />
-		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.10" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.11" />
 		<PackageReference Include="Quick.Build" Version="1.0.20" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		

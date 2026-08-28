@@ -571,9 +571,6 @@ public class ContainerContext : IDisposable
             ProcessChannel.Disconnected -= Channel_Disconnected;
             try
             {
-                ProcessChannel.ClearCommandExecuterManagers();
-                ProcessChannel.ClearNoticeHandlerManagers();
-
                 //先尝试发送退出指令。最多等待1秒
                 ProcessChannel.SendCommand(
                     new YiQiDong.Protocol.V1.QpCommands.Exit.Request(), 1000).Wait();

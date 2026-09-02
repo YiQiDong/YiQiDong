@@ -101,7 +101,7 @@
                 资源信息
             </div>
             <div class="card-body p-0">
-                <table class="table table-sm table-hover mb-0">
+                <table class="table table-sm mb-0">
                     <tbody>
                         @foreach (var t in systemInfoContext.PerformanceInfos)
                         {
@@ -115,7 +115,7 @@
                                                 <span class="badge badge-info">@t.UsedStr</span>
                                                 <span>/</span>
                                                 <span class="badge badge-info">@t.TotalStr</span>
-                                                <span>=</span>
+                                                <span>= </span>
                                             }
                                             <span class="badge badge-info">@(t.UsedPercent)%</span>
                                         </div>
@@ -161,7 +161,7 @@
                 网络信息
             </div>
             <div class="card-body p-0">
-                <table class="table table-sm table-hover mb-0">
+                <table class="table table-sm mb-0">
                     <tbody>
                         @if (systemInfoContext.NetworkInterfaceInfos != null)
                         {

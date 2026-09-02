@@ -186,7 +186,6 @@ namespace YiQiDong
                 {
                     options.SerializerOptions.TypeInfoResolverChain.Add(Model.YqdContainerInfoSerializerContext.Default);
                 });
-                builder.Services.AddECharts();
                 if (IsStartSuccess)
                     Quick.Blazor.Bootstrap.ReverseProxy.ReverseProxyManager.Instance.Load(builder.Services.AddReverseProxy());
                 builder.WebHost

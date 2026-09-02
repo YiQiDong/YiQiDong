@@ -1,6 +1,4 @@
-﻿@using Blazor.ECharts.Components
-
-<div class="row">
+﻿<div class="row">
     <div class="col-md-6 col-sm-12 mb-3">
         <div class="card">
             <div class="card-header">
@@ -100,31 +98,33 @@
     <div class="col-md-6 col-sm-12 mb-3">
         <div class="card">
             <div class="card-header">
-                <span @onclick="showProcessManage">CPU利用率</span>
-            </div>
-            <div class="card-body p-0">
-                <ELine style="height:120px" Option="@cpuChartsOption"></ELine>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-sm-12 mb-3">
-        <div class="card">
-            <div class="card-header">
-                <span @onclick="showProcessManage">内存使用量</span>
-            </div>
-            <div class="card-body p-0">
-                <ELine style="height:120px" Option="@memoryChartsOption"></ELine>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-sm-12 mb-3">
-        <div class="card">
-            <div class="card-header">
-                磁盘信息
+                资源信息
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm table-hover mb-0">
                     <tbody>
+                        @foreach (var t in systemInfoContext.PerformanceInfos)
+                        {
+                            <tr>
+                                <td @onclick="showProcessManage" style="cursor:pointer">
+                                    <p class="font-weight-bold small mb-1">
+                                        @t.Name
+                                        <div>
+                                            @if (t.HasTotalStrAndUsedStr)
+                                            {
+                                                <span class="badge badge-info">@t.UsedStr</span>
+                                                <span>/</span>
+                                                <span class="badge badge-info">@t.TotalStr</span>
+                                                <span>=</span>
+                                            }
+                                            <span class="badge badge-info">@(t.UsedPercent)%</span>
+                                        </div>
+                                    </p>
+                                    <Progress Visiable Value="t.UsedPercent" Striped Background="t.Background">
+                                    </Progress>
+                                </td>
+                            </tr>
+                        }
                         @if(systemInfoContext.DriverInfos!=null)
                         {
                             @foreach (var t in systemInfoContext.DriverInfos)
@@ -137,9 +137,9 @@
                                                 <span class="badge badge-primary">@t.DriveFormat</span>
                                                 <span class="badge badge-primary">@t.DriveType</span>
                                                 <span class="badge badge-info">@t.UsedStr</span>
-                                                /
+                                                <span>/</span>
                                                 <span class="badge badge-info">@t.TotalStr</span>
-                                                =
+                                                <span>=</span>
                                                 <span class="badge badge-info">@(t.UsedPercent)%</span>
                                             </div>
                                         </p>
@@ -158,7 +158,7 @@
     <div class="col-md-6 col-sm-12 mb-3">
         <div class="card">
             <div class="card-header">
-                网卡信息
+                网络信息
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm table-hover mb-0">
@@ -170,7 +170,7 @@
                                 <tr>
                                     <td>
                                         <p class="font-weight-bold small mb-1">
-                                            网卡 [ @t.Name - @t.Description ]
+                                            @t.Name - @t.Description
                                             <div>
                                                 <p class="m-0">
                                                     <span class="badge badge-primary">@t.NetworkInterfaceType</span>

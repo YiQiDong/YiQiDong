@@ -16,6 +16,7 @@ namespace YiQiDong.Utils
             public string DriveType { get; set; }
             public long Total { get; set; }
             public long Used { get; set; }
+            public bool HasTotalStrAndUsedStr { get; set; } = true;
             public string TotalStr => storageUnitStringConverting.GetString(Total, 2, false) + "B";
             public string UsedStr => storageUnitStringConverting.GetString(Used, 2, false) + "B";
             public int UsedPercent => Total == 0 ? 0 : Convert.ToInt32(Used * 100 / Total);
@@ -58,22 +59,14 @@ namespace YiQiDong.Utils
         private const int chartsMaxDataCount = 100;
         private SystemInfoWatcher systemInfoWatcher;
         private Timer shortTimer, longTimer;
-
-        public double?[][] CpuChartsData = new double?[chartsMaxDataCount][];
-        public double?[][] MemoryUsedChartsData = new double?[chartsMaxDataCount][];
-
-        private Queue<double?[]> CpuChartsDataQueue = new Queue<double?[]>();
-        private Queue<double?[]> MemoryUsedChartsDataQueue = new Queue<double?[]>();
-
+        
         public DisplayDriverInfo[] DriverInfos;
         public DisplayDriverInfo CpuInfo;
         public DisplayDriverInfo MemoryInfo { get; set; }
+        public DisplayDriverInfo[] PerformanceInfos;
+
         public DisplayNetworkInterfaceInfo[] NetworkInterfaceInfos;
-        public double MemoryTotalInUnit { get; set; }
-        /// <summary>
-        /// 内存单位
-        /// </summary>
-        public string MemoryUnit { get; set; }
+        
         /// <summary>
         /// 操作系统名称
         /// </summary>
@@ -123,18 +116,19 @@ namespace YiQiDong.Utils
         public event EventHandler DataChanged;
         public SystemInfoContext()
         {
-            var nowTime = DateTime.Now;
-            for (var i = 0; i < chartsMaxDataCount; i++)
-            {
-                CpuChartsDataQueue.Enqueue(new double?[] { new Epoch.net.LongEpochTime(nowTime.AddSeconds(i - chartsMaxDataCount)).Epoch, null });
-                MemoryUsedChartsDataQueue.Enqueue(new double?[] { new Epoch.net.LongEpochTime(nowTime.AddSeconds(i - chartsMaxDataCount)).Epoch, null });
-            }
-
             Task.Run(() =>
             {
-                CpuInfo = new DisplayDriverInfo();
-                CpuInfo.Total = 100;
-                MemoryInfo = new DisplayDriverInfo();
+                CpuInfo = new DisplayDriverInfo
+                {
+                    Name = "CPU",
+                    Total = 100,
+                    HasTotalStrAndUsedStr = false
+                };
+                MemoryInfo = new DisplayDriverInfo()
+                {
+                    Name = "内存"
+                };
+                PerformanceInfos = [CpuInfo, MemoryInfo];
 
                 try
                 {
@@ -225,7 +219,6 @@ namespace YiQiDong.Utils
                     try
                     {
                         CpuInfo.Used = systemInfoWatcher.GetCpuUsagePercent();
-                        pushData(CpuChartsDataQueue, CpuInfo.Used, CpuChartsData);
                     }
                     catch (Exception ex)
                     {
@@ -237,13 +230,8 @@ namespace YiQiDong.Utils
                         var rawMemoryInfo = systemInfoWatcher.GetMemoryInfo();
                         if (rawMemoryInfo == null)
                             throw new NullReferenceException("systemInfoWatcher.GetMemoryInfo() return null.");
-                        MemoryInfo.Total = rawMemoryInfo.Total;
                         MemoryInfo.Used = rawMemoryInfo.Used;
-                        MemoryUnit = storageUnitStringConverting.GetFitUnitString(MemoryInfo.Total);
-
-                        MemoryTotalInUnit = double.Parse(storageUnitStringConverting.GetUnits(MemoryInfo.Total, MemoryUnit).ToString("N1"));
-                        var memoryUsedInUnit = double.Parse(storageUnitStringConverting.GetUnits(MemoryInfo.Used, MemoryUnit).ToString("N1"));
-                        pushData(MemoryUsedChartsDataQueue, memoryUsedInUnit, MemoryUsedChartsData);
+                        MemoryInfo.Total = rawMemoryInfo.Total;                        
                     }
                     catch (Exception ex)
                     {

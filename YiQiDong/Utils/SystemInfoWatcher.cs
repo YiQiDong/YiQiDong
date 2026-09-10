@@ -1,16 +1,7 @@
-﻿using Quick.Shell.Utils;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using Quick.Shell.Utils;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using Windows.Win32;
-using System.Runtime.InteropServices.ComTypes;
-using Quick.Shell.WinCmd;
 using Windows.Win32.System.SystemInformation;
-using System.ComponentModel;
 using Quick.Blazor.Bootstrap.Admin.Utils;
 
 namespace YiQiDong.Utils
@@ -84,14 +75,13 @@ namespace YiQiDong.Utils
                     if (string.IsNullOrEmpty(cpuName))
                         cpuName = ProcessUtils.ExecuteShell("sysctl -n machdep.cpu.brand_string").Output?.Trim();
                     //获取内存信息
-                    var memDict = GetSystemInfo("sysctl -a | grep hw.memsize");
+                    var memDict = GetSystemInfo("sysctl -a");
                     string memoryTotalSizeStr;
                     if (memDict.TryGetValue("hw.memsize_usable", out memoryTotalSizeStr))
                         memoryTotalSize = long.Parse(memoryTotalSizeStr);
                     else if (memDict.TryGetValue("hw.memsize", out memoryTotalSizeStr))
                         memoryTotalSize = long.Parse(memoryTotalSizeStr);
-                    var pageSizeRet = ProcessUtils.ExecuteShell("pagesize");
-                    pageSize_macos = int.Parse(pageSizeRet.Output);
+                    pageSize_macos = int.Parse(memDict["hw.pagesize"]);
                 }
                 else
                 {
@@ -282,12 +272,20 @@ namespace YiQiDong.Utils
             }
             else if (OperatingSystem.IsMacOS())
             {
-                var dict = GetSystemInfo("memory_pressure");
-                var freePercentage = int.Parse(dict["System-wide memory free percentage"].Replace("%", string.Empty));
-
+                var dict = GetSystemInfo("vm_stat");
+                foreach(var item in dict)
+                    dict[item.Key] = item.Value.TrimEnd('.');
                 var total = memoryTotalSize;
-                var free = total * freePercentage / 100;
-                var used = total - free;
+                /*
+                App 内存 = `(Pages active + Pages inactive + Pages speculative + Pages throttled − Pages purgeable − File-backed pages)` × pageSize
+                联动内存 = `Pages wired down × pageSize`
+                被压缩内存 = `Pages occupied by compressor × pageSize`
+                */
+                var used = long.Parse(dict["Pages active"]) + long.Parse(dict["Pages inactive"]) + long.Parse(dict["Pages speculative"]) + long.Parse(dict["Pages throttled"]) - long.Parse(dict["Pages purgeable"]) - long.Parse(dict["File-backed pages"])
+                    + long.Parse(dict["Pages wired down"])
+                    + long.Parse(dict["Pages occupied by compressor"]);
+                used *= pageSize_macos;
+                var free = total - used;
                 return new MemoryInfo()
                 {
                     Free = free,

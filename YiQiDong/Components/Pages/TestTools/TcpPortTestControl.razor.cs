@@ -10,9 +10,11 @@ namespace YiQiDong.Components.Pages.TestTools;
 
 public partial class TcpPortTestControl : ComponentBase, IDisposable
 {
-    private Options options=new Options();
+    private Options options = new Options();
     private bool isTesting = false;
-    private int progressPercent=0;
+    private int scanned;
+    private int total;
+    private float progressPercent = 0;
     private CancellationTokenSource cts;
     private LogViewControl logViewControl;
 
@@ -25,6 +27,12 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
     }
 
     private void stop()
+    {
+        clean();
+        pushLog("已停止");
+    }
+
+    private void clean()
     {
         cts?.Cancel();
         cts = null;
@@ -43,13 +51,41 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
         public int EndPort { get; set; } = 65535;
         public int TimeoutMs { get; set; } = 800;
         public int Concurrency { get; set; } = 200;
-        public bool Verbose { get; set; }=true;
+        public bool Verbose { get; set; } = false;
+
+        public void Check()
+        {
+            if (string.IsNullOrWhiteSpace(Target))
+                throw new IOException("必须指定目标地址");
+            if (StartPort < 1 || StartPort > 65535 ||
+                EndPort < 1 || EndPort > 65535)
+                throw new IOException("端口范围须在 1-65535 之间");
+            if (StartPort > EndPort)
+                throw new IOException("起始端口须小于等于结束端口");
+
+            if (TimeoutMs < 1)
+                throw new IOException("超时须大于 0");
+            if (Concurrency < 1)
+                throw new IOException("并发数须大于 0");
+        }
     }
+
+    private string divider = new string('-', 48);
 
     private async Task beginTest(Options options, CancellationToken cancellationToken)
     {
         isTesting = true;
-        pushLog($"开始对[{options.Target}]进行TCP端口扫描...");
+
+        try
+        {
+            options.Check();
+        }
+        catch (Exception ex)
+        {
+            pushLog(ex.Message);
+            clean();
+            return;
+        }
         try
         {
             IPAddress ip = null;
@@ -58,7 +94,7 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
                 if (!IPAddress.TryParse(options.Target, out ip))
                 {
                     var addresses = await Dns.GetHostAddressesAsync(options.Target);
-                    ip = addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)
+                    ip = addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork || a.AddressFamily == AddressFamily.InterNetworkV6)
                          ?? addresses.FirstOrDefault();
                 }
             }
@@ -75,17 +111,29 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
             }
 
             pushLog($"开始扫描 {options.Target} ({ip}) 端口 {options.StartPort}-{options.EndPort}");
-            pushLog($"超时={options.TimeoutMs}ms  并发={options.Concurrency}  {(options.Verbose ? "(详细模式)" : "")}");
-            pushLog(new string('-', 48));
+            pushLog($"超时={options.TimeoutMs}ms  最大并发={options.Concurrency}  {(options.Verbose ? "(详细模式)" : "")}");
+            pushLog(divider);
+
+            _ = Task.Run(async () =>
+            {
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(100, cancellationToken);
+                    progressPercent = scanned * 100F / total;
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
+
+            
+            total = options.EndPort - options.StartPort + 1;            
+            scanned = 0;
+            progressPercent = 0;
 
             var stopwatch = Stopwatch.StartNew();
-            var total = options.EndPort - options.StartPort + 1;
             var openPorts = new ConcurrentBag<int>();
-            var scanned = 0;
-
             var ports = Enumerable.Range(options.StartPort, total);
             await Parallel.ForEachAsync(ports,
-                new ParallelOptions { MaxDegreeOfParallelism = options.Concurrency },
+                new ParallelOptions { MaxDegreeOfParallelism = options.Concurrency, CancellationToken = cancellationToken },
                 async (port, ct) =>
                 {
                     var open = await IsPortOpen(ip, port, options.TimeoutMs, ct);
@@ -94,27 +142,21 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
 
                     if (options.Verbose)
                     {
-                        if (open)
-                            pushLog($"  [OPEN]   {port,-6} {ServiceName(port)}");
+                        pushLog(open
+                        ? $"  [OPEN]   {port,-6} {ServiceName(port)}"
+                        : $"  [closed] {port,-6}");
                     }
-                    var done = Interlocked.Increment(ref scanned);
-                    if (done % 100 == 0)
-                    {
-                        progressPercent = done * 100 / total;
-                        await InvokeAsync(StateHasChanged);
-                    }
+                    Interlocked.Increment(ref scanned);
                 });
-
             stopwatch.Stop();
 
-            if (!options.Verbose)
-                Console.Write("\r" + new string(' ', 24) + "\r");
+            if (options.Verbose)
+                pushLog(divider);
 
-            pushLog(new string('-', 48));
             pushLog($"开放端口: {openPorts.Count} 个");
             foreach (var p in openPorts.OrderBy(x => x))
                 pushLog($"  {p,-6} {ServiceName(p)}");
-            pushLog(new string('-', 48));
+            pushLog(divider);
             pushLog($"完成。开放 {openPorts.Count}/{total} 个端口，耗时 {stopwatch.Elapsed.TotalSeconds:F1}s");
         }
         catch (OperationCanceledException) { }
@@ -122,16 +164,16 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
         {
             pushLog("测试时出错，原因：" + ExceptionUtils.GetExceptionString(ex));
         }
-        stop();
+        clean();
         await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        stop();
+        clean();
     }
 
-    
+
     private static async Task<bool> IsPortOpen(IPAddress ip, int port, int timeoutMs, CancellationToken ct)
     {
         Socket socket = null;
@@ -143,16 +185,9 @@ public partial class TcpPortTestControl : ComponentBase, IDisposable
                 ReceiveTimeout = timeoutMs,
                 Blocking = true
             };
-
-            var connectTask = socket.ConnectAsync(new IPEndPoint(ip, port), ct);
-            try
-            {
-                await connectTask.AsTask().WaitAsync(TimeSpan.FromMilliseconds(timeoutMs), ct);
-            }
-            catch (TimeoutException)
-            {
-                return false;
-            }
+            var timeoutCts = new CancellationTokenSource(timeoutMs);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
+            await socket.ConnectAsync(new IPEndPoint(ip, port), cts.Token);
             return socket.Connected;
         }
         catch (SocketException)

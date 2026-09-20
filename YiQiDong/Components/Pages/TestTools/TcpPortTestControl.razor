@@ -1,35 +1,98 @@
 ﻿<div class="modal-body">
     <EditForm Model="@this">
         <DataAnnotationsValidator />
-        <div class="input-group mb-1">
-            @if(isTesting)
-            {
-                <div class="input-group-prepend">
-                    <span class="input-group-text">主机</span>
+        <div class="form-row">
+            <div class="form-group col-12">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">主机</span>
+                    </div>
+                    @if (isTesting)
+                    {
+                        <InputText class="form-control" @bind-Value="options.Target" readonly />
+                    }
+                    else
+                    {
+                        <InputText class="form-control" @bind-Value="options.Target" />
+                    }
+                    <div class="input-group-append">
+                        @if (isTesting)
+                        {
+                            <button type="button" class="btn btn-secondary" @onclick="stop">停止</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-secondary" @onclick="start">开始</button>
+                        }
+                    </div>
                 </div>
-                <InputText class="form-control" @bind-Value="options.Target" readonly />
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" @onclick="stop">停止</button>
-                </div>
-            }
-            else
-            {
-                <div class="input-group-prepend">
-                    <span class="input-group-text">主机</span>
-                </div>
-                <InputText class="form-control" @bind-Value="options.Target" />
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" @onclick="start">开始</button>
-                </div>
-            }
+            </div>
         </div>
+        @if (isTesting)
+        {
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                             aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100"
+                             style="width: @progressPercent%"></div>
+                    </div>
+                    <span>已扫描 @scanned/@total ...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">起始端口</span>
+                        </div>
+                        <InputNumber class="form-control" @bind-Value="options.StartPort" />
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">结束端口</span>
+                        </div>
+                        <InputNumber class="form-control" @bind-Value="options.EndPort" />
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">超时时间</span>
+                        </div>
+                        <InputNumber class="form-control" @bind-Value="options.TimeoutMs" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">                
+                <div class="form-group col-md-4">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">最大并发</span>
+                        </div>
+                        <InputNumber class="form-control" @bind-Value="options.Concurrency" />
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">详细模式</span>
+                        </div>
+                        <div class="form-control">
+                            <div class="custom-control custom-switch">
+                                <InputCheckbox class="custom-control-input" @bind-Value="options.Verbose" id="cbVerbose" />
+                                <label class="custom-control-label" for="cbVerbose"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </EditForm>
-    @if(isTesting)
-    {
-        <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="@progressPercent"
-                 aria-valuemin="0" aria-valuemax="100" style="width: @progressPercent%"></div>
-        </div>
-    }
     <LogViewControl @ref="logViewControl" />
 </div>

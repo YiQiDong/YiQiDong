@@ -7,7 +7,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">主机</span>
                 </div>
-                <InputText class="form-control" @bind-Value="host" readonly />
+                <InputText class="form-control" @bind-Value="options.Target" readonly />
                 <div class="input-group-append">
                     <button type="button" class="btn btn-secondary" @onclick="stop">停止</button>
                 </div>
@@ -17,14 +17,19 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">主机</span>
                 </div>
-                <InputText class="form-control" @bind-Value="host" />
+                <InputText class="form-control" @bind-Value="options.Target" />
                 <div class="input-group-append">
                     <button type="button" class="btn btn-secondary" @onclick="start">开始</button>
                 </div>
             }
         </div>
     </EditForm>
-    <LogViewControl @ref="logViewControl">
-
-    </LogViewControl>
+    @if(isTesting)
+    {
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="@progressPercent"
+                 aria-valuemin="0" aria-valuemax="100" style="width: @progressPercent%"></div>
+        </div>
+    }
+    <LogViewControl @ref="logViewControl" />
 </div>

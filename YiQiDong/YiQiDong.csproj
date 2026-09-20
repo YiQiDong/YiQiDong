@@ -11,6 +11,7 @@
 		<Description>跨平台应用程序运行平台</Description>
 		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
 		<IsPackable>false</IsPackable>
+		<CETCompat>false</CETCompat>
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>partial</TrimMode>
 		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>		

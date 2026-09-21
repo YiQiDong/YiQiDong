@@ -106,6 +106,7 @@ namespace YiQiDong.ArgsHandlers
             string line = null;
             Console.Write($"{Locale<Args_Empty>.GetString("Title")}[{Program.Config.Title}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
+            Console.WriteLine();
             if (!string.IsNullOrEmpty(line))
             {
                 Program.Config.Title = line;
@@ -113,6 +114,7 @@ namespace YiQiDong.ArgsHandlers
             }
             Console.Write($"URL[{Program.Config.Urls}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
+            Console.WriteLine();
             if (!string.IsNullOrEmpty(line))
             {
                 if (!line.StartsWith("http://"))
@@ -122,6 +124,7 @@ namespace YiQiDong.ArgsHandlers
             }
             Console.Write($"{Locale<Args_Empty>.GetString("Password")}[{Program.Config.Password}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
+            Console.WriteLine();
             if (!string.IsNullOrEmpty(line))
             {
                 Program.Config.Password = line;
@@ -129,6 +132,7 @@ namespace YiQiDong.ArgsHandlers
             }
             Console.Write($"{Locale<Args_Empty>.GetString("Data Folder")}[{Program.Config.DataFolder}]: ", ConsoleColor.Green);
             line = Console.ReadLine();
+            Console.WriteLine();
             if (!string.IsNullOrEmpty(line))
             {
                 Program.Config.DataFolder = line;

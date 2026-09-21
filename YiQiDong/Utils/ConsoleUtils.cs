@@ -26,40 +26,53 @@ public class ConsoleUtils
 
     public static void ConsoleWrite(string message, ConsoleColor foregroundColor)
     {
-        if (Console.IsOutputRedirected)
-            return;
-        var preForegroundColor = Console.ForegroundColor;
-        Console.ForegroundColor = foregroundColor;
-        Console.Write(message);
-        Console.ForegroundColor = preForegroundColor;
+        try
+        {
+            if (Console.IsOutputRedirected)
+            {
+                Console.Write(message);
+            }
+            else
+            {
+                var preForegroundColor = Console.ForegroundColor;
+                Console.ForegroundColor = foregroundColor;
+                Console.Write(message);
+                Console.ForegroundColor = preForegroundColor;
+            }
+        }
+        catch { }
     }
 
     public static void ConsoleWriteLine(string message, ConsoleColor foregroundColor)
     {
-        if (Console.IsOutputRedirected)
-            return;
-        var preForegroundColor = Console.ForegroundColor;
-        Console.ForegroundColor = foregroundColor;
-        Console.WriteLine(message);
-        Console.ForegroundColor = preForegroundColor;
+        try
+        {
+            if (Console.IsOutputRedirected)
+            {
+                Console.WriteLine(message);
+            }
+            else
+            {
+                var preForegroundColor = Console.ForegroundColor;
+                Console.ForegroundColor = foregroundColor;
+                Console.WriteLine(message);
+                Console.ForegroundColor = preForegroundColor;
+            }
+        }
+        catch
+        {}
     }
 
     public static void ConsoleWriteLine(string message)
     {
-        if (Console.IsOutputRedirected)
-            return;
-        try
-        {
-            Console.WriteLine(message);
-        }
+        try { Console.WriteLine(message); }
         catch { }
     }
 
     public static void ConsoleWriteLine()
     {
-        if (Console.IsOutputRedirected)
-            return;
-        Console.WriteLine();
+        try { Console.WriteLine(); }
+        catch { }
     }
 
     public static void ExecuteAction(string name, Action action)

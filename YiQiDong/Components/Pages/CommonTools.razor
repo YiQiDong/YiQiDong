@@ -1,4 +1,6 @@
-﻿<Accordion AllowMultiplePanelActived="true">
+﻿@page "/tools"
+
+<Accordion AllowMultiplePanelActived="true">
     @foreach (var group in tools.GroupBy(t => t.Category))
     {
         <AccordionPane Key="@group.Key">

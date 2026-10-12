@@ -10,6 +10,7 @@ using Blazored.LocalStorage;
 using Quick.Shell.Utils;
 using Quick.Utils;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace YiQiDong
 {
@@ -186,6 +187,8 @@ namespace YiQiDong
                 {
                     options.SerializerOptions.TypeInfoResolverChain.Add(Model.YqdContainerInfoSerializerContext.Default);
                 });
+                builder.Services.AddCascadingAuthenticationState();
+                builder.Services.AddScoped<AuthenticationStateProvider, MyAuthenticationStateProvider>();
                 if (IsStartSuccess)
                     Quick.Blazor.Bootstrap.ReverseProxy.ReverseProxyManager.Instance.Load(builder.Services.AddReverseProxy());
                 builder.WebHost

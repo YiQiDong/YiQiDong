@@ -1,111 +1,40 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Authorization;
 using Quick.Blazor.Bootstrap;
-using Quick.Blazor.Bootstrap.Utils;
 using YiQiDong.Core;
 using YiQiDong.Utils;
 
 namespace YiQiDong.Components.Layout
 {
-    public partial class MainLayout : LayoutComponentBase, IPageNavigater, IDisposable
+    public partial class MainLayout : LayoutComponentBase
     {
-        private NavMenu navMenu;
-        private bool IsLoading = true;
-        public bool IsLogin { get; private set; } = false;
-        public string Title => Program.Config.Title;
-        public string Message { get; private set; }
-        private string CorrectPassword => Program.Config.Password;
-
-        public string Password { get; set; }
-
-        public string ActiveKey => null;
-
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         [Inject]
         public Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; }
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
-        private string LoginTokenKey;
-        private string loginToken;
+    
+        private bool IsLoading = true;
+        public string Title => Program.Config.Title;
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-#if DEBUG
-            Password = CorrectPassword;
-#endif
-            LoginTokenKey = NavigationManager.Uri + "_token";
-        }
+        public string ActiveKey => null;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                loginToken = await LocalStorage.GetItemAsStringAsync(LoginTokenKey);
-                if (!string.IsNullOrEmpty(loginToken))
-                {
-                    IsLogin = LoginTokenManager.Instance.Verify(loginToken);
-                    if (IsLogin)
-                        LoginTokenManager.Instance.UsingToken(loginToken);
-                    else
-                        await LocalStorage.RemoveItemAsync(LoginTokenKey);
-                }
                 IsLoading = false;
                 _ = InvokeAsync(StateHasChanged);
             }
         }
 
-        public void OnPost()
+        private async Task Logout()
         {
-            if (!IsLogin && CorrectPassword != Password)
-            {
-                Message = "密码不正确！";
-                return;
-            }
-            IsLogin = true;
-            var token = Guid.NewGuid().ToString("N");
-            LoginTokenManager.Instance.UsingToken(token);
-            LocalStorage.SetItemAsStringAsync(LoginTokenKey, token);
-            StateHasChanged();
-        }
-
-        private void onPasswordKeyPress(KeyboardEventArgs e)
-        {
-            if (e.Key == "Enter")
-                OnPost();
-        }
-
-        private void Logout()
-        {
-            LocalStorage.RemoveItemAsync(LoginTokenKey);
-            LoginTokenManager.Instance.Logout(loginToken);
-            IsLogin = false;
-        }
-
-        public void Navigate(string activeKey, Type componentType, Dictionary<string, object> parameterDict)
-        {
-            //更改菜单选中状态
-            if (!string.IsNullOrEmpty(activeKey))
-                navMenu.ChangeActiveKey(activeKey);
-            //跳转到页面
-            parameterDict[nameof(IPageNavigater)] = this;
-            Body = BlazorUtils.GetRenderFragment(componentType, parameterDict);
-            StateHasChanged();
-        }
-
-        private void Show<T>()
-        {
-            Body = BlazorUtils.GetRenderFragment<T>(new Dictionary<string, object>()
-            {
-                [nameof(IPageNavigater)] = this
-            });
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            LoginTokenManager.Instance.Logout(authState.User.Identity.Name);
+            ((MyAuthenticationStateProvider)AuthenticationStateProvider).SignOut();
+            await InvokeAsync(StateHasChanged);
         }
 
         private bool IsShowDataFolderWarning() => !DebugUtils.IsDebug() && UpdateUtils.IsDataFolderInDanger();
-
-        public void Dispose()
-        {
-            if (!string.IsNullOrEmpty(loginToken))
-                LoginTokenManager.Instance.UnusingToken(loginToken);
-        }
     }
 }

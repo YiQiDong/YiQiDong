@@ -1,24 +1,63 @@
 ﻿<div class="modal-body">
     <EditForm Model="@this">
         <DataAnnotationsValidator />
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">地址</span>
+                    </div>
+                    @if (isConnected)
+                    {
+                        <InputText class="form-control" @bind-Value="host" readonly />
+                    }
+                    else
+                    {
+                        <InputText class="form-control" @bind-Value="host" />
+                    }
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">端口</span>
+                    </div>
+                    @if (isConnected)
+                    {
+                        <InputNumber class="form-control" @bind-Value="port" readonly />
+                    }
+                    else
+                    {
+                        <InputNumber class="form-control" @bind-Value="port" />
+                    }
+                    <div class="input-group-append">
+                        @if (isConnected)
+                        {
+                            <button type="button" class="btn btn-secondary" @onclick="stop">断开</button>
+                        }
+                        else
+                        {
+                            @if(isConnecting)
+                            {
+                                <button type="button" class="btn btn-secondary" disabled>连接</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="start">连接</button>
+                            }                            
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
         @if (isConnected)
         {
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">地址</span>
-                </div>
-                <InputText class="form-control" @bind-Value="address" readonly />
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary" @onclick="stop">断开</button>
-                </div>                
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend">
                     <span class="input-group-text">数据</span>
                 </div>
-                <input class="form-control" type="text"
-                    @bind-value="data" @bind-value:event="oninput"
-                    @onkeypress="onDataKeyPress"  />
+                <input class="form-control" type="text" @bind-value="data" @bind-value:event="oninput"
+                       @onkeypress="onDataKeyPress" />
                 <div class="input-group-append">
                     @if (isSending)
                     {
@@ -31,27 +70,6 @@
                 </div>
             </div>
         }
-        else
-        {
-            <div class="input-group mb-1">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">地址</span>
-                </div>
-                <InputText class="form-control" @bind-Value="address" />
-                <div class="input-group-append">
-                    @if (isConnecting)
-                    {
-                        <button type="button" class="btn btn-secondary" disabled>连接</button>
-                    }
-                    else
-                    {
-                        <button type="button" class="btn btn-secondary" @onclick="start">连接</button>
-                    }
-                </div>
-            </div>
-        }
     </EditForm>
-    <LogViewControl @ref="logViewControl">
-
-    </LogViewControl>
+    <LogViewControl @ref="logViewControl"></LogViewControl>
 </div>

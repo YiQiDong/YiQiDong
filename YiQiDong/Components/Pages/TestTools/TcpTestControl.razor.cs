@@ -9,7 +9,8 @@ namespace YiQiDong.Components.Pages.TestTools;
 
 public partial class TcpTestControl : ComponentBase, IDisposable
 {
-    private string address;
+    private string host;
+    private int port = 80;
     private string data;
     private bool isConnecting = false;
     private bool isSending = false;
@@ -20,38 +21,26 @@ public partial class TcpTestControl : ComponentBase, IDisposable
 
     private async Task start()
     {
-        string host;
-        int port;
-
-        try
-        {
-            var strs = address.Split(":");
-            host = strs[0].Trim();
-            port = int.Parse(strs[1].Trim());
-        }
-        catch
-        {
-            pushLog($"地址[{address}]无效!");
-            return;
-        }
         isConnecting = true;
         try
         {
-            tcpClient = new();
-            tcpClient.SendTimeout = 10 * 1000;
-            tcpClient.ReceiveTimeout = 30 * 1000;
+            tcpClient = new()
+            {
+                SendTimeout = 10 * 1000,
+                ReceiveTimeout = 30 * 1000
+            };
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             await tcpClient.ConnectAsync(host, port);
             stopwatch.Stop();
             writer = new StreamWriter(tcpClient.GetStream());
-            pushLog($"已连接到[{address}],用时: {stopwatch.ElapsedMilliseconds}ms");
+            pushLog($"已连接到[{host}:{port}],用时: {stopwatch.ElapsedMilliseconds}ms");
             beginRead(tcpClient);
             isConnected = true;
         }
         catch (Exception ex)
         {
-            pushLog($"连接到[{address}]时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
+            pushLog($"连接到[{host}:{port}]时出错，原因：{ExceptionUtils.GetExceptionMessage(ex)}");
         }
         isConnecting = false;
         _ = InvokeAsync(StateHasChanged);
@@ -87,7 +76,7 @@ public partial class TcpTestControl : ComponentBase, IDisposable
             }
             catch
             {
-                pushLog($"到[{address}]的连接已断开");
+                pushLog($"到[{host}:{port}]的连接已断开");
                 stop();
             }
         });

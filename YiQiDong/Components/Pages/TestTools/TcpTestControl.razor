@@ -2,7 +2,7 @@
     <EditForm Model="@this">
         <DataAnnotationsValidator />
         <div class="form-row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-4">
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
                         <span class="input-group-text">地址</span>
@@ -17,7 +17,7 @@
                     }
                 </div>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-3">
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
                         <span class="input-group-text">端口</span>
@@ -30,24 +30,45 @@
                     {
                         <InputNumber class="form-control" @bind-Value="port" />
                     }
-                    <div class="input-group-append">
-                        @if (isConnected)
-                        {
-                            <button type="button" class="btn btn-secondary" @onclick="stop">断开</button>
-                        }
-                        else
-                        {
-                            @if(isConnecting)
-                            {
-                                <button type="button" class="btn btn-secondary" disabled>连接</button>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-secondary" @onclick="start">连接</button>
-                            }                            
-                        }
-                    </div>
                 </div>
+            </div>
+            <div class="form-group col-md-3">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">类型</span>
+                    </div>
+                    @if (isConnected)
+                    {
+                        <InputSelect class="form-control" @bind-Value="connectionType" readonly>
+                            <option value="TEXT">文本</option>
+                            <option value="HEX">16进制</option>
+                        </InputSelect>
+                    }
+                    else
+                    {
+                        <InputSelect class="form-control" @bind-Value="connectionType">
+                            <option value="TEXT">文本</option>
+                            <option value="HEX">16进制</option>
+                        </InputSelect>
+                    }
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                @if (isConnected)
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="stop">断开</button>
+                }
+                else
+                {
+                    @if (isConnecting)
+                    {
+                        <button type="button" class="btn btn-secondary" disabled>连接</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="start">连接</button>
+                    }
+                }
             </div>
         </div>
         @if (isConnected)

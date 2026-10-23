@@ -223,7 +223,7 @@ namespace YiQiDong
         public static async Task StopWebService()
         {
             ConsoleUtils.ConsoleWriteLine("正在停止Web服务...");
-            await app.StopAsync();
+            await app.DisposeAsync();
         }
 
         public static void StopContainers()

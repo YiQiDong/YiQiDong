@@ -5,6 +5,7 @@ using Quick.Build;
 using Quick.Shell.PowerShell;
 using Quick.Utils;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Text;
 using Tewr.Blazor.FileReader;
 using YiQiDong.Components.Controls;
@@ -263,6 +264,7 @@ namespace YiQiDong.Components.Pages
                     var psFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.ps1");
                     var psFileEncoding = Encoding.GetEncoding(Thread.CurrentThread.CurrentCulture.TextInfo.ANSICodePage);
                     var psFileContent = @$"sc.exe stop {Consts.SERVICE_NAME_WIN32}
+Wait-Process -Id {Process.GetCurrentProcess().Id}
 do
 {{
     try{{ Remove-Item ""{installDir}"" -Recurse -Force }}
@@ -309,7 +311,7 @@ Remove-Item ""{psFileName}""
         private void restartService()
         {
             modalLoading.UpdateProgress(null, "正在重启服务...");
-            YiQiDongUtils.RestartService();
+            _ = YiQiDongUtils.RestartService();
         }
 
         private async Task UploadUpdate()

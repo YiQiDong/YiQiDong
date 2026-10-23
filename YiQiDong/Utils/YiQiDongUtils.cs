@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 using Quick.Build;
+using Quick.Shell.PowerShell;
 using Quick.Shell.Utils;
 using YiQiDong.Core.Utils.Unix;
 
@@ -8,13 +10,22 @@ namespace YiQiDong.Utils;
 
 public class YiQiDongUtils
 {
-    public static void RestartService()
+    public static async Task RestartService()
     {
+        await Task.Delay(100);
         Program.StopContainers();
         
         if (OperatingSystem.IsWindows())
         {
-            ProcessUtils.ExecuteShell("sc restart YiQiDong.Service", true);
+            var psFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.ps1");
+            var psFileEncoding = Encoding.GetEncoding(Thread.CurrentThread.CurrentCulture.TextInfo.ANSICodePage);
+            var psFileContent = @$"sc.exe stop {Consts.SERVICE_NAME_WIN32}
+Wait-Process -Id {Process.GetCurrentProcess().Id}
+sc.exe start {Consts.SERVICE_NAME_WIN32}
+Remove-Item ""{psFileName}""
+";
+            File.WriteAllText(psFileName, psFileContent, psFileEncoding);
+            PowerShellProcessContext.ExecutePs1File(psFileName, true);
         }
         else
         {

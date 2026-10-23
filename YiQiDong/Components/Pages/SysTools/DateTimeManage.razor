@@ -48,7 +48,7 @@
                 throw new NotImplementedException("未实现此功能");
             }
             modalLoading.UpdateContent("设置日期时间成功，正在重启程序...");
-            YiQiDongUtils.RestartService();
+            _ = YiQiDongUtils.RestartService();
         }
         catch (Exception ex)
         {

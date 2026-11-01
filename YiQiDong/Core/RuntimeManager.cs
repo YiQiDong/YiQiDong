@@ -16,10 +16,6 @@ namespace YiQiDong.Core
         private List<RuntimeInfo> RuntimeList = new List<RuntimeInfo>();
         private Dictionary<string, RuntimeInfo> runtimeIdRuntimeDict = new Dictionary<string, RuntimeInfo>();
         private Dictionary<string, RuntimeInfo[]> runtimeNameRuntimesDict = new Dictionary<string, RuntimeInfo[]>();
-        //重试最大次数
-        private const int RETRY_MAX_TIMES = 10;
-        //重试间隔
-        private const int RETRY_INTERVAL = 5000;
 
         public void Init()
         {
@@ -163,39 +159,16 @@ namespace YiQiDong.Core
                 runtimeInfo.Id = $"{runtimeInfo.Name}-{runtimeInfo.Version}";
                 var newRuntimeFolder = RuntimePathUtils.GetRuntimeFolder(runtimeInfo.Id);
                 ContainerContext[] containers = null;
+                var toDeleteFolderList = new List<string>();
+
                 //添加运行库
                 if (preRuntimeInfo == null)
                 {
-                    //删除之前运行库的目录
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在删除之前运行库目录...");
-                        if (!Directory.Exists(newRuntimeFolder))
-                            break;
-                        try { Directory.Delete(newRuntimeFolder, true); }
-                        catch (Exception ex)
-                        {
-                            if (i + 1 >= RETRY_MAX_TIMES)
-                                throw new IOException($"目录[{newRuntimeFolder}]无法删除，替换失败。", ex);
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
+                    //清空新目录
+                    FolderUtils.PrepareToDeleteFolder(newRuntimeFolder, toDeleteFolderList, progressHandler);
                     //移动运行库目录
-                    var sourceFolder = tmpRuntimeDir;
-                    var desFolder = newRuntimeFolder;
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在移动运行库目录...");
-                        if (!Directory.Exists(sourceFolder))
-                            break;
-                        try { Directory.Move(sourceFolder, desFolder); }
-                        catch (Exception ex)
-                        {
-                            if (i + 1 >= RETRY_MAX_TIMES)
-                                throw new IOException($"将目录[{sourceFolder}]移动到[{desFolder}]时出错。", ex);
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
+                    FolderUtils.MoveFolder(tmpRuntimeDir, newRuntimeFolder, progressHandler);
+
                     CheckExecuteFiles(runtimeInfo);
                     containers = ContainerManager.Instance.UseRuntimeContainers(runtimeInfo.Id);
                     messageHandler?.Invoke($"已添加运行库[{runtimeInfo.Name} {runtimeInfo.Version}].");
@@ -218,44 +191,11 @@ namespace YiQiDong.Core
                         container.ContainerInfo.Enable = preEnable;
                     }
                     var preRuntimeFolder = RuntimePathUtils.GetRuntimeFolder(preRuntimeInfo.Id);
-                    //删除之前运行库的目录
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在删除之前运行库目录...");
-                        if (!Directory.Exists(preRuntimeFolder)
-                            && !Directory.Exists(newRuntimeFolder))
-                            break;
 
-                        try
-                        {
-                            if (Directory.Exists(preRuntimeFolder))
-                                Directory.Delete(preRuntimeFolder, true);
-                            if (Directory.Exists(newRuntimeFolder))
-                                Directory.Delete(newRuntimeFolder, true);
-                        }
-                        catch (Exception ex)
-                        {
-                            if (i + 1 >= RETRY_MAX_TIMES)
-                                throw new IOException($"之前运行库目录无法删除，替换失败。", ex);
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
-                    //移动运行库目录
-                    var sourceFolder = tmpRuntimeDir;
-                    var desFolder = newRuntimeFolder;
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在移动运行库目录...");
-                        if (!Directory.Exists(sourceFolder))
-                            break;
-                        try { Directory.Move(sourceFolder, desFolder); }
-                        catch (Exception ex)
-                        {
-                            if (i + 1 >= RETRY_MAX_TIMES)
-                                throw new IOException($"将目录[{sourceFolder}]移动到[{desFolder}]时出错。", ex);
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
+                    FolderUtils.PrepareToDeleteFolder(preRuntimeFolder, toDeleteFolderList, progressHandler);
+                    FolderUtils.PrepareToDeleteFolder(newRuntimeFolder, toDeleteFolderList, progressHandler);
+                    FolderUtils.MoveFolder(tmpRuntimeDir, newRuntimeFolder, progressHandler);
+
                     //修改关联容器的运行库名称
                     foreach (var container in containers)
                     {
@@ -272,6 +212,8 @@ namespace YiQiDong.Core
                     CheckExecuteFiles(runtimeInfo);
                     messageHandler?.Invoke($"已替换运行库[{runtimeInfo.Name} {runtimeInfo.Version}].");
                 }
+                FolderUtils.DeleteFolder(toDeleteFolderList, progressHandler);
+
                 //添加运行库
                 RuntimeList.Add(runtimeInfo);
                 refreshRuntimeDict();
@@ -287,20 +229,7 @@ namespace YiQiDong.Core
             }
             catch
             {
-                await Task.Run(() =>
-                {
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在删除临时运行库目录...");
-                        if (!Directory.Exists(tmpRuntimeDir))
-                            break;
-                        try { Directory.Delete(tmpRuntimeDir, true); }
-                        catch
-                        {
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
-                });
+                FolderUtils.DeleteFolder([tmpRuntimeDir], progressHandler);
                 throw;
             }
         }

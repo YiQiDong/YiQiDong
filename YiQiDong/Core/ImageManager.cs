@@ -1,8 +1,5 @@
 ﻿using Quick.Utils;
 using SharpCompress.Archives;
-using SharpCompress.Archives.SevenZip;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Readers;
 using YiQiDong.Core.Utils;
 using YiQiDong.Core.Utils.Unix;
 using YiQiDong.Protocol.V1.Model;
@@ -17,10 +14,6 @@ namespace YiQiDong.Core
 
         private List<ImageInfo> ImageList = new List<ImageInfo>();
         private Dictionary<string, ImageInfo> imageIdImageDict = new Dictionary<string, ImageInfo>();
-        //重试最大次数
-        private const int RETRY_MAX_TIMES = 10;
-        //重试间隔
-        private const int RETRY_INTERVAL = 5000;
 
         public void Init()
         {
@@ -170,6 +163,8 @@ namespace YiQiDong.Core
                 }
 
                 ContainerContext[] containers = null;
+
+                var toDeleteFolderList = new List<string>();
                 //添加镜像
                 if (preImageInfo == null)
                 {
@@ -187,19 +182,8 @@ namespace YiQiDong.Core
                         var sourceImageFolder = ImagePathUtils.GetImageFolder(imageInfo.Id);
                         var desImageFolder = ImagePathUtils.GetImageFolder(imageId);
                         //移动镜像目录
-                        for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                        {
-                            progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在移动镜像目录...");
-                            if (!Directory.Exists(sourceImageFolder))
-                                break;
-                            try { Directory.Move(sourceImageFolder, desImageFolder); }
-                            catch (Exception ex)
-                            {
-                                if (i + 1 >= RETRY_MAX_TIMES)
-                                    throw new IOException($"将目录[{sourceImageFolder}]移动到[{desImageFolder}]时出错。", ex);
-                                Thread.Sleep(RETRY_INTERVAL);
-                            }
-                        }
+                        FolderUtils.MoveFolder(sourceImageFolder, desImageFolder, progressHandler);
+
                         imageInfo.Id = imageId;
                     }
                     containers = ContainerManager.Instance.UseImageContainers(imageInfo.Id);
@@ -225,19 +209,7 @@ namespace YiQiDong.Core
                     }
                     var preImageFolder = ImagePathUtils.GetImageFolder(preImageInfo.Id);
                     //删除之前镜像目录
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在删除之前镜像目录...");
-                        if (!Directory.Exists(preImageFolder))
-                            break;
-                        try { Directory.Delete(preImageFolder, true); }
-                        catch (Exception ex)
-                        {
-                            if (i + 1 >= RETRY_MAX_TIMES)
-                                throw new IOException($"目录[{preImageFolder}]无法删除，替换失败。", ex);
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
+                    FolderUtils.PrepareToDeleteFolder(preImageFolder, toDeleteFolderList, progressHandler);
 
                     //如果新镜像没有初始镜像编号
                     //或者新镜像初始编号与被替换镜像编号相同
@@ -248,20 +220,7 @@ namespace YiQiDong.Core
                     {
                         var sourceImageFolder = ImagePathUtils.GetImageFolder(imageInfo.Id);
                         var desImageFolder = preImageFolder;
-                        //移动镜像目录
-                        for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                        {
-                            progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在移动镜像目录...");
-                            if (!Directory.Exists(sourceImageFolder))
-                                break;
-                            try { Directory.Move(sourceImageFolder, desImageFolder); }
-                            catch (Exception ex)
-                            {
-                                if (i + 1 >= RETRY_MAX_TIMES)
-                                    throw new IOException($"将目录[{sourceImageFolder}]移动到[{desImageFolder}]时出错。", ex);
-                                Thread.Sleep(RETRY_INTERVAL);
-                            }
-                        }
+                        FolderUtils.MoveFolder(sourceImageFolder, desImageFolder, progressHandler);
                         imageInfo.Id = preImageInfo.Id;
                     }
                     else
@@ -269,19 +228,7 @@ namespace YiQiDong.Core
                         var sourceImageFolder = ImagePathUtils.GetImageFolder(imageInfo.Id);
                         var desImageFolder = ImagePathUtils.GetImageFolder(imageInfo.DefaultId);
                         //移动镜像目录
-                        for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                        {
-                            progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在移动镜像目录...");
-                            if (!Directory.Exists(sourceImageFolder))
-                                break;
-                            try { Directory.Move(sourceImageFolder, desImageFolder); }
-                            catch (Exception ex)
-                            {
-                                if (i + 1 >= RETRY_MAX_TIMES)
-                                    throw new IOException($"将目录[{sourceImageFolder}]移动到[{desImageFolder}]时出错。", ex);
-                                Thread.Sleep(RETRY_INTERVAL);
-                            }
-                        }
+                        FolderUtils.MoveFolder(sourceImageFolder, desImageFolder, progressHandler);
                         imageInfo.Id = imageInfo.DefaultId;
                         //修改关联容器的镜像名称
                         foreach (var container in containers)
@@ -294,7 +241,7 @@ namespace YiQiDong.Core
                     CheckExecuteFiles(imageInfo);
                     messageHandler?.Invoke($"已替换镜像[{imageInfo.Name} {imageInfo.Version}].");
                 }
-
+                FolderUtils.DeleteFolder(toDeleteFolderList, progressHandler);
                 ImageList.Add(imageInfo);
                 refreshImageDict();
                 //容器启用
@@ -312,20 +259,7 @@ namespace YiQiDong.Core
             }
             catch
             {
-                await Task.Run(() =>
-                {
-                    for (var i = 0; i < RETRY_MAX_TIMES; i++)
-                    {
-                        progressHandler.Invoke(RETRY_MAX_TIMES, i + 1, $"正在删除临时镜像目录...");
-                        if (!Directory.Exists(newImageDir))
-                            break;
-                        try { Directory.Delete(newImageDir, true); }
-                        catch
-                        {
-                            Thread.Sleep(RETRY_INTERVAL);
-                        }
-                    }
-                });
+                FolderUtils.DeleteFolder([newImageDir], progressHandler);
                 throw;
             }
         }

@@ -228,7 +228,9 @@ namespace YiQiDong.Core
             containerInfo.EncryptMode = newModel.EncryptMode;
             containerInfo.EncryptPadding = newModel.EncryptPadding;
             containerInfo.TransportTimeout = newModel.TransportTimeout;
-            if (containerInfo.Image == null || !string.IsNullOrEmpty(newModel.ImageId))
+            if ((containerInfo.Image == null
+                || !string.IsNullOrEmpty(newModel.ImageId))
+                && newModel.ImageId != containerInfo.ImageId)
             {
                 containerInfo.ImageId = newModel.ImageId;
                 containerInfo.Image = ImageManager.Instance.Get(newModel.ImageId);

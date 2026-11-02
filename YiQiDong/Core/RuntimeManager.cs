@@ -222,7 +222,7 @@ namespace YiQiDong.Core
                     for (var i = 0; i < containers.Length; i++)
                     {
                         var container = containers[i];
-                        progressHandler.Invoke(i + 1, containers.Length, $"正在启用容器[{container.ContainerInfo.Name}]...");
+                        progressHandler.Invoke(containers.Length, i + 1, $"正在启用容器[{container.ContainerInfo.Name}]...");
                         container.BeginEnable();
                     }
                 return runtimeInfo;

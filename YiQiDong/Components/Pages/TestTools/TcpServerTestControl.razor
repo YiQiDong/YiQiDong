@@ -1,0 +1,68 @@
+﻿<div class="modal-body">
+    <EditForm Model="@this">
+        <DataAnnotationsValidator />
+        <div class="form-row align-items-center">
+            <div class="form-group col-auto">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">地址</span>
+                    </div>
+                    @if (isListening)
+                    {
+                        <InputText class="form-control" @bind-Value="ipAddress" readonly />
+                    }
+                    else
+                    {
+                        <InputText class="form-control" @bind-Value="ipAddress" />
+                    }
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">端口</span>
+                    </div>
+                    @if (isListening)
+                    {
+                        <InputNumber class="form-control" @bind-Value="port" readonly />
+                    }
+                    else
+                    {
+                        <InputNumber class="form-control" @bind-Value="port" />
+                    }
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <div class="custom-control custom-switch">
+                    <InputCheckbox class="custom-control-input" @bind-Value="includeRaw" id="includeRaw" />
+                    <label class="custom-control-label" for="includeRaw">原始数据</label>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <div class="custom-control custom-switch">
+                    <InputCheckbox class="custom-control-input" @bind-Value="includeUTF8Text"
+                                    id="includeUTF8Text" />
+                    <label class="custom-control-label" for="includeUTF8Text">UTF8文本</label>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <div class="custom-control custom-switch">
+                    <InputCheckbox class="custom-control-input" @bind-Value="includeANSIText"
+                                    id="includeANSIText" />
+                    <label class="custom-control-label" for="includeANSIText">本地文本</label>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                @if (isListening)
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="stop">停止</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="start">开始</button>
+                }
+            </div>
+        </div>
+    </EditForm>
+    <LogViewControl @ref="logViewControl"></LogViewControl>
+</div>

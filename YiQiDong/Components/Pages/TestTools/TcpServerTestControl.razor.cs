@@ -14,21 +14,24 @@ public partial class TcpServerTestControl : ComponentBase, IDisposable
     private string ipAddress = "0.0.0.0";
     private int port = 80;
     private bool isListening = false;
+    private CancellationTokenSource cts;
     private TcpListener tcpListener;
     private LogViewControl logViewControl;
-    private bool includeRaw=true;
-    private bool includeUTF8Text=true;
-    private bool includeANSIText=true;
+    private bool includeRaw = true;
+    private bool includeUTF8Text = false;
+    private bool includeANSIText = false;
 
     private async Task start()
     {
         try
         {
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
             tcpListener = new TcpListener(IPAddress.Parse(ipAddress), port);
             tcpListener.Start();
             pushLog($"正在监听: {tcpListener.LocalEndpoint}");
             isListening = true;
-            beginAccept();
+            beginAccept(cts.Token);
         }
         catch (Exception ex)
         {
@@ -39,18 +42,20 @@ public partial class TcpServerTestControl : ComponentBase, IDisposable
 
     private void stop()
     {
+        cts?.Cancel();
+        cts = null;
         isListening = false;
         tcpListener?.Dispose();
         InvokeAsync(StateHasChanged);
     }
 
-    private void beginAccept()
+    private void beginAccept(CancellationToken cancellationToken)
     {
         Task.Run(async () =>
         {
-            while (isListening)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                var tcpClient = await tcpListener.AcceptTcpClientAsync();
+                var tcpClient = await tcpListener.AcceptTcpClientAsync(cancellationToken);
                 var connectionName = tcpClient.Client.RemoteEndPoint.ToString();
                 pushLog($"[{connectionName}] 已连接.");
                 _ = Task.Run(async () =>
@@ -61,17 +66,17 @@ public partial class TcpServerTestControl : ComponentBase, IDisposable
                         using (var stream = tcpClient.GetStream())
                         {
                             var sb = new StringBuilder();
-                            while (true)
+                            while (!cancellationToken.IsCancellationRequested)
                             {
-                                var ret = await stream.ReadAtLeastAsync(buffer, 1);
+                                var ret = await stream.ReadAtLeastAsync(buffer, 1, true, cancellationToken);
 
                                 sb.AppendLine($"[{connectionName}] 接收到数据[{ret}字节]");
                                 if (includeRaw)
-                                    sb.AppendLine($"RAW: {BitConverter.ToString(buffer, 0, ret)}");
+                                    sb.AppendLine($"原始数据: {BitConverter.ToString(buffer, 0, ret)}");
                                 if (includeUTF8Text)
-                                    sb.AppendLine($"UTF8: {Encoding.UTF8.GetString(buffer, 0, ret)}");
+                                    sb.AppendLine($"UTF8文本: {Encoding.UTF8.GetString(buffer, 0, ret)}");
                                 if (includeANSIText)
-                                    sb.AppendLine($"ANSI: {Encoding.GetEncoding(0).GetString(buffer, 0, ret)}");
+                                    sb.AppendLine($"本地文本: {Encoding.GetEncoding(0).GetString(buffer, 0, ret)}");
                                 pushLog(sb.ToString().Trim());
                                 sb.Clear();
                             }

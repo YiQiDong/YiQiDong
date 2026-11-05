@@ -26,11 +26,7 @@ public partial class TcpClientTestControl : ComponentBase, IDisposable
         isConnecting = true;
         try
         {
-            tcpClient = new()
-            {
-                SendTimeout = 10 * 1000,
-                ReceiveTimeout = 30 * 1000
-            };
+            tcpClient = new();
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             await tcpClient.ConnectAsync(host, port);
@@ -92,7 +88,7 @@ public partial class TcpClientTestControl : ComponentBase, IDisposable
                                 var ret = stream.ReadAtLeast(buffer, 1, true);
                                 if (ret <= 0)
                                     throw new IOException("读取数据为0");
-                                pushLog($"[RX] {BitConverter.ToString(buffer, 0, ret)}".Replace('-',' '));
+                                pushLog($"[RX] {BitConverter.ToString(buffer, 0, ret)}".Replace('-', ' '));
                             }
                             break;
                         }
@@ -135,7 +131,7 @@ public partial class TcpClientTestControl : ComponentBase, IDisposable
                             .Replace(":", string.Empty)
                             );
                         stream.Write(sendBuffer);
-                        pushLog($"[TX] {BitConverter.ToString(sendBuffer).Replace('-',' ')}");
+                        pushLog($"[TX] {BitConverter.ToString(sendBuffer).Replace('-', ' ')}");
                         break;
                 }
 

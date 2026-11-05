@@ -75,7 +75,7 @@ namespace YiQiDong.Components.Pages
             //其他工具
             //-----------
             yield return ToolInfo.Create<TestTools.PingTestControl>("其他工具", "Ping测试", "fa fa-bolt");
-            yield return ToolInfo.Create<TestTools.TcpTestControl>("其他工具", "TCP测试", "fa fa-bolt");
+            yield return ToolInfo.Create<TestTools.TcpClientTestControl>("其他工具", "TCP客户端", "fa fa-bolt");
             yield return ToolInfo.Create<TestTools.TcpPortTestControl>("其他工具", "TCP端口扫描", "fa fa-bolt");
             yield return ToolInfo.Create<DevTools.RasKeyPairGenerator>("其他工具", "RSA密钥对生成", "fa fa-bolt");
             yield return ToolInfo.Create<DevTools.GuidGenerator>("其他工具", "GUID生成", "fa fa-bolt");

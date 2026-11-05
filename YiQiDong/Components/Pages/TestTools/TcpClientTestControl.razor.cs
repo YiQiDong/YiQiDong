@@ -7,7 +7,7 @@ using Quick.Utils;
 
 namespace YiQiDong.Components.Pages.TestTools;
 
-public partial class TcpTestControl : ComponentBase, IDisposable
+public partial class TcpClientTestControl : ComponentBase, IDisposable
 {
     private string host;
     private int port = 80;

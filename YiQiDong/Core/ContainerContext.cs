@@ -715,7 +715,8 @@ public class ContainerContext : IDisposable
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                //每天检查一次日志文件是否需要删除
+                await Task.Delay(TimeSpan.FromDays(1), cancellationToken);
                 checkDeleteLogFiles();
             }
         }
